@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated />
+    <generated>
+      <config projectName="webserv" targetName="webserv" />
+    </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -10,9 +12,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/webserv.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webserv.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/a.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/google_connection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/google_connection.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf.d" beforeDir="false" afterPath="$PROJECT_DIR$/conf.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/listener.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/listener.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +27,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -39,6 +45,23 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="webserv" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="webserv" TARGET_NAME="webserv" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="webserv" RUN_TARGET_NAME="webserv">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -50,7 +73,8 @@
       <workItem from="1607090845898" duration="4601000" />
       <workItem from="1607105493950" duration="1185000" />
       <workItem from="1607412877338" duration="353000" />
-      <workItem from="1607423427208" duration="2741000" />
+      <workItem from="1607423427208" duration="9982000" />
+      <workItem from="1607442020835" duration="388000" />
     </task>
     <servers />
   </component>
@@ -62,5 +86,54 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1607430346966" />
+    <state width="1495" height="424" key="GridCell.Tab.0.bottom" timestamp="1607442175236">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="424" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175236" />
+    <state width="1495" height="424" key="GridCell.Tab.0.center" timestamp="1607442175235">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="424" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175235" />
+    <state width="1495" height="424" key="GridCell.Tab.0.left" timestamp="1607442175235">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="424" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175235" />
+    <state width="1495" height="424" key="GridCell.Tab.0.right" timestamp="1607442175236">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="424" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175236" />
+    <state width="1495" height="520" key="GridCell.Tab.1.bottom" timestamp="1607442130540">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="520" key="GridCell.Tab.1.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="1495" height="520" key="GridCell.Tab.1.bottom/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061499" />
+    <state width="1495" height="520" key="GridCell.Tab.1.center" timestamp="1607442130540">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="520" key="GridCell.Tab.1.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="1495" height="520" key="GridCell.Tab.1.center/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
+    <state width="1495" height="520" key="GridCell.Tab.1.left" timestamp="1607442130539">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="520" key="GridCell.Tab.1.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130539" />
+    <state width="1495" height="520" key="GridCell.Tab.1.left/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
+    <state width="1495" height="520" key="GridCell.Tab.1.right" timestamp="1607442130540">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1495" height="520" key="GridCell.Tab.1.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="1495" height="520" key="GridCell.Tab.1.right/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
+    <state width="640" height="204" key="ImportCMakeProjectWizard.bottomPanel" timestamp="1607442016019">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="640" height="204" key="ImportCMakeProjectWizard.bottomPanel/0.0.2560.1440@0.0.2560.1440" timestamp="1607442016019" />
+    <state width="640" height="476" key="ImportCMakeProjectWizard.topPanel" timestamp="1607442016019">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state width="640" height="476" key="ImportCMakeProjectWizard.topPanel/0.0.2560.1440@0.0.2560.1440" timestamp="1607442016019" />
+    <state x="1456" y="358" key="run.anything.popup" timestamp="1607442184093">
+      <screen x="0" y="23" width="2560" height="1328" />
+    </state>
+    <state x="1456" y="358" key="run.anything.popup/0.0.2560.1440@0.0.2560.1440" timestamp="1607441083735" />
+    <state x="1456" y="358" key="run.anything.popup/0.23.2560.1328@0.23.2560.1328" timestamp="1607442184093" />
   </component>
 </project>

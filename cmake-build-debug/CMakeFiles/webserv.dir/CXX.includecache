@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/deddara/school21/webserv/server.cpp
+iostream
+-
+sstream
+/Users/deddara/school21/webserv/sstream
+fstream
+/Users/deddara/school21/webserv/fstream
+vector
+/Users/deddara/school21/webserv/vector
+sys/types.h
+-
+sys/socket.h
+-
+netdb.h
+-
+arpa/inet.h
+-
+fcntl.h
+-
+sys/select.h
+-
+

@@ -186,9 +186,10 @@ run(void)
 
         if (FD_ISSET(listener, &readset)) {
             struct sockaddr_storage ss;
-            socklen_t slen = sizeof(ss);
+			fd_set fd_;
+
+			socklen_t slen = sizeof(ss);
             int fd = accept(listener, (struct sockaddr*)&ss, &slen);
-            fd_set fd_;
             FD_ZERO(&fd_);
             FD_SET(fd, &fd_);
             select(fd+1, &fd_, &fd_, 0, 0);
