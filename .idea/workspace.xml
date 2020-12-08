@@ -9,7 +9,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="" />
+    <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/google_connection.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/google_connection.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,11 +47,20 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1607090844513</updated>
-      <workItem from="1607090845898" duration="2391000" />
+      <workItem from="1607090845898" duration="4601000" />
+      <workItem from="1607105493950" duration="1185000" />
+      <workItem from="1607412877338" duration="353000" />
+      <workItem from="1607423427208" duration="2741000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1607430346966">
+      <screen x="0" y="0" width="2560" height="1440" />
+    </state>
+    <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1607430346966" />
   </component>
 </project>

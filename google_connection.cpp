@@ -40,6 +40,8 @@ int main()
 	sin.sin_port = htons(80);
 	sin.sin_addr = *(reinterpret_cast<in_addr*>(h->h_addr));
 
+	std::cout << sin.sin_addr << std::endl;
+
 	if (connect(fd, (struct sockaddr*) &sin, sizeof(sin)))
 	{
 		perror("connect");
@@ -71,6 +73,9 @@ int main()
 		}
 		std::cout << buf;
 	}
+
+	std::string str = "ASdsdsadASDdsasd";
+	std::cout << s
 
 	return (0);
 }
