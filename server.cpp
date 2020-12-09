@@ -82,6 +82,8 @@ int main()
 		perror("listen");
 		return (1);
 	}
+	fcntl(listener, F_SETFL, O_NONBLOCK);
+
 	FD_ZERO(&cur_socks);
 	FD_SET(listener, &cur_socks);
 
@@ -118,7 +120,23 @@ int main()
 			{
 				if (i == listener)
 				{
-					accepter = accept(listener, (struct sockaddr*) NULL, NULL);
+					fd_set fd_;
+					struct sockaddr_storage ss;
+					socklen_t slen = sizeof(ss);
+
+					if ((accepter = accept(listener, (struct sockaddr*)&ss, &slen)) < 0)
+					{
+						perror("accept");
+						return (1);
+					}
+					fcntl(accepter, F_SETFL, O_NONBLOCK);
+					FD_ZERO(&fd_);
+					FD_SET(accepter, &fd_);
+					if ((select(accepter + 1, &fd_, &fd_, 0, 0)) < 0)
+					{
+						perror("select");
+						return (1);
+					}
 					FD_SET(accepter, &cur_socks);
 					if (accepter > max_fd)
 						max_fd = accepter;
