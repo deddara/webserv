@@ -14,6 +14,12 @@
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,9 +49,9 @@
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
     <configuration name="webserv" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="webserv" TARGET_NAME="webserv" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="webserv" RUN_TARGET_NAME="webserv">
@@ -71,7 +77,8 @@
       <workItem from="1607105493950" duration="1185000" />
       <workItem from="1607412877338" duration="353000" />
       <workItem from="1607423427208" duration="9982000" />
-      <workItem from="1607442020835" duration="627000" />
+      <workItem from="1607442020835" duration="1008000" />
+      <workItem from="1607500176101" duration="2801000" />
     </task>
     <servers />
   </component>
@@ -127,10 +134,10 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state width="640" height="476" key="ImportCMakeProjectWizard.topPanel/0.0.2560.1440@0.0.2560.1440" timestamp="1607442016019" />
-    <state x="1456" y="358" key="run.anything.popup" timestamp="1607442184093">
+    <state x="1456" y="358" key="run.anything.popup" timestamp="1607504886824">
       <screen x="0" y="23" width="2560" height="1328" />
     </state>
     <state x="1456" y="358" key="run.anything.popup/0.0.2560.1440@0.0.2560.1440" timestamp="1607441083735" />
-    <state x="1456" y="358" key="run.anything.popup/0.23.2560.1328@0.23.2560.1328" timestamp="1607442184093" />
+    <state x="1456" y="358" key="run.anything.popup/0.23.2560.1328@0.23.2560.1328" timestamp="1607504886824" />
   </component>
 </project>

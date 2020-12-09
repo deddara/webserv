@@ -44,74 +44,56 @@ int main()
 	lst_adress	adr;
 	get_ip_from_file(adr);
 
-	adr.port = 1339;
-	adr.ip = "127.0.0.1";
-	fd_set readset, writeset, exset;
+	int listener, accepter;
+	struct sockaddr_in servaddr;
+	char	buff[1024];
+	memset(buff, 0, sizeof(buff));
 
-	int sockfd;
-	struct sockaddr_in	my_addr;
-
-	sockfd = socket(PF_INET, SOCK_STREAM, 0);
-	fcntl(sockfd, F_SETFL, O_NONBLOCK);
-
-	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(adr.port);
-	my_addr.sin_addr.s_addr = inet_addr(adr.ip);
-	memset(my_addr.sin_zero, 0, sizeof my_addr.sin_zero);
-	if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(my_addr)) < 0){
-		perror("bind");
-		return 1;
-	}
-	if (listen(sockfd, 16)<0) {
+	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
 		perror("listen");
-		return 1;
+		return (1);
 	}
-	FD_ZERO(&writeset);
-	FD_ZERO(&exset);
-	FD_ZERO(&readset);
-	int yes = 1;
-	setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int));
-	int max_fd;
-	while (1) {
-		char buf[1024];
-		bzero(buf, 1024);
-		max_fd = sockfd;
-		FD_ZERO(&readset);
-		FD_ZERO(&writeset);
-		FD_ZERO(&exset);
 
-		FD_SET(sockfd, &readset);
-		if (select(max_fd+1, &readset, &writeset, &exset, NULL) < 0) {
-			perror("select");
+	bzero(&servaddr, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(adr.port);
+	servaddr.sin_addr.s_addr = inet_addr(adr.ip);
+
+	if (bind(listener, (struct sockaddr *)& servaddr, sizeof(servaddr)) < 0)
+	{
+		perror("bind");
+		return (1);
+	}
+	if (listen(listener, 10) < 0)
+	{
+		perror("listen");
+		return (1);
+	}
+	int n;
+
+	for ( ; ; )
+	{
+		accepter = accept(listener, (struct sockaddr*) NULL, NULL);
+		while ((n = recv(accepter, buff, sizeof(buff), 0)) > 0)
+		{
+			std::cout << buff;
+			if (buff[n-1] == '\n')
+				break;
+			memset(buff, 0, sizeof(buff));
+		}
+		if (n < 0)
+		{
+			perror("n");
+			return (1);
+		}
+		char *resp = "HTTP/1.1 200 OK\r\n";
+		if ((send(accepter, resp, strlen(resp), 0)) < 0)
+		{
+			perror("send");
 			return 1;
 		}
-
-		if (FD_ISSET(sockfd, &readset))
-		{
-			struct sockaddr_storage ss;
-			fd_set new_fd;
-
-			socklen_t slen = sizeof(ss);
-			int fd = accept(sockfd, (struct sockaddr*)&ss, &slen);
-			fcntl(fd, F_SETFL, O_NONBLOCK);
-
-//			FD_ZERO(&new_fd);
-//			FD_SET(fd, &new_fd);
-//			select(fd + 1, &new_fd, &new_fd, 0, 0);
-			sleep(1);
-			if (fd < 0) {
-				perror("accept");
-			}
-			else
-			{
-				while (1) {
-					ssize_t res = recv(fd, buf, sizeof(buf), 0);
-					std::cout << res <<  " "<< buf << std::endl;
-					if (res <= 0) {
-						break;
-					}
-				}
-			}
-		}
+		close(accepter);
 	}
+
 }
