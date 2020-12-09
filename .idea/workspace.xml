@@ -14,6 +14,16 @@
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/webserv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/webserv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf.d" beforeDir="false" afterPath="$PROJECT_DIR$/conf.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +32,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ClangdSettings">
+    <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
@@ -43,9 +54,9 @@
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="webserv" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="webserv" TARGET_NAME="webserv" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="webserv" RUN_TARGET_NAME="webserv">
@@ -73,6 +84,7 @@
       <workItem from="1607423427208" duration="9982000" />
       <workItem from="1607442020835" duration="1008000" />
       <workItem from="1607500176101" duration="5675000" />
+      <workItem from="1607516124699" duration="2908000" />
     </task>
     <servers />
   </component>
@@ -84,41 +96,41 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1607430346966" />
-    <state width="1495" height="424" key="GridCell.Tab.0.bottom" timestamp="1607442175236">
+    <state width="2518" height="360" key="GridCell.Tab.0.bottom" timestamp="1607520024088">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="424" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175236" />
-    <state width="1495" height="424" key="GridCell.Tab.0.center" timestamp="1607442175235">
+    <state width="2518" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024088" />
+    <state width="2518" height="360" key="GridCell.Tab.0.center" timestamp="1607520024086">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="424" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175235" />
-    <state width="1495" height="424" key="GridCell.Tab.0.left" timestamp="1607442175235">
+    <state width="2518" height="360" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024086" />
+    <state width="2518" height="360" key="GridCell.Tab.0.left" timestamp="1607520024086">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="424" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175235" />
-    <state width="1495" height="424" key="GridCell.Tab.0.right" timestamp="1607442175236">
+    <state width="2518" height="360" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024086" />
+    <state width="2518" height="360" key="GridCell.Tab.0.right" timestamp="1607520024087">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="424" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607442175236" />
-    <state width="1495" height="520" key="GridCell.Tab.1.bottom" timestamp="1607442130540">
+    <state width="2518" height="360" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024087" />
+    <state width="2518" height="360" key="GridCell.Tab.1.bottom" timestamp="1607520024089">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="520" key="GridCell.Tab.1.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="2518" height="360" key="GridCell.Tab.1.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024089" />
     <state width="1495" height="520" key="GridCell.Tab.1.bottom/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061499" />
-    <state width="1495" height="520" key="GridCell.Tab.1.center" timestamp="1607442130540">
+    <state width="2518" height="360" key="GridCell.Tab.1.center" timestamp="1607520024088">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="520" key="GridCell.Tab.1.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="2518" height="360" key="GridCell.Tab.1.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024088" />
     <state width="1495" height="520" key="GridCell.Tab.1.center/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
-    <state width="1495" height="520" key="GridCell.Tab.1.left" timestamp="1607442130539">
+    <state width="2518" height="360" key="GridCell.Tab.1.left" timestamp="1607520024088">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="520" key="GridCell.Tab.1.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130539" />
+    <state width="2518" height="360" key="GridCell.Tab.1.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024088" />
     <state width="1495" height="520" key="GridCell.Tab.1.left/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
-    <state width="1495" height="520" key="GridCell.Tab.1.right" timestamp="1607442130540">
+    <state width="2518" height="360" key="GridCell.Tab.1.right" timestamp="1607520024089">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1495" height="520" key="GridCell.Tab.1.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607442130540" />
+    <state width="2518" height="360" key="GridCell.Tab.1.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607520024089" />
     <state width="1495" height="520" key="GridCell.Tab.1.right/0.23.2560.1328@0.23.2560.1328" timestamp="1607442061498" />
     <state width="640" height="204" key="ImportCMakeProjectWizard.bottomPanel" timestamp="1607442016019">
       <screen x="0" y="0" width="2560" height="1440" />
@@ -133,5 +145,21 @@
     </state>
     <state x="1456" y="358" key="run.anything.popup/0.0.2560.1440@0.0.2560.1440" timestamp="1607441083735" />
     <state x="1456" y="358" key="run.anything.popup/0.23.2560.1328@0.23.2560.1328" timestamp="1607504886824" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/server.cpp</url>
+          <line>148</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/server.cpp</url>
+          <line>100</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

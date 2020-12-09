@@ -57,7 +57,19 @@ int sender_recv(int fd)
 		perror("n");
 		return (1);
 	}
-	char *resp = "HTTP/1.1 200 OK\r\n";
+	char *resp = "HTTP/1.1 200 OK\r\n"
+				 "Date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
+				 "Server: Apache/2.2.14 (Win32)\r\n"
+				 "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\r\n"
+				 "Content-Length: 88\r\n"
+				 "Content-Type: text/html\r\n"
+				 "Connection: Closed\r\n\r\n"
+				 "<html>\n"
+				 "<body>\n"
+				 "<h1>Hello, World!</h1>\n"
+				 "</body>\n"
+				 "</html>\r\n";
+
 	if ((send(fd, resp, strlen(resp), 0)) < 0)
 	{
 		perror("send");
@@ -85,6 +97,8 @@ int 	server_setup()
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(adr.port);
 	servaddr.sin_addr.s_addr = inet_addr(adr.ip);
+	int opt = 1;
+	setsockopt(listener, SOL_SOCKET,  SO_REUSEADDR, &opt, sizeof(opt));
 	if (bind(listener, (struct sockaddr *)& servaddr, sizeof(servaddr)) < 0)
 	{
 		perror("bind");

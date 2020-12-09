@@ -27,4 +27,6 @@ fcntl.h
 -
 sys/select.h
 -
+zconf.h
+/Users/deddara/school21/webserv/zconf.h
 
