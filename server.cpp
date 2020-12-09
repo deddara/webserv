@@ -67,43 +67,66 @@ int sender_recv(int fd)
 	return (0);
 }
 
-int main()
+int 	server_setup()
 {
+	int listener;
 	lst_adress	adr;
 	get_ip_from_file(adr);
-	fd_set cur_socks, rdy_socks;
-	int listener, accepter;
 	struct sockaddr_in servaddr;
-	char	buff[1024];
-	memset(buff, 0, sizeof(buff));
 
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		perror("listen");
-		return (1);
+		return (504);
 	}
 	fcntl(listener, F_SETFL, O_NONBLOCK);
-
-	FD_ZERO(&cur_socks);
-	FD_SET(listener, &cur_socks);
-
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(adr.port);
 	servaddr.sin_addr.s_addr = inet_addr(adr.ip);
-
 	if (bind(listener, (struct sockaddr *)& servaddr, sizeof(servaddr)) < 0)
 	{
 		perror("bind");
+		return (504);
+	}
+	return (listener);
+}
+
+int new_connection(int listener, struct sockaddr_storage & ss, socklen_t & slen)
+{
+	int accepter;
+	fd_set fd_;
+	if ((accepter = accept(listener, (struct sockaddr*)&ss, &slen)) < 0)
+	{
+		perror("accept");
 		return (1);
 	}
+	fcntl(accepter, F_SETFL, O_NONBLOCK);
+	FD_ZERO(&fd_);
+	FD_SET(accepter, &fd_);
+	if ((select(accepter + 1, &fd_, &fd_, 0, 0)) < 0)
+	{
+		perror("select");
+		return (1);
+	}
+	return accepter;
+}
+
+int		server_handler(int listener)
+{
+	int accepter;
+	fd_set cur_socks, rdy_socks;
+
+	FD_ZERO(&cur_socks);
+	FD_SET(listener, &cur_socks);
+
 	if (listen(listener, 10) < 0)
 	{
 		perror("listen");
 		return (1);
 	}
-	int n;
+
 	int max_fd = listener;
 	for ( ; ; )
 	{
@@ -120,23 +143,9 @@ int main()
 			{
 				if (i == listener)
 				{
-					fd_set fd_;
 					struct sockaddr_storage ss;
 					socklen_t slen = sizeof(ss);
-
-					if ((accepter = accept(listener, (struct sockaddr*)&ss, &slen)) < 0)
-					{
-						perror("accept");
-						return (1);
-					}
-					fcntl(accepter, F_SETFL, O_NONBLOCK);
-					FD_ZERO(&fd_);
-					FD_SET(accepter, &fd_);
-					if ((select(accepter + 1, &fd_, &fd_, 0, 0)) < 0)
-					{
-						perror("select");
-						return (1);
-					}
+					accepter = new_connection(listener, ss, slen);
 					FD_SET(accepter, &cur_socks);
 					if (accepter > max_fd)
 						max_fd = accepter;
@@ -149,5 +158,14 @@ int main()
 			}
 		}
 	}
+}
+
+int main()
+{
+	int listener;
+
+	listener = server_setup();
+
+	server_handler(listener);
 
 }
