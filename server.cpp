@@ -39,11 +39,39 @@ void 	get_ip_from_file(lst_adress & adr)
 	adr.port = std::stoi(vec.back());
 }
 
+int sender_recv(int fd)
+{
+	int n;
+	char buff[1024];
+	memset(buff, 0, sizeof(buff));
+
+	while ((n = recv(fd, buff, sizeof(buff), 0)) > 0)
+	{
+		std::cout << buff;
+		if (buff[n-1] == '\n')
+			break;
+		memset(buff, 0, sizeof(buff));
+	}
+	if (n < 0)
+	{
+		perror("n");
+		return (1);
+	}
+	char *resp = "HTTP/1.1 200 OK\r\n";
+	if ((send(fd, resp, strlen(resp), 0)) < 0)
+	{
+		perror("send");
+		return 1;
+	}
+	close(fd);
+	return (0);
+}
+
 int main()
 {
 	lst_adress	adr;
 	get_ip_from_file(adr);
-
+	fd_set cur_socks, rdy_socks;
 	int listener, accepter;
 	struct sockaddr_in servaddr;
 	char	buff[1024];
@@ -54,6 +82,9 @@ int main()
 		perror("listen");
 		return (1);
 	}
+	FD_ZERO(&cur_socks);
+	FD_SET(listener, &cur_socks);
+
 
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
@@ -71,29 +102,34 @@ int main()
 		return (1);
 	}
 	int n;
-
+	int max_fd = listener;
 	for ( ; ; )
 	{
-		accepter = accept(listener, (struct sockaddr*) NULL, NULL);
-		while ((n = recv(accepter, buff, sizeof(buff), 0)) > 0)
-		{
-			std::cout << buff;
-			if (buff[n-1] == '\n')
-				break;
-			memset(buff, 0, sizeof(buff));
-		}
-		if (n < 0)
-		{
-			perror("n");
+		rdy_socks = cur_socks;
+
+		if (select(max_fd + 1, &rdy_socks, NULL, NULL, NULL) < 0){
+			perror("select");
 			return (1);
 		}
-		char *resp = "HTTP/1.1 200 OK\r\n";
-		if ((send(accepter, resp, strlen(resp), 0)) < 0)
+
+		for (int i = 0; i < max_fd + 1; i++)
 		{
-			perror("send");
-			return 1;
+			if (FD_ISSET(i, &rdy_socks))
+			{
+				if (i == listener)
+				{
+					accepter = accept(listener, (struct sockaddr*) NULL, NULL);
+					FD_SET(accepter, &cur_socks);
+					if (accepter > max_fd)
+						max_fd = accepter;
+				}
+				else
+				{
+					sender_recv(i);
+					FD_CLR(i, &cur_socks);
+				}
+			}
 		}
-		close(accepter);
 	}
 
 }
