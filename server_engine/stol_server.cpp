@@ -59,7 +59,7 @@ int serv_recv_msg(std::vector<int> & client_fd, std::vector<int>::iterator & it)
 	{
 		close(*it);
 		client_fd.erase(it);
-		return (500);
+		return (1);
 	}
 	return (0);
 }
@@ -105,9 +105,10 @@ int main()
 					perror("send");
 					return 1;
 				}
-//				close(*it);
-//				client_fd.erase(it);
 				serv.response = "\0";
+				//				close(*it);
+//				client_fd.erase(it);
+
 //				break;
 			}
 		}
