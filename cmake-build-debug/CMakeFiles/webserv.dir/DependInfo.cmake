@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/deddara/school21_42/webserv/server.cpp" "/home/deddara/school21_42/webserv/cmake-build-debug/CMakeFiles/webserv.dir/server.cpp.o"
+  "/Users/deddara/school21/webserv/stol_server.cpp" "/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles/webserv.dir/stol_server.cpp.o"
   )
-set(CMAKE_CXX_COMPILER_ID "GNU")
+set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH

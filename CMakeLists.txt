@@ -4,4 +4,4 @@ project(webserv)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(webserv
-        server.cpp)
+        stol_server.cpp)
