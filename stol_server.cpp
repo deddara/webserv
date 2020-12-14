@@ -19,14 +19,15 @@ void response_prepare(Server & serv)
 {
 	char buff[1000];
 	bzero(buff, sizeof(buff));
+	serv.body = "\0";
 
-	int fd = open("./html_files/50x.html", O_RDONLY);
+	int fd = open("./html_files/index.html", O_RDONLY);
 	if (fd < 0){
 		perror("open");
 		return ;
 	}
 	while (read(fd, buff, sizeof(buff))) {
-		serv.body.assign(buff, strlen(buff));
+		serv.body += buff;
 		std::cout << serv.body;
 	}
 	serv.response = "HTTP/1.1 200 OK\r\n"
@@ -38,24 +39,18 @@ void response_prepare(Server & serv)
 	serv.response += serv.body;
 }
 
-int main()
-{
-	fd_set readset, writeset;
-	int listen_sock, accept_sock;
+int server_setup(){
 	struct sockaddr_in addr;
-	std::vector<int> client_fd;
-	Server	serv;
-	char buff[1024];
-	bzero(&buff, 1024);
-	bzero(&addr, sizeof(addr));
+	int listen_sock;
 
+	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(3031);
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	if ((listen_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("listen_sock");
-		return (1);
+		return (500);
 	}
 	fcntl(listen_sock, F_SETFL, O_NONBLOCK);
 	int opt = 1;
@@ -63,15 +58,27 @@ int main()
 	if ((bind(listen_sock, (struct sockaddr*)& addr, sizeof(addr))) < 0)
 	{
 		perror("bind");
-		return (1);
+		return (500);
 	}
-
 	if ((listen(listen_sock, 10)) < 0){
 		perror("listen_sock");
-		return (1);
+		return (500);
 	}
+	return (listen_sock);
+}
 
-	int max_fd;
+int main()
+{
+	fd_set readset, writeset;
+	int accept_sock, listen_sock, max_fd;
+	std::vector<int> client_fd;
+	Server	serv;
+	char buff[1024];
+
+	if (listen_sock = server_setup())
+		return (1);
+	bzero(&buff, 1024);
+
 	for (;;){
 		max_fd = listen_sock;
 		FD_ZERO(&readset);
@@ -124,7 +131,10 @@ int main()
 					perror("send");
 					return 1;
 				}
+//				close(*it);
+//				client_fd.erase(it);
 				serv.response = "\0";
+//				break;
 			}
 		}
 	}
