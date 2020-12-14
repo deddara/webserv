@@ -20,7 +20,7 @@ void response_prepare(Server & serv)
 	char buff[1000];
 	bzero(buff, sizeof(buff));
 
-	int fd = open("./html_files/index.html", O_RDONLY);
+	int fd = open("./html_files/50x.html", O_RDONLY);
 	if (fd < 0){
 		perror("open");
 		return ;
