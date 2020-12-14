@@ -44,17 +44,35 @@ std::vector<int> & client_fd, int & max_fd, const Server & serv)
 	}
 }
 
+int serv_recv_msg(std::vector<int> & client_fd, std::vector<int>::iterator & it){
+	int n;
+	char buff[1024];
+	bzero(&buff, 1024);
+
+	while ((n = recv(*it, buff, sizeof(buff), 0)) > 0)
+	{
+		std::cout << buff;
+		if (buff[n - 1] == '\n')
+			break;
+	}
+	if (n <= 0)
+	{
+		close(*it);
+		client_fd.erase(it);
+		return (500);
+	}
+	return (0);
+}
+
 int main()
 {
 	fd_set readset, writeset;
 	int accept_sock, listen_sock, max_fd;
 	std::vector<int> client_fd;
 	Server	serv;
-	char buff[1024];
 
 	if ((listen_sock = server_setup()) == 500)
 		return (1);
-	bzero(&buff, 1024);
 
 	for (;;){
 		max_fd = listen_sock;
@@ -76,19 +94,8 @@ int main()
 		for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it) {
 			if (FD_ISSET(*it, &readset))
 			{
-				int n;
-				while ((n = recv(*it, buff, sizeof(buff), 0)) > 0)
-				{
-					std::cout << buff;
-					if (buff[n - 1] == '\n')
-						break;
-				}
-				if (n <= 0)
-				{
-					close(*it);
-					client_fd.erase(it);
+				if (serv_recv_msg(client_fd, it))
 					break;
-				}
 				// тут должен быть парс реквеста
 				response_prepare(serv);
 			}
