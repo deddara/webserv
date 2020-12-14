@@ -1,6 +1,4 @@
 #include <iostream>
-#include "sstream"
-#include "fstream"
 #include "vector"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -9,12 +7,36 @@
 #include <fcntl.h>
 #include <sys/select.h>
 #include "zconf.h"
-
+#include "unistd.h"
 class Server{
 public:
 	std::string response;
+	std::string body;
 
 };
+
+void response_prepare(Server & serv)
+{
+	char buff[1000];
+	bzero(buff, sizeof(buff));
+
+	int fd = open("./html_files/index.html", O_RDONLY);
+	if (fd < 0){
+		perror("open");
+		return ;
+	}
+	while (read(fd, buff, sizeof(buff))) {
+		serv.body.assign(buff, strlen(buff));
+		std::cout << serv.body;
+	}
+	serv.response = "HTTP/1.1 200 OK\r\n"
+					"Date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
+					"Server: webserv 0.0\r\n";
+	serv.response += std::to_string(serv.body.length()); serv.response += "\r\n";
+	serv.response += "Content-Type: text/html; charset=UTF-8\r\n"
+				  "Connection: Keep-Alive\r\n\r\n";
+	serv.response += serv.body;
+}
 
 int main()
 {
@@ -93,18 +115,8 @@ int main()
 					client_fd.erase(it);
 					break;
 				}
-				serv.response = "HTTP/1.1 200 OK\r\n"
-								"date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
-								"server: Apache/2.2.14 (Win32)\r\n"
-								"last-modified: Wed, 22 Jul 2009 19:15:56 GMT\r\n"
-								"content-length: 88\r\n"
-								"content-type: text/html\r\n"
-								"connection: keep-alive\r\n\r\n"
-								"<html>\n"
-								"<body>\n"
-								"<h1>Hello, World!</h1>\n"
-								"</body>\n"
-								"</html>\r\n";
+				// тут должен быть парс реквеста
+				response_prepare(serv);
 			}
 			if (FD_ISSET(*it, &writeset)){
 				if ((send(*it, serv.response.c_str(), serv.response.length(), 0)) < 0)

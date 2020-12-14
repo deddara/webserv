@@ -68,7 +68,7 @@ int sender_recv(int fd)
 				 "<body>\n"
 				 "<h1>Hello, World!</h1>\n"
 				 "</body>\n"
-				 "</html>\r\n";
+				 "</html>\n";
 
 	if ((send(fd, resp, strlen(resp), 0)) < 0)
 	{
