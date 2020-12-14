@@ -13,8 +13,27 @@
   <component name="ChangeListManager">
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/a.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stol_server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/stol_server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/cmake_clean.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/stol_server.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/webserv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/webserv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/webserv.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/webserv.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/google_connection.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/listener.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/stol_server.cpp" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +97,7 @@
       <workItem from="1607500176101" duration="5675000" />
       <workItem from="1607516124699" duration="2908000" />
       <workItem from="1607934668656" duration="2587000" />
-      <workItem from="1607959819371" duration="8695000" />
+      <workItem from="1607959819371" duration="10119000" />
     </task>
     <servers />
   </component>
@@ -102,22 +121,22 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1607430346966" />
-    <state width="1349" height="360" key="GridCell.Tab.0.bottom" timestamp="1607962907556">
+    <state width="1349" height="424" key="GridCell.Tab.0.bottom" timestamp="1607975098380">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1349" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607962907556" />
-    <state width="1349" height="360" key="GridCell.Tab.0.center" timestamp="1607962907555">
+    <state width="1349" height="424" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1607975098380" />
+    <state width="1349" height="424" key="GridCell.Tab.0.center" timestamp="1607975098379">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1349" height="360" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607962907555" />
-    <state width="1349" height="360" key="GridCell.Tab.0.left" timestamp="1607962907555">
+    <state width="1349" height="424" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1607975098379" />
+    <state width="1349" height="424" key="GridCell.Tab.0.left" timestamp="1607975098379">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1349" height="360" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607962907555" />
-    <state width="1349" height="360" key="GridCell.Tab.0.right" timestamp="1607962907556">
+    <state width="1349" height="424" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1607975098379" />
+    <state width="1349" height="424" key="GridCell.Tab.0.right" timestamp="1607975098380">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="1349" height="360" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607962907556" />
+    <state width="1349" height="424" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1607975098380" />
     <state width="1349" height="360" key="GridCell.Tab.1.bottom" timestamp="1607962907557">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
@@ -151,26 +170,5 @@
     </state>
     <state x="1456" y="358" key="run.anything.popup/0.0.2560.1440@0.0.2560.1440" timestamp="1607441083735" />
     <state x="1456" y="358" key="run.anything.popup/0.23.2560.1328@0.23.2560.1328" timestamp="1607969333964" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/server.cpp</url>
-          <line>148</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/server.cpp</url>
-          <line>100</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/stol_server.cpp</url>
-          <line>71</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

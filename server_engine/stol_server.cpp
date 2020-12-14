@@ -1,43 +1,4 @@
-#include <iostream>
-#include "vector"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/select.h>
-#include "zconf.h"
-#include "unistd.h"
-class Server{
-public:
-	std::string response;
-	std::string body;
-
-};
-
-void response_prepare(Server & serv)
-{
-	char buff[1000];
-	bzero(buff, sizeof(buff));
-	serv.body = "\0";
-
-	int fd = open("./html_files/index.html", O_RDONLY);
-	if (fd < 0){
-		perror("open");
-		return ;
-	}
-	while (read(fd, buff, sizeof(buff))) {
-		serv.body += buff;
-		std::cout << serv.body;
-	}
-	serv.response = "HTTP/1.1 200 OK\r\n"
-					"Date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
-					"Server: webserv 0.0\r\n";
-	serv.response += std::to_string(serv.body.length()); serv.response += "\r\n";
-	serv.response += "Content-Type: text/html; charset=UTF-8\r\n"
-				  "Connection: Keep-Alive\r\n\r\n";
-	serv.response += serv.body;
-}
+#include "server.hpp"
 
 int server_setup(){
 	struct sockaddr_in addr;
@@ -67,6 +28,22 @@ int server_setup(){
 	return (listen_sock);
 }
 
+void set_prepare(fd_set & readset, fd_set & writeset, const int & listen_sock, \
+std::vector<int> & client_fd, int & max_fd, const Server & serv)
+{
+	FD_ZERO(&readset);
+	FD_ZERO(&writeset);
+	FD_SET(listen_sock, &readset);
+	for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it){
+		FD_SET(*it, &readset);
+		if (serv.response.length() != 0){
+			FD_SET(*it, &writeset);
+		}
+		if (*it > max_fd)
+			max_fd = *it;
+	}
+}
+
 int main()
 {
 	fd_set readset, writeset;
@@ -75,23 +52,13 @@ int main()
 	Server	serv;
 	char buff[1024];
 
-	if (listen_sock = server_setup())
+	if ((listen_sock = server_setup()) == 500)
 		return (1);
 	bzero(&buff, 1024);
 
 	for (;;){
 		max_fd = listen_sock;
-		FD_ZERO(&readset);
-		FD_ZERO(&writeset);
-		FD_SET(listen_sock, &readset);
-		for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it){
-			FD_SET(*it, &readset);
-			if (serv.response.length() != 0){
-				FD_SET(*it, &writeset);
-			}
-			if (*it > max_fd)
-				max_fd = *it;
-		}
+		set_prepare(readset, writeset, listen_sock, client_fd, max_fd, serv);
 		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0)
 			return (1);
 		if (FD_ISSET(listen_sock, &readset))

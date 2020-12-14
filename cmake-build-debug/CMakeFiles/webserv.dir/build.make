@@ -77,30 +77,45 @@ include CMakeFiles/webserv.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/webserv.dir/flags.make
 
-CMakeFiles/webserv.dir/stol_server.cpp.o: CMakeFiles/webserv.dir/flags.make
-CMakeFiles/webserv.dir/stol_server.cpp.o: ../stol_server.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/webserv.dir/stol_server.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/stol_server.cpp.o -c /Users/deddara/school21/webserv/stol_server.cpp
+CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o: CMakeFiles/webserv.dir/flags.make
+CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o: ../server_engine/stol_server.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o -c /Users/deddara/school21/webserv/server_engine/stol_server.cpp
 
-CMakeFiles/webserv.dir/stol_server.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/stol_server.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/stol_server.cpp > CMakeFiles/webserv.dir/stol_server.cpp.i
+CMakeFiles/webserv.dir/server_engine/stol_server.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/server_engine/stol_server.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/server_engine/stol_server.cpp > CMakeFiles/webserv.dir/server_engine/stol_server.cpp.i
 
-CMakeFiles/webserv.dir/stol_server.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/stol_server.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/stol_server.cpp -o CMakeFiles/webserv.dir/stol_server.cpp.s
+CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/server_engine/stol_server.cpp -o CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s
+
+CMakeFiles/webserv.dir/server_engine/response.cpp.o: CMakeFiles/webserv.dir/flags.make
+CMakeFiles/webserv.dir/server_engine/response.cpp.o: ../server_engine/response.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/webserv.dir/server_engine/response.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/server_engine/response.cpp.o -c /Users/deddara/school21/webserv/server_engine/response.cpp
+
+CMakeFiles/webserv.dir/server_engine/response.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/server_engine/response.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/server_engine/response.cpp > CMakeFiles/webserv.dir/server_engine/response.cpp.i
+
+CMakeFiles/webserv.dir/server_engine/response.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/server_engine/response.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/server_engine/response.cpp -o CMakeFiles/webserv.dir/server_engine/response.cpp.s
 
 # Object files for target webserv
 webserv_OBJECTS = \
-"CMakeFiles/webserv.dir/stol_server.cpp.o"
+"CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o" \
+"CMakeFiles/webserv.dir/server_engine/response.cpp.o"
 
 # External object files for target webserv
 webserv_EXTERNAL_OBJECTS =
 
-webserv: CMakeFiles/webserv.dir/stol_server.cpp.o
+webserv: CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o
+webserv: CMakeFiles/webserv.dir/server_engine/response.cpp.o
 webserv: CMakeFiles/webserv.dir/build.make
 webserv: CMakeFiles/webserv.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable webserv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable webserv"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/webserv.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -143,32 +143,59 @@ webserv/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/build
 .PHONY : webserv/fast
 
-stol_server.o: stol_server.cpp.o
+server_engine/response.o: server_engine/response.cpp.o
 
-.PHONY : stol_server.o
+.PHONY : server_engine/response.o
 
 # target to build an object file
-stol_server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/stol_server.cpp.o
-.PHONY : stol_server.cpp.o
+server_engine/response.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.o
+.PHONY : server_engine/response.cpp.o
 
-stol_server.i: stol_server.cpp.i
+server_engine/response.i: server_engine/response.cpp.i
 
-.PHONY : stol_server.i
+.PHONY : server_engine/response.i
 
 # target to preprocess a source file
-stol_server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/stol_server.cpp.i
-.PHONY : stol_server.cpp.i
+server_engine/response.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.i
+.PHONY : server_engine/response.cpp.i
 
-stol_server.s: stol_server.cpp.s
+server_engine/response.s: server_engine/response.cpp.s
 
-.PHONY : stol_server.s
+.PHONY : server_engine/response.s
 
 # target to generate assembly for a file
-stol_server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/stol_server.cpp.s
-.PHONY : stol_server.cpp.s
+server_engine/response.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.s
+.PHONY : server_engine/response.cpp.s
+
+server_engine/stol_server.o: server_engine/stol_server.cpp.o
+
+.PHONY : server_engine/stol_server.o
+
+# target to build an object file
+server_engine/stol_server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o
+.PHONY : server_engine/stol_server.cpp.o
+
+server_engine/stol_server.i: server_engine/stol_server.cpp.i
+
+.PHONY : server_engine/stol_server.i
+
+# target to preprocess a source file
+server_engine/stol_server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.i
+.PHONY : server_engine/stol_server.cpp.i
+
+server_engine/stol_server.s: server_engine/stol_server.cpp.s
+
+.PHONY : server_engine/stol_server.s
+
+# target to generate assembly for a file
+server_engine/stol_server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s
+.PHONY : server_engine/stol_server.cpp.s
 
 # Help Target
 help:
@@ -179,9 +206,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... webserv"
-	@echo "... stol_server.o"
-	@echo "... stol_server.i"
-	@echo "... stol_server.s"
+	@echo "... server_engine/response.o"
+	@echo "... server_engine/response.i"
+	@echo "... server_engine/response.s"
+	@echo "... server_engine/stol_server.o"
+	@echo "... server_engine/stol_server.i"
+	@echo "... server_engine/stol_server.s"
 .PHONY : help
 
 
