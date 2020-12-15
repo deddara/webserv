@@ -106,10 +106,10 @@ int main()
 					return 1;
 				}
 				serv.response.clear();
-				close(*it);
-				client_fd.erase(it);
+//				close(*it);
+//				client_fd.erase(it);
 //
-				break;
+//				break;
 			}
 		}
 	}

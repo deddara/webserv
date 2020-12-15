@@ -1,7 +1,7 @@
 //#include "server.hpp"
 #include <sys/time.h>
-#include "iostream"
 #include "time.h"
+#include "server.hpp"
 
 
 #define FEB_NF_MONTH 28
@@ -46,42 +46,57 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 	return (count);
 }
 
-//int get_month(time_t sec){
-//
-//}
-
-//int get_day_of_month(time_t sec){
-//	int day = 1;
-//	int month = 1;
-//	int year;
-//	while (sec >= 0)
-//	{
-//		if (day == )
-//	}
-//}
-
-struct tm * my_localtime(time_t & sec, 	struct tm & t)
+void get_day(time_t & sec, int & day)
 {
-	int is_v_year;
-	int day;
-	t.tm_year = get_year(sec, is_v_year, day);
-//	t->tm_month = get_month(sec);
-	return (&t);
+
+	while (sec - 86400 >= 0)
+	{
+		day++;
+		if (day == 7)
+			day = 0;
+		sec -= 86400;
+	}
 }
 
-int main()
+std::string date_prepare(time_t & sec, struct tm & t)
+{
+	char buffer[40];
+	int is_v_year;
+	int day;
+	int i = 0;
+
+	bzero(buffer, sizeof(buffer));
+	t.tm_year = get_year(sec, is_v_year, day);
+	get_day(sec, day);
+	t.tm_wday = day;
+
+	strftime (buffer, sizeof buffer, "%a, ", &t);
+	int j = 4;
+	for (i = 5; i < 16; ++i){
+		if (j == 7)
+			j = 0;
+		else if (j == 4 && i != 5)
+			j = 7;
+		buffer[i] = __DATE__[j];
+		j++;
+	}
+	buffer[i] = ' ';
+	std::string date(buffer);
+	date.append(__TIME__);
+	date.append(" GMT\r\n");
+	return date;
+}
+
+std::string my_localtime()
 {
 	struct timeval time_of_day_res;
 	time_t		time_in_sec;
-	struct tm *info;
 	struct tm dmt;
+	std::string date;
 
 	gettimeofday(&time_of_day_res, NULL);
 	time_in_sec = time_of_day_res.tv_sec;
 
-	info = my_localtime(time_in_sec, dmt);
-
-	std::cout << time_in_sec << std::endl;
-
-	std::cout << info->tm_year;
+	date = date_prepare(time_in_sec, dmt);
+	return (date);
 }
