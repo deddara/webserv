@@ -16,10 +16,10 @@ void response_prepare(Server & serv)
 	}
 	serv.response = "HTTP/1.1 200 OK\r\n"
 					"Date: Mon, 27 Jul 2009 12:28:53 GMT\r\n"
-					"Server: webserv 0.0\r\n";
+					"Server: webserv0.0\r\n";
 	serv.response += std::to_string(serv.body.length()); serv.response += "\r\n";
 	serv.response += "Content-Type: text/html; charset=UTF-8\r\n"
-					 "Connection: Keep-Alive\r\n\r\n";
+					 "Connection: Close\r\n\r\n";
 	serv.response += serv.body;
 	serv.response += "\r\n\r\n";
 }

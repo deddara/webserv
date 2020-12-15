@@ -105,11 +105,11 @@ int main()
 					perror("send");
 					return 1;
 				}
-				serv.response = "\0";
-				//				close(*it);
-//				client_fd.erase(it);
-
-//				break;
+				serv.response.clear();
+				close(*it);
+				client_fd.erase(it);
+//
+				break;
 			}
 		}
 	}
