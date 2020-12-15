@@ -4,12 +4,6 @@
 #include "server.hpp"
 
 
-#define FEB_NF_MONTH 28
-#define FEB_F_MONTH 29
-#define F_MONTH 31
-#define MONTH 30
-# define SEC_PER_D 86400
-
 # define SEC_PER_Y 31536000
 # define SEC_PER_V_Y 31622400
 
@@ -40,11 +34,38 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 	}
 	if (y == 3) {
 		is_v_y = 1;
-		std::cout << day << std::endl;
 	}
 	count += 70;
 	return (count);
 }
+
+# define THIRTY_ONE_M	2678400
+# define THIRTY_M		2592000
+# define TWENTY_NINE_M	2505600
+# define TWENTY_EIGHT_M	2419200
+
+
+//void get_month(time_t & sec, int const & is_v_y){
+//	int dec = THIRTY_ONE_M;
+//	int month = 0;
+//	while (sec - dec >= 0)
+//	{
+//		if (month == 0 || month == 2 || month == 4 || month == 6 || \
+//		month == 7 || month == 9 || month == 11)
+//			dec = THIRTY_ONE_M;
+//		else if (month == 1 && is_v_y)
+//			dec = TWENTY_NINE_M;
+//		else if (month == 1 && !is_v_y)
+//			dec = TWENTY_EIGHT_M;
+//		else
+//			dec = THIRTY_M;
+//		sec -= dec;
+//		month++;
+//		if (month == 12)
+//			month = 0;
+//	}
+//	std::cout << month << std::endl;
+//}
 
 void get_day(time_t & sec, int & day)
 {
@@ -67,6 +88,7 @@ std::string date_prepare(time_t & sec, struct tm & t)
 
 	bzero(buffer, sizeof(buffer));
 	t.tm_year = get_year(sec, is_v_year, day);
+//	get_month(sec, is_v_year);
 	get_day(sec, day);
 	t.tm_wday = day;
 
