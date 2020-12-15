@@ -35,7 +35,6 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 	if (y == 3) {
 		is_v_y = 1;
 	}
-	std::cout << day;
 	count += 70;
 	return (count);
 }
@@ -82,7 +81,6 @@ int get_day(time_t & sec, int & day, int const & month, int const & is_v_y)
 			day_count = 1;
 		else if ((month == 3 || month == 5 || month == 8 || month == 10) && day_count == 30)
 			day_count = 1;
-		day++;
 		day_count++;
 		if (day == 7)
 			day = 0;
@@ -116,6 +114,16 @@ int get_min(time_t & sec) {
 	return min;
 }
 
+void get_day_of_week(time_t  sec, int & day){
+	while (sec - 86400 >= 0)
+	{
+		day++;
+		if (day == 7)
+			day = 0;
+		sec -= 86400;
+	}
+}
+
 std::string date_prepare(time_t & sec, struct tm & t)
 {
 	char buffer[40];
@@ -125,6 +133,7 @@ std::string date_prepare(time_t & sec, struct tm & t)
 
 	bzero(buffer, sizeof(buffer));
 	t.tm_year = get_year(sec, is_v_year, day);
+	get_day_of_week(sec, day);
 	t.tm_mon = get_month(sec, is_v_year);
 	t.tm_mday = get_day(sec, day, t.tm_mon, is_v_year);
 	t.tm_wday = day;
