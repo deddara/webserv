@@ -35,6 +35,7 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 	if (y == 3) {
 		is_v_y = 1;
 	}
+	std::cout << day;
 	count += 70;
 	return (count);
 }
@@ -67,16 +68,27 @@ int get_month(time_t & sec, int const & is_v_y){
 	return month;
 }
 
-void get_day(time_t & sec, int & day)
+int get_day(time_t & sec, int & day, int const & month, int const & is_v_y)
 {
-
+	int day_count = 1;
 	while (sec - 86400 >= 0)
 	{
+		if ((month == 0 || month == 2 || month == 4 || month == 6 || \
+		month == 7 || month == 9 || month == 11) && day_count == 31)
+			day_count = 1;
+		else if (month == 1 && day_count == 29 && is_v_y)
+			day_count = 1;
+		else if (month == 1 && day_count == 28 && !is_v_y)
+			day_count = 1;
+		else if ((month == 3 || month == 5 || month == 8 || month == 10) && day_count == 30)
+			day_count = 1;
 		day++;
+		day_count++;
 		if (day == 7)
 			day = 0;
 		sec -= 86400;
 	}
+	return day_count;
 }
 
 int get_hour(time_t & sec){
@@ -114,14 +126,14 @@ std::string date_prepare(time_t & sec, struct tm & t)
 	bzero(buffer, sizeof(buffer));
 	t.tm_year = get_year(sec, is_v_year, day);
 	t.tm_mon = get_month(sec, is_v_year);
-	get_day(sec, day);
+	t.tm_mday = get_day(sec, day, t.tm_mon, is_v_year);
 	t.tm_wday = day;
 	t.tm_hour = get_hour(sec);
 	t.tm_min = get_min(sec);
 	t.tm_sec = sec;
 
 
-	strftime (buffer, sizeof buffer, "Today is %A, %B %d.\n", &t);
+	strftime (buffer, sizeof buffer, "Today is %a, %B %d.\n", &t);
 	printf("%s",buffer);
 	strftime (buffer, sizeof buffer, "The time is %I:%M:%S %p.\n",  &t);
 	printf("%s",buffer);
