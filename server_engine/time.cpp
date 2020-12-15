@@ -45,27 +45,27 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 # define TWENTY_EIGHT_M	2419200
 
 
-//void get_month(time_t & sec, int const & is_v_y){
-//	int dec = THIRTY_ONE_M;
-//	int month = 0;
-//	while (sec - dec >= 0)
-//	{
-//		if (month == 0 || month == 2 || month == 4 || month == 6 || \
-//		month == 7 || month == 9 || month == 11)
-//			dec = THIRTY_ONE_M;
-//		else if (month == 1 && is_v_y)
-//			dec = TWENTY_NINE_M;
-//		else if (month == 1 && !is_v_y)
-//			dec = TWENTY_EIGHT_M;
-//		else
-//			dec = THIRTY_M;
-//		sec -= dec;
-//		month++;
-//		if (month == 12)
-//			month = 0;
-//	}
-//	std::cout << month << std::endl;
-//}
+int get_month(time_t & sec, int const & is_v_y){
+	int dec = THIRTY_ONE_M;
+	int month = 0;
+	while (sec - dec >= 0)
+	{
+		if (month == 0 || month == 2 || month == 4 || month == 6 || \
+		month == 7 || month == 9 || month == 11)
+			dec = THIRTY_ONE_M;
+		else if (month == 1 && is_v_y)
+			dec = TWENTY_NINE_M;
+		else if (month == 1 && !is_v_y)
+			dec = TWENTY_EIGHT_M;
+		else
+			dec = THIRTY_M;
+		sec -= dec;
+		month++;
+		if (month == 12)
+			month = 0;
+	}
+	return month;
+}
 
 void get_day(time_t & sec, int & day)
 {
@@ -79,6 +79,31 @@ void get_day(time_t & sec, int & day)
 	}
 }
 
+int get_hour(time_t & sec){
+
+	int dec = 3600;
+	int hour = 0;
+
+	while (sec - dec >= 0)
+	{
+		hour++;
+		sec -= dec;
+	}
+
+	return hour;
+}
+
+int get_min(time_t & sec) {
+	int dec = 60;
+	int min = 0;
+	while (sec - dec >= 0)
+	{
+		min++;
+		sec -= dec;
+	}
+	return min;
+}
+
 std::string date_prepare(time_t & sec, struct tm & t)
 {
 	char buffer[40];
@@ -88,11 +113,18 @@ std::string date_prepare(time_t & sec, struct tm & t)
 
 	bzero(buffer, sizeof(buffer));
 	t.tm_year = get_year(sec, is_v_year, day);
-//	get_month(sec, is_v_year);
+	t.tm_mon = get_month(sec, is_v_year);
 	get_day(sec, day);
 	t.tm_wday = day;
+	t.tm_hour = get_hour(sec);
+	t.tm_min = get_min(sec);
+	t.tm_sec = sec;
 
-	strftime (buffer, sizeof buffer, "%a, ", &t);
+
+	strftime (buffer, sizeof buffer, "Today is %A, %B %d.\n", &t);
+	printf("%s",buffer);
+	strftime (buffer, sizeof buffer, "The time is %I:%M:%S %p.\n",  &t);
+	printf("%s",buffer);
 	int j = 4;
 	for (i = 5; i < 16; ++i){
 		if (j == 7)
