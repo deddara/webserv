@@ -23,7 +23,7 @@ int get_year(time_t & sec){
 		if (y == 3)
 		{
 			dec = SEC_PER_V_Y;
-			y = 0;
+			y = -1;
 		}
 		else if (!y)
 			dec = SEC_PER_Y;
@@ -65,7 +65,10 @@ int main()
 
 	gettimeofday(&tv, NULL);
 	t = tv.tv_sec;
-
+	std::cout << __DATE__ << std::endl;
+	std::cout << __TIME__ << std::endl;
 	info = my_localtime(t, dmt);
+	std::cout << t << std::endl;
+
 	std::cout << info->tm_year;
 }

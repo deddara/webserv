@@ -21,4 +21,5 @@ void response_prepare(Server & serv)
 	serv.response += "Content-Type: text/html; charset=UTF-8\r\n"
 					 "Connection: Keep-Alive\r\n\r\n";
 	serv.response += serv.body;
+	serv.response += "\r\n\r\n";
 }
