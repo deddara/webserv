@@ -197,6 +197,33 @@ server_engine/stol_server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s
 .PHONY : server_engine/stol_server.cpp.s
 
+server_engine/time.o: server_engine/time.cpp.o
+
+.PHONY : server_engine/time.o
+
+# target to build an object file
+server_engine/time.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.o
+.PHONY : server_engine/time.cpp.o
+
+server_engine/time.i: server_engine/time.cpp.i
+
+.PHONY : server_engine/time.i
+
+# target to preprocess a source file
+server_engine/time.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.i
+.PHONY : server_engine/time.cpp.i
+
+server_engine/time.s: server_engine/time.cpp.s
+
+.PHONY : server_engine/time.s
+
+# target to generate assembly for a file
+server_engine/time.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.s
+.PHONY : server_engine/time.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -212,6 +239,9 @@ help:
 	@echo "... server_engine/stol_server.o"
 	@echo "... server_engine/stol_server.i"
 	@echo "... server_engine/stol_server.s"
+	@echo "... server_engine/time.o"
+	@echo "... server_engine/time.i"
+	@echo "... server_engine/time.s"
 .PHONY : help
 
 

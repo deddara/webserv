@@ -146,18 +146,7 @@ std::string date_prepare(time_t & sec, struct tm & t)
 	printf("%s",buffer);
 	strftime (buffer, sizeof buffer, "The time is %I:%M:%S %p.\n",  &t);
 	printf("%s",buffer);
-	int j = 4;
-	for (i = 5; i < 16; ++i){
-		if (j == 7)
-			j = 0;
-		else if (j == 4 && i != 5)
-			j = 7;
-		buffer[i] = __DATE__[j];
-		j++;
-	}
-	buffer[i] = ' ';
 	std::string date(buffer);
-	date.append(__TIME__);
 	date.append(" GMT\r\n");
 	return date;
 }

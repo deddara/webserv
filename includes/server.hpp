@@ -14,9 +14,11 @@ class Server{
 public:
 	std::string response;
 	std::string body;
+	std::string date;
 
 };
 
 void response_prepare(Server & serv);
+std::string my_localtime();
 
 #endif

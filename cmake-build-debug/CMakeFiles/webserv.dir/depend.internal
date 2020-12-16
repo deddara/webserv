@@ -7,3 +7,6 @@ CMakeFiles/webserv.dir/server_engine/response.cpp.o
 CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o
  ../includes/server.hpp
  /Users/deddara/school21/webserv/server_engine/stol_server.cpp
+CMakeFiles/webserv.dir/server_engine/time.cpp.o
+ ../includes/server.hpp
+ /Users/deddara/school21/webserv/server_engine/time.cpp

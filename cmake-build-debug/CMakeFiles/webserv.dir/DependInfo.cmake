@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/deddara/school21/webserv/server_engine/response.cpp" "/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/response.cpp.o"
   "/Users/deddara/school21/webserv/server_engine/stol_server.cpp" "/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o"
+  "/Users/deddara/school21/webserv/server_engine/time.cpp" "/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/time.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
