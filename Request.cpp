@@ -12,6 +12,8 @@
 
 #include "Request.hpp"
 
+//Auxiliary functions
+
 Request::value_type split(std::string const &raw, char delim) {
 	Request::value_type res;
 	std::string k;
@@ -38,22 +40,40 @@ std::string str_to_lower(std::string &str) {
 	return str;
 }
 
+// Private functions
+
 void Request::check_common() {
-	if ((_data["head"][0] != "GET" && _data["head"][0] != "HEAD") ||
-		_data["head"][2] != "HTTP/1.1")
-		_isbadrequest = true;
-	if (!_data["host"].size() || _data["host"][0] == "")
+	if ((_data["head"][0] != "GET" &&
+	     _data["head"][0] != "HEAD" &&
+	     _data["head"][0] != "POST") ||
+	     _data["head"][2] != "HTTP/1.1")
+	     _isbadrequest = true;
+	if (!_data["host"].size() || _data["host"][0].empty())
 		_isbadrequest = true;
 }
 
-Request::Request(std::string const &raw_data) : _isbadrequest(false) {
+// Public functions
+
+Request::Request(std::string const &raw_data)
+											: _isbadrequest(false), _body("") {
+	std::string tmp = raw_data;
+	trim(tmp);
+	if (tmp.empty() || tmp[0] == '\n') {
+		_isbadrequest = true;
+		return;
+	}
 	bool first_str = true;
 	std::size_t pos = 0;
 	for(std::size_t i = 0; i != raw_data.size(); i = pos) {
 		if (pos >= raw_data.size())
 			break;
 		pos++;
-		pos = raw_data.find("\n", pos);
+		if (raw_data[pos] == '\n') {
+			_body = raw_data.substr(pos + 1, pos + raw_data.size());
+			check_common();
+			return;
+		}
+		pos = raw_data.find('\n', pos);
 		if (first_str) {
 			std::string fstr = raw_data.substr(0, pos);
 			if (std::count(fstr.begin(), fstr.end(),' ') > 2)
@@ -72,12 +92,12 @@ Request::Request(std::string const &raw_data) : _isbadrequest(false) {
 		for(size_t i = 0; i != value.size(); ++i)
 			trim(value[i]);
 		_data[str_to_lower(key)] = value;
-		_data.erase("");
 	}
 	check_common();
 }
 
-Request::Request(Request const &obj) {
+Request::Request(Request const &obj)
+					: _isbadrequest(obj._isbadrequest), _body(obj._body) {
 	map_type::iterator ite = _data.end();
 	for(map_type::iterator it = _data.begin(); it != ite; ++it)
 		it->second.clear();
@@ -87,6 +107,8 @@ Request::Request(Request const &obj) {
 
 Request &Request::operator=(Request const &obj) {
 	if (this != &obj) {
+		_isbadrequest = obj._isbadrequest;
+		_body = obj._body;
 		map_type::iterator ite = _data.end();
 		for(map_type::iterator it = _data.begin(); it != ite; ++it)
 			it->second.clear();
@@ -103,11 +125,31 @@ Request::~Request() {
 	_data.clear();
 }
 
+Request::map_type::const_iterator Request::begin() const {
+	return _data.begin();
+}
+
+Request::map_type::const_iterator Request::end() const {
+	return _data.end();
+}
+
 bool Request::error() const {
 	return _isbadrequest;
+}
+
+bool Request::is_valid_value(const std::string &key) const {
+	std::string low_key = static_cast<std::string>(key);
+	value_type value = _data.find(str_to_lower(low_key))->second;
+	if (!value.empty() && !value[0].empty())
+		return true;
+	return false;
 }
 
 const Request::value_type &Request::find(std::string const &key) const {
 	std::string low_key = static_cast<std::string>(key);
 	return _data.find(str_to_lower(low_key))->second;
+}
+
+const std::string & Request::get_body() const {
+	return _body;
 }

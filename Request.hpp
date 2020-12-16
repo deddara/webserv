@@ -28,6 +28,7 @@ private:
 	void check_common();
 
 	map_type    _data;
+	std::string _body;
 	bool        _isbadrequest;
 
 public:
@@ -37,12 +38,19 @@ public:
 	Request &operator=(Request const &obj);
 	~Request();
 
+	map_type::const_iterator begin() const;
+
+	map_type::const_iterator end() const;
+
 	//Check error
 	bool error() const;
 
+	//Check value existence
+	bool is_valid_value(std::string const &key) const;
+
 	//Element access
 	const value_type &find(std::string const &key) const;
-
+	const std::string &get_body() const;
 
 };
 
