@@ -13,9 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/time.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/time.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/webserv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/webserv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server_engine/time.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server_engine/time.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server_engine/stol_server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server_engine/stol_server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +74,7 @@
       <workItem from="1607934668656" duration="2587000" />
       <workItem from="1607959819371" duration="16723000" />
       <workItem from="1608036312106" duration="15555000" />
-      <workItem from="1608114669567" duration="707000" />
+      <workItem from="1608114669567" duration="1778000" />
     </task>
     <servers />
   </component>
@@ -100,22 +98,22 @@
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
     <state x="1039" y="530" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1440@0.0.2560.1440" timestamp="1607430346966" />
-    <state width="2518" height="360" key="GridCell.Tab.0.bottom" timestamp="1608056923267">
+    <state width="1506" height="360" key="GridCell.Tab.0.bottom" timestamp="1608116110536">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2518" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1608056923267" />
-    <state width="2518" height="360" key="GridCell.Tab.0.center" timestamp="1608056923266">
+    <state width="1506" height="360" key="GridCell.Tab.0.bottom/0.0.2560.1440@0.0.2560.1440" timestamp="1608116110536" />
+    <state width="1506" height="360" key="GridCell.Tab.0.center" timestamp="1608116110534">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2518" height="360" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1608056923266" />
-    <state width="2518" height="360" key="GridCell.Tab.0.left" timestamp="1608056923266">
+    <state width="1506" height="360" key="GridCell.Tab.0.center/0.0.2560.1440@0.0.2560.1440" timestamp="1608116110534" />
+    <state width="1506" height="360" key="GridCell.Tab.0.left" timestamp="1608116110534">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2518" height="360" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1608056923266" />
-    <state width="2518" height="360" key="GridCell.Tab.0.right" timestamp="1608056923266">
+    <state width="1506" height="360" key="GridCell.Tab.0.left/0.0.2560.1440@0.0.2560.1440" timestamp="1608116110534" />
+    <state width="1506" height="360" key="GridCell.Tab.0.right" timestamp="1608116110535">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>
-    <state width="2518" height="360" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1608056923266" />
+    <state width="1506" height="360" key="GridCell.Tab.0.right/0.0.2560.1440@0.0.2560.1440" timestamp="1608116110535" />
     <state width="2518" height="360" key="GridCell.Tab.1.bottom" timestamp="1608040961583">
       <screen x="0" y="0" width="2560" height="1440" />
     </state>

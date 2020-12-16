@@ -16,6 +16,8 @@ public:
 	std::string body;
 	std::string date;
 
+	void
+
 };
 
 void response_prepare(Server & serv);
