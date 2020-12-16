@@ -141,13 +141,8 @@ std::string date_prepare(time_t & sec, struct tm & t)
 	t.tm_min = get_min(sec);
 	t.tm_sec = sec;
 
-
-	strftime (buffer, sizeof buffer, "Today is %a, %B %d.\n", &t);
-	printf("%s",buffer);
-	strftime (buffer, sizeof buffer, "The time is %I:%M:%S %p.\n",  &t);
-	printf("%s",buffer);
+	strftime (buffer, sizeof buffer, "%a, %d %b %G %k:%M:%S GMT\r\n", &t);
 	std::string date(buffer);
-	date.append(" GMT\r\n");
 	return date;
 }
 
