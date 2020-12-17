@@ -134,18 +134,18 @@ int Server::launch() {
 			{
 				if (recv_msg(it))
 					break;
-//				Request req(static_cast<std::string>(buff));
+				Request req(static_cast<std::string>(buff));
 //				std::cout << "======" << std::endl << static_cast<std::string>(buff) << std::endl << "==========";
 //				for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
 //					if (req.is_valid_value(it->first))
 //						std::cout << it->first << ":" << it->second.front() << std::endl;
 //				}
-//				if (req.error())
-//				{
+				if (req.error())
+				{
+					response_prepare_2();
+				}
+				else
 					response_prepare();
-//				}
-//				else
-//					response_prepare();
 			}
 			if (FD_ISSET(*it, &writeset)){
 				if ((send(*it, response.c_str(), response.length(), 0)) < 0)
