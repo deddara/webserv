@@ -17,15 +17,16 @@ private:
 	std::string body;
 	std::string date;
 	std::vector<int> client_fd;
+	std::vector<int> server_socks;
 	fd_set readset, writeset;
 	char buff[1024];
-	int accept_sock, listen_sock, max_fd;
+	int accept_sock, max_fd;
 
 public:
-	Server(){};
+	Server() : max_fd(0) { server_socks.reserve(100); };
 	~Server(){};
 	int launch();
-	int setup();
+	int setup(std::string const & host, int const port);
 	void set_prepare();
 	int recv_msg(std::vector<int>::iterator it);
 	void response_prepare();

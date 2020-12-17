@@ -1,12 +1,21 @@
-#include "./server_engine/Server.hpp"
+#include "Server.hpp"
 #include "includes.hpp"
+#include "ConfParser.hpp"
+#include "VirtServer.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
 	Server	serv;
 
-	if (serv.setup() == 500)
-		return 1;
+	ConfParser		confPars(argc == 2 ? argv[1] : "../webserv.conf");
+	std::vector<VirtServer> const &	servers = confPars.getServer();
+	size_t			serversNum = confPars.getServer().size();
+
+	for (size_t i = 0; i < serversNum; ++i){
+		if (serv.setup(servers[i].getHost(), servers[i].getPort()))
+			return (1);
+	}
 	if (serv.launch())
 		return 1;
+
 }

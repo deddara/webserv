@@ -22,7 +22,7 @@ class									VirtServer
 	std::string							pr_host;
 	int									pr_port;
 	std::vector<std::string>			pr_serverName;
-	std::string							pr_errorPage;
+	std::string							pr_errorPage; //map
 	int									pr_limitClientBody;
 	std::vector<Location>				pr_location;
 

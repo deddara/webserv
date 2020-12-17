@@ -5,7 +5,8 @@
 void Server::response_prepare()
 {
 	bzero(buff, sizeof(buff));
-	body = "\0";
+	body.clear();
+	date.clear();
 	date = my_localtime();
 	int fd = open("../html_files/index.html", O_RDONLY);
 	if (fd < 0){
@@ -26,13 +27,14 @@ void Server::response_prepare()
 	std::cout << response;
 }
 
-int Server::setup(){
+int Server::setup(std::string const & host, int const port){
 	struct sockaddr_in addr;
+	int listen_sock;
 
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = ft_htons(3032);
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	addr.sin_port = ft_htons(port);
+	addr.sin_addr.s_addr = inet_addr(host.c_str());
 
 	if ((listen_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("listen_sock");
@@ -50,6 +52,7 @@ int Server::setup(){
 		perror("listen_sock");
 		return (500);
 	}
+	server_socks.push_back(listen_sock);
 	return (0);
 }
 
@@ -57,7 +60,8 @@ void Server::set_prepare()
 {
 	FD_ZERO(&readset);
 	FD_ZERO(&writeset);
-	FD_SET(listen_sock, &readset);
+	for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it)
+		FD_SET(*it, &readset);
 	for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it){
 		FD_SET(*it, &readset);
 		if (this->response.length() != 0){
@@ -113,21 +117,24 @@ void Server::response_prepare_2(){
 
 int Server::launch() {
 	for (;;){
-		max_fd = listen_sock;
+		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
+			if (*it > max_fd)
+				max_fd = *it;
+		}
 		set_prepare();
 		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0)
 			return (1);
-		if (FD_ISSET(listen_sock, &readset))
-		{
-			struct sockaddr_storage ss;
-			socklen_t slen = sizeof(ss);
-			if ((accept_sock = accept(listen_sock, (struct sockaddr*) & ss, &slen)) < 0)
-			{
-				perror("accept");
-				return(1);
+		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
+			if (FD_ISSET(*it, &readset)) {
+				struct sockaddr_storage ss;
+				socklen_t slen = sizeof(ss);
+				if ((accept_sock = accept(*it, (struct sockaddr *) &ss, &slen)) < 0) {
+					perror("accept");
+					return (1);
+				}
+				fcntl(accept_sock, F_SETFL, O_NONBLOCK);
+				client_fd.push_back(accept_sock);
 			}
-			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-			client_fd.push_back(accept_sock);
 		}
 		for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it) {
 			if (FD_ISSET(*it, &readset))
