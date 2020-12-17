@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 17:14:02 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/17 18:31:08 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath)
 
 void				ConfParser::errorExit(int code, std::string const & word)
 {
-	std::string		errors[16] = {
+	std::string		errors[17] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -143,6 +143,7 @@ void				ConfParser::errorExit(int code, std::string const & word)
 		"Error: invalid value \"" + word + "\" of \"autoindex\" directive",
 		"Error: unsupported value \"" + word
 			+ "\" of \"allow_methods\" directive",
+		"Error: unexpected \";\"",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
@@ -151,6 +152,8 @@ void				ConfParser::errorExit(int code, std::string const & word)
 VirtServer			ConfParser::serverBlockProc()
 {
 	skipSpaceComm();
+	if (pr_data[pr_pos] == ';')
+		errorExit(16, "");
 	if (checkBrackets(pr_data[pr_pos]) != 1)
 		errorExit(2, "");
 	pr_pos++;
@@ -159,15 +162,18 @@ VirtServer			ConfParser::serverBlockProc()
 	std::string		key;
 	std::string		val;
 	int				ret = 0;
+	int				i = 0;
 
+	skipSpaceComm();
 	while (checkBrackets(pr_data[pr_pos]) != 2)
 	{
+		if (pr_data[pr_pos] == ';')
+			errorExit(16, "");
 		ret = 0;
-		skipSpaceComm();
 		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
 		key = pickWord();
-		int				i = 0;
+		i = 0;
 		for (; i < 6; ++i)
 		{
 			if (toLower(key) == server.getServerFields()[i])
@@ -178,6 +184,8 @@ VirtServer			ConfParser::serverBlockProc()
 				break ;
 			}
 		}
+		if (pr_data[pr_pos] == ';')
+			errorExit(16, "");
 		if (i == 6)
 			errorExit(4, key);
 		skipSpaceComm();
@@ -284,6 +292,8 @@ Location				ConfParser::locationBlockProc(std::string const & str)
 		location.setPrefix("/" + location.getPrefix());
 
 	skipSpaceComm();
+	if (pr_data[pr_pos] == ';')
+		errorExit(16, "");
 	if (checkBrackets(pr_data[pr_pos]) != 1)
 		errorExit(2, "");
 	pr_pos++;
@@ -305,6 +315,8 @@ Location				ConfParser::locationBlockProc(std::string const & str)
 				break ;
 			}
 		}
+		if (pr_data[pr_pos] == ';')
+			errorExit(16, "");
 		if (i == 4)
 			errorExit(4, key);
 		skipSpaceComm();
