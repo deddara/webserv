@@ -90,22 +90,9 @@ CMakeFiles/webserv.dir/server_engine/Server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/server_engine/Server.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/server_engine/Server.cpp -o CMakeFiles/webserv.dir/server_engine/Server.cpp.s
 
-CMakeFiles/webserv.dir/server_engine/response.cpp.o: CMakeFiles/webserv.dir/flags.make
-CMakeFiles/webserv.dir/server_engine/response.cpp.o: ../server_engine/response.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/webserv.dir/server_engine/response.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/server_engine/response.cpp.o -c /Users/deddara/school21/webserv/server_engine/response.cpp
-
-CMakeFiles/webserv.dir/server_engine/response.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/server_engine/response.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/server_engine/response.cpp > CMakeFiles/webserv.dir/server_engine/response.cpp.i
-
-CMakeFiles/webserv.dir/server_engine/response.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/server_engine/response.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/server_engine/response.cpp -o CMakeFiles/webserv.dir/server_engine/response.cpp.s
-
 CMakeFiles/webserv.dir/utils/time.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/utils/time.cpp.o: ../utils/time.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/webserv.dir/utils/time.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/webserv.dir/utils/time.cpp.o"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/utils/time.cpp.o -c /Users/deddara/school21/webserv/utils/time.cpp
 
 CMakeFiles/webserv.dir/utils/time.cpp.i: cmake_force
@@ -116,21 +103,49 @@ CMakeFiles/webserv.dir/utils/time.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/utils/time.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/utils/time.cpp -o CMakeFiles/webserv.dir/utils/time.cpp.s
 
+CMakeFiles/webserv.dir/utils/utils.cpp.o: CMakeFiles/webserv.dir/flags.make
+CMakeFiles/webserv.dir/utils/utils.cpp.o: ../utils/utils.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/webserv.dir/utils/utils.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/utils/utils.cpp.o -c /Users/deddara/school21/webserv/utils/utils.cpp
+
+CMakeFiles/webserv.dir/utils/utils.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/utils/utils.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/utils/utils.cpp > CMakeFiles/webserv.dir/utils/utils.cpp.i
+
+CMakeFiles/webserv.dir/utils/utils.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/utils/utils.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/utils/utils.cpp -o CMakeFiles/webserv.dir/utils/utils.cpp.s
+
+CMakeFiles/webserv.dir/main.cpp.o: CMakeFiles/webserv.dir/flags.make
+CMakeFiles/webserv.dir/main.cpp.o: ../main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/webserv.dir/main.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/main.cpp.o -c /Users/deddara/school21/webserv/main.cpp
+
+CMakeFiles/webserv.dir/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/main.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/deddara/school21/webserv/main.cpp > CMakeFiles/webserv.dir/main.cpp.i
+
+CMakeFiles/webserv.dir/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/main.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/deddara/school21/webserv/main.cpp -o CMakeFiles/webserv.dir/main.cpp.s
+
 # Object files for target webserv
 webserv_OBJECTS = \
 "CMakeFiles/webserv.dir/server_engine/Server.cpp.o" \
-"CMakeFiles/webserv.dir/server_engine/response.cpp.o" \
-"CMakeFiles/webserv.dir/utils/time.cpp.o"
+"CMakeFiles/webserv.dir/utils/time.cpp.o" \
+"CMakeFiles/webserv.dir/utils/utils.cpp.o" \
+"CMakeFiles/webserv.dir/main.cpp.o"
 
 # External object files for target webserv
 webserv_EXTERNAL_OBJECTS =
 
 webserv: CMakeFiles/webserv.dir/server_engine/Server.cpp.o
-webserv: CMakeFiles/webserv.dir/server_engine/response.cpp.o
 webserv: CMakeFiles/webserv.dir/utils/time.cpp.o
+webserv: CMakeFiles/webserv.dir/utils/utils.cpp.o
+webserv: CMakeFiles/webserv.dir/main.cpp.o
 webserv: CMakeFiles/webserv.dir/build.make
 webserv: CMakeFiles/webserv.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable webserv"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/deddara/school21/webserv/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable webserv"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/webserv.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -6,5 +6,5 @@ CXX_FLAGS = -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/Ma
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/deddara/school21/webserv/includes 
+CXX_INCLUDES = -I/Users/deddara/school21/webserv/includes -I/Users/deddara/school21/webserv/server_engine 
 

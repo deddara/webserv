@@ -3,12 +3,13 @@ project(webserv)
 
 set(CMAKE_CXX_STANDARD 98)
 
-include_directories(includes)
+include_directories(includes server_engine)
 
 add_executable(webserv
         ./server_engine/Server.cpp
-        ./server_engine/response.cpp
-        utils/time.cpp)
+        utils/time.cpp
+        utils/utils.cpp
+        main.cpp)
 
 #add_executable(webserv
 #        ./server_engine/time.cpp

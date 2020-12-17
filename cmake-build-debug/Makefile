@@ -143,6 +143,33 @@ webserv/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/build
 .PHONY : webserv/fast
 
+main.o: main.cpp.o
+
+.PHONY : main.o
+
+# target to build an object file
+main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/main.cpp.o
+.PHONY : main.cpp.o
+
+main.i: main.cpp.i
+
+.PHONY : main.i
+
+# target to preprocess a source file
+main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/main.cpp.i
+.PHONY : main.cpp.i
+
+main.s: main.cpp.s
+
+.PHONY : main.s
+
+# target to generate assembly for a file
+main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/main.cpp.s
+.PHONY : main.cpp.s
+
 server_engine/Server.o: server_engine/Server.cpp.o
 
 .PHONY : server_engine/Server.o
@@ -169,33 +196,6 @@ server_engine/Server.s: server_engine/Server.cpp.s
 server_engine/Server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/Server.cpp.s
 .PHONY : server_engine/Server.cpp.s
-
-server_engine/response.o: server_engine/response.cpp.o
-
-.PHONY : server_engine/response.o
-
-# target to build an object file
-server_engine/response.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.o
-.PHONY : server_engine/response.cpp.o
-
-server_engine/response.i: server_engine/response.cpp.i
-
-.PHONY : server_engine/response.i
-
-# target to preprocess a source file
-server_engine/response.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.i
-.PHONY : server_engine/response.cpp.i
-
-server_engine/response.s: server_engine/response.cpp.s
-
-.PHONY : server_engine/response.s
-
-# target to generate assembly for a file
-server_engine/response.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.s
-.PHONY : server_engine/response.cpp.s
 
 utils/time.o: utils/time.cpp.o
 
@@ -224,6 +224,33 @@ utils/time.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/time.cpp.s
 .PHONY : utils/time.cpp.s
 
+utils/utils.o: utils/utils.cpp.o
+
+.PHONY : utils/utils.o
+
+# target to build an object file
+utils/utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/utils.cpp.o
+.PHONY : utils/utils.cpp.o
+
+utils/utils.i: utils/utils.cpp.i
+
+.PHONY : utils/utils.i
+
+# target to preprocess a source file
+utils/utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/utils.cpp.i
+.PHONY : utils/utils.cpp.i
+
+utils/utils.s: utils/utils.cpp.s
+
+.PHONY : utils/utils.s
+
+# target to generate assembly for a file
+utils/utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/utils.cpp.s
+.PHONY : utils/utils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -233,15 +260,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... webserv"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 	@echo "... server_engine/Server.o"
 	@echo "... server_engine/Server.i"
 	@echo "... server_engine/Server.s"
-	@echo "... server_engine/response.o"
-	@echo "... server_engine/response.i"
-	@echo "... server_engine/response.s"
 	@echo "... utils/time.o"
 	@echo "... utils/time.i"
 	@echo "... utils/time.s"
+	@echo "... utils/utils.o"
+	@echo "... utils/utils.i"
+	@echo "... utils/utils.s"
 .PHONY : help
 
 

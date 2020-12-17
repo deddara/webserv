@@ -11,14 +11,25 @@
 #include "unistd.h"
 
 class Server{
-public:
+
+private:
 	std::string response;
 	std::string body;
 	std::string date;
+	std::vector<int> client_fd;
+	fd_set readset, writeset;
+	int accept_sock, listen_sock, max_fd;
 
+public:
+	Server(){};
+	~Server(){};
+	int launch();
+	int setup();
+	void set_prepare();
+	int recv_msg(std::vector<int>::iterator it);
+	void response_prepare();
 
 };
 
-void response_prepare(Server & serv);
 
 #endif
