@@ -13,6 +13,11 @@
   <component name="ChangeListManager">
     <list default="true" id="be32025a-ed87-4f77-8606-818ca486e7f6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/webserv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/webserv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/html_files/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/html_files/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/includes/server.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/includes/server.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server_engine/stol_server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/server_engine/stol_server.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,11 +55,6 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -74,7 +74,8 @@
       <workItem from="1607934668656" duration="2587000" />
       <workItem from="1607959819371" duration="16723000" />
       <workItem from="1608036312106" duration="15555000" />
-      <workItem from="1608114669567" duration="1778000" />
+      <workItem from="1608114669567" duration="1939000" />
+      <workItem from="1608198720786" duration="685000" />
     </task>
     <servers />
   </component>

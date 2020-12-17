@@ -16,7 +16,6 @@ public:
 	std::string body;
 	std::string date;
 
-	void
 
 };
 

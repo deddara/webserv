@@ -6,7 +6,7 @@ int server_setup(){
 
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(3031);
+	addr.sin_port = htons(3032);
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	if ((listen_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){

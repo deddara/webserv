@@ -26,11 +26,7 @@ zconf.h
 unistd.h
 ../includes/unistd.h
 
-/Users/deddara/school21/webserv/server_engine/time.cpp
-sys/time.h
--
-time.h
-/Users/deddara/school21/webserv/server_engine/time.h
+/Users/deddara/school21/webserv/server_engine/stol_server.cpp
 server.hpp
 /Users/deddara/school21/webserv/server_engine/server.hpp
 
