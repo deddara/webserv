@@ -6,44 +6,65 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/16 21:09:10 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/17 17:14:02 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ConfParser.hpp"
 
-ConfParser::ConfParser(std::string const & fpath): _filePath(fpath)
+int					checkStringInt(std::string const &word)
 {
-	_success = false;
+	size_t			len = word.length();
+	for (size_t i = 0; i < len; ++i)
+	{
+		if (!std::isdigit(word[i]))
+			return 1;
+	}
+	return 0;
+}
+
+int					checkSuspiciousSymbols(std::string const &word)
+{
+	size_t			len = word.length();
+	for (size_t i = 0; i < len; ++i)
+	{
+		if (word[i] == '/')
+			return 1;
+	}
+	return 0;
+}
+
+int					checkBrackets(char c)
+{
+	if (c == '{')
+		return 1;
+	if (c == '}')
+		return 2;
+	return 0;
+}
+
+ConfParser::ConfParser(std::string const & fpath): pr_pos(0) {
+	pr_data = readConfFile(fpath);
+	pr_len = pr_data.length();
 	parser();
 }
 
-ConfParser::ConfParser(ConfParser const & other) { *this = other; }
-
 ConfParser::~ConfParser() {}
 
-ConfParser &			ConfParser::operator=(ConfParser const & other)
+void				ConfParser::skipSpaceComm()
 {
-	if (this != &other)
-		_filePath = other._filePath;
-	return *this;
-}
-
-void					skipSpaceComm(std::string const &data, size_t *pos,
-																	size_t len)
-{
-	size_t				newPos = 0;
-	while (*pos < len - 1)
+	size_t			newPos = 0;
+	while (pr_pos < pr_len - 1)
 	{
-		while (isspace(data[*pos]))
-			(*pos)++;
-		if (data[*pos] == '#')
+		while (isspace(pr_data[pr_pos]))
+			(pr_pos)++;
+		if (pr_data[pr_pos] == '#')
 		{
-			if ((newPos = data.find("\n", *pos)) != std::string::npos)
-				*pos = newPos;
+			if ((newPos = pr_data.find("\n", pr_pos)) != std::string::npos)
+				pr_pos = newPos;
 			else
 			{
-				*pos = len - 1;
+				pr_pos = pr_len - 1;
 				break ;
 			}
 		}
@@ -52,7 +73,7 @@ void					skipSpaceComm(std::string const &data, size_t *pos,
 	}
 }
 
-std::string				toLower(std::string str)
+std::string			ConfParser::toLower(std::string str)
 {
 	for (size_t i = 0; i < str.length(); i++)
 	{
@@ -62,25 +83,36 @@ std::string				toLower(std::string str)
 	return str;
 }
 
-std::string				pickWord(std::string const &data, size_t *pos,
-																	size_t len)
+std::string			ConfParser::toUpper(std::string str)
 {
-	std::string			word;
-	while (*pos < len - 1 && !isspace(data[*pos]) && data[*pos] != ';' \
-			&& data[*pos] != '{' && data[*pos] != '}')
-		word.push_back(data[(*pos)++]);
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] >= 'a' && str[i] <= 'z')
+			str[i] -= 32;
+	}
+	return str;
+}
+
+std::string			ConfParser::pickWord()
+{
+	std::string		word;
+	while (pr_pos < pr_len - 1 && !isspace(pr_data[pr_pos]) \
+			&& pr_data[pr_pos] != ';' \
+			&& pr_data[pr_pos] != '{' && pr_data[pr_pos] != '}')
+		word.push_back(pr_data[(pr_pos)++]);
 	return word;
 }
 
-std::string const &		ConfParser::getPath() const { return _filePath; }
-
-bool					ConfParser::getParsResult() const { return _success; }
-
-std::string const		ConfParser::readConfFile(int fd)
+std::string			ConfParser::readConfFile(std::string const & fpath)
 {
-	std::string			data;
-	char				buf[128];
-	int					ret = 0;
+	int				fd = 0;
+	int				ret = 0;
+	char			buf[128];
+	std::string		data;
+
+	if ((fd = open(fpath.c_str(), O_RDONLY)) < 0)
+		errorExit(0, "");
+
 	while ((ret = read(fd, buf, 128)) > 0)
 	{
 		buf[ret] = '\0';
@@ -91,15 +123,13 @@ std::string const		ConfParser::readConfFile(int fd)
 	return data;
 }
 
-void					ConfParser::errorExit(int code,
-													std::string const & word)
+void				ConfParser::errorExit(int code, std::string const & word)
 {
-	std::string			errors[14] = {
+	std::string		errors[16] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
-		"Error: invalid number of arguments in \"" + word + \
-			"\" directive",
+		"Error: invalid number of arguments in \"" + word + "\" directive",
 		"Error: unknown directive \"" + word + "\"",
 		"Error: host not found in \"" + word + "\" of the \"listen\" directive",
 		"Error: invalid port in \"" + word + "\" of the \"listen\" directive",
@@ -110,341 +140,268 @@ void					ConfParser::errorExit(int code,
 		"Error: limit client body \"" + word + "\" overflows",
 		"Error: location prefix is missing",
 		"Error: unexpected \"}\"",
+		"Error: invalid value \"" + word + "\" of \"autoindex\" directive",
+		"Error: unsupported value \"" + word
+			+ "\" of \"allow_methods\" directive",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
 }
 
-void					serverInit(Servers *server)
+VirtServer			ConfParser::serverBlockProc()
 {
-	server->host = "";
-	server->port = 0;
-	// server->serverName; //INFO
-	server->errorPage = "";
-	server->limitClientBody = -1;
-}
-
-int						checkStringInt(std::string const &word)
-{
-	size_t				len = word.length();
-	for (size_t i = 0; i < len; ++i)
-	{
-		if (!std::isdigit(word[i]))
-			return 1;
-	}
-	return 0;
-}
-
-int						checkSuspiciousSymbols(std::string const &word)
-{
-	size_t				len = word.length();
-	for (size_t i = 0; i < len; ++i)
-	{
-		if (word[i] == '/')
-			return 1;
-	}
-	return 0;
-}
-
-int						checkBrackets(char c)
-{
-	if (c == '{')
-		return 1;
-	if (c == '}')
-		return 2;
-	return 0;
-}
-
-void					ConfParser::serverBlockProc(std::string const &data,
-													size_t *pos, size_t len)
-{
-	_serverFields.push_back("host");
-	_serverFields.push_back("listen");
-	_serverFields.push_back("server_name");
-	_serverFields.push_back("error_page");
-	_serverFields.push_back("limit_client_body");
-	_serverFields.push_back("location");
-
-	skipSpaceComm(data, pos, len);
-	if (checkBrackets(data[*pos]) != 1)
+	skipSpaceComm();
+	if (checkBrackets(pr_data[pr_pos]) != 1)
 		errorExit(2, "");
-	(*pos)++;
-	Servers				server;
-	serverInit(&server);
+	pr_pos++;
 
-	std::string			key;
-	std::string			val;
-	int					ret;
+	VirtServer		server;
+	std::string		key;
+	std::string		val;
+	int				ret = 0;
 
-	while (checkBrackets(data[*pos]) != 2)
+	while (checkBrackets(pr_data[pr_pos]) != 2)
 	{
 		ret = 0;
-		skipSpaceComm(data, pos, len);
-		if (checkBrackets(data[*pos]) == 1)
+		skipSpaceComm();
+		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		key = pickWord(data, pos, len);
+		key = pickWord();
 		int				i = 0;
 		for (; i < 6; ++i)
 		{
-			if (toLower(key) == _serverFields[i])
+			if (toLower(key) == server.getServerFields()[i])
 			{
-				skipSpaceComm(data, pos, len);
-				if (data[*pos] == ';')
+				skipSpaceComm();
+				if (pr_data[pr_pos] == ';')
 					errorExit(3, key);
 				break ;
 			}
 		}
 		if (i == 6)
 			errorExit(4, key);
-		skipSpaceComm(data, pos, len);
-		if (checkBrackets(data[*pos]) == 1)
+		skipSpaceComm();
+		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		val = pickWord(data, pos, len);
+		val = pickWord();
 		if (i == 0)
 		{
-			server.host = val;
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			server.setHost(val);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			pr_pos++;
 		}
 		else if (i == 1)
 		{
 			if (checkStringInt(val))
 				errorExit(5, val);
-			server.port = static_cast<int>(std::stold(val));
-			if (server.port < 0 || server.port > 65535)
+			int num = static_cast<int>(std::stold(val));
+			if (num < 0 || num > 65535)
 				errorExit(6, val);
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			server.setPort(num);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			pr_pos++;
 		}
 		else if (i == 2)
 		{
-			if (server.serverName.size())
-				server.serverName.clear();
-			if (checkBrackets(data[*pos]) == 1)
+			if (server.getServerName().size())
+				server.clearServerName();
+			if (checkBrackets(pr_data[pr_pos]) == 1)
 				errorExit(9, "");
 			if (checkSuspiciousSymbols(val))
 				errorExit(7, val);
-			server.serverName.push_back(val);
-			skipSpaceComm(data, pos, len);
-			while (data[*pos] != ';')
+			server.setServerName(val);
+			skipSpaceComm();
+			while (pr_data[pr_pos] != ';')
 			{
-				if ((ret = checkBrackets(data[*pos])))
+				if ((ret = checkBrackets(pr_data[pr_pos])))
 					errorExit(ret == 1 ? 9 : 8, key);
-				val = pickWord(data, pos, len);
+				val = pickWord();
 				if (checkSuspiciousSymbols(val))
 					errorExit(7, val);
-				server.serverName.push_back(val);
-				skipSpaceComm(data, pos, len);
+				server.setServerName(val);
+				skipSpaceComm();
 			}
-			(*pos)++;
+			pr_pos++;
 		}
 		if (i == 3)
 		{
-			server.errorPage = val;
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			server.setErrorPage(val);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			pr_pos++;
 		}
 		else if (i == 4)
 		{
 			if (checkStringInt(val))
 				errorExit(10, val);
-			server.limitClientBody = static_cast<int>(std::stold(val));
-			if (server.limitClientBody < 0)
+			int num = static_cast<int>(std::stold(val));
+			if (num < 0)
 				errorExit(11, val);
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			server.setLimitClientBody(num);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			pr_pos++;
 		}
 		if (i == 5)
 		{
-			locationBlockProc(data, pos, len, val);
+			server.setLocation(locationBlockProc(val));
 		}
-		std::cout << server.host << std::endl; //DEBUG
-		std::cout << server.port << std::endl; //DEBUG
-		for (unsigned long i = 0; i < server.serverName.size(); ++i)
-			std::cout << server.serverName[i] << std::endl; //DEBUG
-		std::cout << server.errorPage << std::endl; //DEBUG
-		std::cout << server.limitClientBody << std::endl; //DEBUG
+		skipSpaceComm();
 	}
+	pr_pos++;
+	return server;
 }
 
-void					locationInit(Locations *location)
+Location				ConfParser::locationBlockProc(std::string const & str)
 {
-	location->prefix = "";
-	// location->index; //INFO
-	// location->allowMethods; //INFO
-	location->root = "";
-	location->autoindex = "off";
-}
-
-void					ConfParser::locationBlockProc(std::string const &data,
-						size_t *pos, size_t len, std::string const &prefix)
-{
-	_locationsFields.push_back("index");
-	_locationsFields.push_back("allow_methods");
-	_locationsFields.push_back("root");
-	_locationsFields.push_back("autoindex");
-
-	int					ret;
-
-	if ((ret = checkBrackets(data[*pos])))
-		errorExit(ret == 1 ? 12 : 13, "");
-	skipSpaceComm(data, pos, len);
-
-	Locations			location;
-	locationInit(&location);
-	location.prefix = prefix;
-
-	if (location.prefix[0] != '/')
-		location.prefix.insert(0, "/", 1);
-
-	skipSpaceComm(data, pos, len);
-	if (checkBrackets(data[*pos]) != 1)
-		errorExit(2, "");
-	(*pos)++;
-
 	std::string			key;
 	std::string			val;
+	int					ret = 0;
+	int					i = 0;
 
-	while (checkBrackets(data[*pos]) != 2)
+	if ((ret = checkBrackets(pr_data[pr_pos])))
+		errorExit(ret == 1 ? 12 : 13, "");
+	skipSpaceComm();
+
+	Location			location;
+
+	location.setPrefix(str);
+	if (location.getPrefix()[0] != '/')
+		location.setPrefix("/" + location.getPrefix());
+
+	skipSpaceComm();
+	if (checkBrackets(pr_data[pr_pos]) != 1)
+		errorExit(2, "");
+	pr_pos++;
+
+	while (checkBrackets(pr_data[pr_pos]) != 2)
 	{
 		ret = 0;
-		skipSpaceComm(data, pos, len);
-		if (checkBrackets(data[*pos]) == 1)
+		skipSpaceComm();
+		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		key = pickWord(data, pos, len);
-		int				i = 0;
-		for (; i < 4; ++i)
+		key = pickWord();
+		for (i = 0; i < 4; ++i)
 		{
-			if (toLower(key) == _locationsFields[i])
+			if (toLower(key) == location.getLocationFields()[i])
 			{
-				skipSpaceComm(data, pos, len);
-				if (data[*pos] == ';')
+				skipSpaceComm();
+				if (pr_data[pr_pos] == ';')
 					errorExit(3, key);
 				break ;
 			}
 		}
 		if (i == 4)
 			errorExit(4, key);
-		skipSpaceComm(data, pos, len);
-		if (checkBrackets(data[*pos]) == 1)
+		skipSpaceComm();
+		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		val = pickWord(data, pos, len);
+		val = pickWord();
 		if (i == 0)
 		{
-			if (location.index.size())
-				location.index.clear();
-			if (checkBrackets(data[*pos]) == 1)
+			if (location.getIndex().size())
+				location.clearIndex();
+			if (checkBrackets(pr_data[pr_pos]) == 1)
 				errorExit(9, "");
 			if (checkSuspiciousSymbols(val))
 				errorExit(7, val);
-			location.index.push_back(val);
-			skipSpaceComm(data, pos, len);
-			while (data[*pos] != ';')
+			location.setIndex(val);
+			skipSpaceComm();
+			while (pr_data[pr_pos] != ';')
 			{
-				if ((ret = checkBrackets(data[*pos])))
+				if ((ret = checkBrackets(pr_data[pr_pos])))
 					errorExit(ret == 1 ? 9 : 8, key);
-				val = pickWord(data, pos, len);
+				val = pickWord();
 				if (checkSuspiciousSymbols(val))
 					errorExit(7, val);
-				location.index.push_back(val);
-				skipSpaceComm(data, pos, len);
+				location.setIndex(val);
+				skipSpaceComm();
 			}
-			(*pos)++;
+			pr_pos++;
 		}
 		else if (i == 1)
 		{
-			if (location.allowMethods.size())
-				location.allowMethods.clear();
-			if (checkBrackets(data[*pos]) == 1)
+			if (location.getAllowMethods().size())
+				location.clearAllowMethods();
+			if (checkBrackets(pr_data[pr_pos]) == 1)
 				errorExit(9, "");
 			if (checkSuspiciousSymbols(val))
 				errorExit(7, val);
-			location.allowMethods.push_back(val);
-			skipSpaceComm(data, pos, len);
-			while (data[*pos] != ';')
+			std::string	upVal = toUpper(val);
+			if (upVal != "GET" && upVal != "HEAD" && upVal != "POST")
+				errorExit(15, val);
+			location.setAllowMethods(upVal);
+			skipSpaceComm();
+			while (pr_data[pr_pos] != ';')
 			{
-				if ((ret = checkBrackets(data[*pos])))
+				if ((ret = checkBrackets(pr_data[pr_pos])))
 					errorExit(ret == 1 ? 9 : 8, key);
-				val = pickWord(data, pos, len);
+				val = pickWord();
 				if (checkSuspiciousSymbols(val))
 					errorExit(7, val);
-				location.allowMethods.push_back(val);
-				skipSpaceComm(data, pos, len);
+				location.setAllowMethods(val);
+				skipSpaceComm();
 			}
-			(*pos)++;
+			(pr_pos)++;
 		}
 		else if (i == 2)
 		{
-			location.root = val;
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			location.setRoot(val);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			pr_pos++;
 		}
 		else if (i == 3)
 		{
-			location.autoindex = val;
-			skipSpaceComm(data, pos, len);
-			if ((ret = checkBrackets(data[*pos])))
+			std::string	lowVal = toLower(val);
+			if (lowVal != "on" && lowVal != "off")
+				errorExit(14, lowVal);
+			location.setAutoindex(val);
+			skipSpaceComm();
+			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
-			if (data[*pos] != ';')
+			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
-			(*pos)++;
+			(pr_pos)++;
 		}
-		std::cout << location.prefix << std::endl; //DEBUG
-		for (unsigned long i = 0; i < location.index.size(); ++i)
-			std::cout << location.index[i] << std::endl; //DEBUG
-		for (unsigned long i = 0; i < location.allowMethods.size(); ++i)
-			std::cout << location.allowMethods[i] << std::endl; //DEBUG
-		std::cout << location.root << std::endl; //DEBUG
-		std::cout << location.autoindex << std::endl; //DEBUG
+		skipSpaceComm();
 	}
+	pr_pos++;
+	return location;
 }
 
-void					ConfParser::parser()
+void				ConfParser::parser()
 {
-	std::vector<std::string>	confFields;
-	confFields.push_back("server");
-	confFields.push_back("location");
-	// bool				serverBlockInProgress = false;
-	_locationBlockInProgress = false;
-
-
-	int					fd;
-	if ((fd = open(_filePath.c_str(), O_RDONLY)) < 0)
-		errorExit(0, "");
-
-	std::string const	data = readConfFile(fd);
-
-	size_t				pos = 0;
-	size_t				len = data.length();
-	while (pos < len - 1)
+	while (pr_pos < pr_len - 1)
 	{
-		skipSpaceComm(data, &pos, len);
-		if (toLower(pickWord(data, &pos, len)) != "server")
+		skipSpaceComm();
+		if (toLower(pickWord()) != "server")
 			errorExit(2, "");
 		else
 		{
-			serverBlockProc(data, &pos, len);
+			pr_server.push_back(serverBlockProc());
 		}
+		skipSpaceComm();
 	}
+}
 
+std::vector<VirtServer> const &		ConfParser::getServer() const {
+	return pr_server;
 }

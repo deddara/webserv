@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/15 16:15:44 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/17 14:35:14 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,8 @@ OBJDIR		= obj/
 DIR_1		=
 FLS_1		= $(addprefix $(DIR_1), \
 				ConfParser \
+				Location \
+				VirtServer \
 				)
 
 DIR_TEST	= tests/

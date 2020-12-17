@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:35:34 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/16 21:06:26 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/17 16:59:55 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,58 +14,37 @@
 # define CONFPARSER_HPP
 
 # include <iostream>
-# include <list>
-# include <vector>
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include "libft.h"
 
-struct Locations
-{
-	std::string					prefix;
-	std::vector<std::string>	index;
-	std::vector<std::string>	allowMethods;
-	std::string					root;
-	std::string					autoindex;
-};
-
-struct Servers
-{
-	std::string					host;
-	int							port;
-	std::vector<std::string>	serverName;
-	std::string					errorPage;
-	int							limitClientBody;
-	std::vector<Locations>		locations;
-};
+# include "VirtServer.hpp"
+# include "Location.hpp"
 
 class							ConfParser
 {
-	std::string					_filePath;
-	bool						_success;
-	std::vector<Servers>		_servers;
-	std::vector<std::string>	_serverFields;
-	std::vector<std::string>	_locationsFields;
-	bool						_locationBlockInProgress;
+	std::string					pr_data;
+	size_t						pr_pos;
+	size_t						pr_len;
+	std::vector<VirtServer>		pr_server;
 
 								ConfParser();
-								ConfParser(ConfParser const &);
-	ConfParser &				operator=(ConfParser const &);
-
+	std::string					readConfFile(std::string const &);
 	void						errorExit(int, std::string const &);
 	void						parser();
-	void						serverBlockProc(std::string const &,
-															size_t *, size_t);
-	void						locationBlockProc(std::string const &,
-										size_t *, size_t, std::string const &);
-	std::string const			readConfFile(int);
+	VirtServer					serverBlockProc();
+	Location					locationBlockProc(std::string const &);
+
+	void						skipSpaceComm();
+	std::string					pickWord();
+	std::string					toLower(std::string);
+	std::string					toUpper(std::string);
 public:
 								ConfParser(std::string const &);
 								~ConfParser();
 
-	std::string const &			getPath() const;
-	bool						getParsResult() const;
+	std::vector<VirtServer> const &	getServer() const;
 };
 
 #endif
