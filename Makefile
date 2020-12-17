@@ -6,14 +6,12 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/17 14:35:14 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/17 20:37:57 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= webserv
-INCLUDES	= -I includes/ -I libft/includes/ -I src/
-LIBFT		= libft/libft.a
-LIBFLAGS	= -L libft -lft
+INCLUDES	= -I includes/ -I src/
 CXX			= clang++
 
 CFLAGS		= -Wall -Wextra -Werror
@@ -45,8 +43,8 @@ DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
 all:		$(NAME)
 
-$(NAME):	$(LIBFT) $(OBJ)
-	$(CXX)		$(FLAGS) $(OBJ) $(LIBFLAGS) $(INCLUDES) -o $(NAME)
+$(NAME):	$(OBJ)
+	$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
 	@echo '------------- All done! --------------'
 
 $(OBJ):		$(OBJDIR)%.o: $(SRCDIR)%.cpp
@@ -66,19 +64,6 @@ fclean:	clean
 debug:
 	make FLAGS="$(CFLAGS) $(DBGFLAGS)" all
 
-$(LIBFT): libft_force_make
-	@echo '------------ Making libft ------------'
-	@make		-C libft/ --no-print-directory
-
-libft_clean:
-	make clean	-C libft/
-
-libft_fclean:
-	make fclean	-C libft/
-
-libft_re:
-	make re		-C libft/
-
 run: all
 	./$(NAME)
 
@@ -95,10 +80,6 @@ re:	fclean all
 		clean_all \
 		debug \
 		fclean \
-		libft_clean \
-		libft_fclean \
-		libft_force_make \
-		libft_re \
 		re \
 		run \
 		test \
