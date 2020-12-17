@@ -6,14 +6,14 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 12:18:24 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/17 20:06:24 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "VirtServer.hpp"
 
 
-VirtServer::VirtServer(): pr_port(0), pr_limitClientBody(0) {
+VirtServer::VirtServer(): pr_port(0), pr_limitClientBody(-1) {
 	pr_serverFields.push_back("host");
 	pr_serverFields.push_back("listen");
 	pr_serverFields.push_back("server_name");

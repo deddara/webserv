@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 18:31:08 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/17 20:29:56 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath)
 
 void				ConfParser::errorExit(int code, std::string const & word)
 {
-	std::string		errors[17] = {
+	std::string		errors[18] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -144,6 +144,7 @@ void				ConfParser::errorExit(int code, std::string const & word)
 		"Error: unsupported value \"" + word
 			+ "\" of \"allow_methods\" directive",
 		"Error: unexpected \";\"",
+		"Error: the value of the \"" + word + "\" directive is not set",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
@@ -412,8 +413,28 @@ void				ConfParser::parser()
 		}
 		skipSpaceComm();
 	}
+	checkCompleteness();
 }
 
 std::vector<VirtServer> const &		ConfParser::getServer() const {
 	return pr_server;
+}
+
+void				ConfParser::checkCompleteness() {
+	for (size_t i = 0; i < pr_server.size(); ++i)
+	{
+		if (!pr_server[i].getHost().length())
+			errorExit(17, "host");
+		if (!pr_server[i].getPort())
+			errorExit(17, "listen");
+		for (size_t j = 0; j < pr_server[i].getLocation().size(); ++j)
+		{
+			if (!pr_server[i].getLocation()[j].getIndex().size())
+				errorExit(17, "index");
+			if (!pr_server[i].getLocation()[j].getAllowMethods().size())
+				errorExit(17, "allow_methods");
+			if (!pr_server[i].getLocation()[j].getRoot().length())
+				errorExit(17, "root");
+		}
+	}
 }
