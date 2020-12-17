@@ -1,9 +1,9 @@
 #include "Server.hpp"
 #include "includes.hpp"
+#include "Request.hpp"
 
 void Server::response_prepare()
 {
-	char buff[1000];
 	bzero(buff, sizeof(buff));
 	body = "\0";
 	date = my_localtime();
@@ -70,7 +70,6 @@ void Server::set_prepare()
 
 int Server::recv_msg(std::vector<int>::iterator it){
 	int n;
-	char buff[1024];
 	bzero(&buff, 1024);
 
 	while ((n = recv(*it, buff, sizeof(buff), 0)) > 0)
@@ -79,6 +78,7 @@ int Server::recv_msg(std::vector<int>::iterator it){
 		if (buff[n - 1] == '\n')
 			break;
 	}
+
 	if (n <= 0)
 	{
 		close(*it);
@@ -86,6 +86,29 @@ int Server::recv_msg(std::vector<int>::iterator it){
 		return (1);
 	}
 	return (0);
+}
+
+void Server::response_prepare_2(){
+	bzero(buff, sizeof(buff));
+	body = "\0";
+	date = my_localtime();
+	int fd = open("../html_files/50x.html", O_RDONLY);
+	if (fd < 0){
+		perror("open");
+		return ;
+	}
+	while (read(fd, buff, sizeof(buff))) {
+		body += buff;
+	}
+	response = "HTTP/1.1 200 OK\r\nDate: ";
+	response.append(date);
+	response.append("Server: webserv0.0\r\nContent-Length: ");
+	response.append(std::to_string(body.length())); response.append("\r\n");
+	response += "Content-Type: text/html; charset=UTF-8\r\n"
+				"Connection: Keep-Alive\r\n\r\n";
+	response += body;
+	response += "\r\n\r\n";
+	std::cout << response;
 }
 
 int Server::launch() {
@@ -111,8 +134,18 @@ int Server::launch() {
 			{
 				if (recv_msg(it))
 					break;
-				// тут должен быть парс реквеста
-				response_prepare();
+//				Request req(static_cast<std::string>(buff));
+//				std::cout << "======" << std::endl << static_cast<std::string>(buff) << std::endl << "==========";
+//				for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
+//					if (req.is_valid_value(it->first))
+//						std::cout << it->first << ":" << it->second.front() << std::endl;
+//				}
+//				if (req.error())
+//				{
+					response_prepare();
+//				}
+//				else
+//					response_prepare();
 			}
 			if (FD_ISSET(*it, &writeset)){
 				if ((send(*it, response.c_str(), response.length(), 0)) < 0)

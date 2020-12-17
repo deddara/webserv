@@ -18,6 +18,7 @@ private:
 	std::string date;
 	std::vector<int> client_fd;
 	fd_set readset, writeset;
+	char buff[1024];
 	int accept_sock, listen_sock, max_fd;
 
 public:
@@ -28,6 +29,7 @@ public:
 	void set_prepare();
 	int recv_msg(std::vector<int>::iterator it);
 	void response_prepare();
+	void response_prepare_2();
 
 };
 
