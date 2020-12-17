@@ -38,6 +38,7 @@ public:
 	int const &							getLimitClientBody() const;
 	std::vector<Location> const &		getLocation() const;
 
+	// **** FOR PARSE ****
 	std::vector<std::string> const &	getServerFields() const;
 
 	void								setHost(std::string const &);
