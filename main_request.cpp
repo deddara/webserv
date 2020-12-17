@@ -37,7 +37,7 @@ int main() {
 	std::cout << "-------------Map elements-------------" << std::endl;
 	for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
 		if (req.is_valid_value(it->first))
-			std::cout << it->first << ": " << req.find(it->first).front() << std::endl;
+			std::cout << it->first << ":" << it->second.front() << std::endl;
 	}
 
 	std::cout << "-----------------Body-----------------" << std::endl;
@@ -46,5 +46,21 @@ int main() {
 	std::cout << "----------------Error-----------------" << std::endl;
 	std::cout << "Request is bad: " << req.error() << std::endl;
 
+
+	std::cout << "----------------Check headers-----------------" << std::endl;
+	for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
+		if (req.is_valid_value(it->first)) {
+			if (it->first == "head") {
+				// проверка существования url = it->first
+				std::cout << it->first << ": " << it->second[0] << " " << it->second[1] << std::endl;
+			}
+			else if (it->first == "host") {
+				// проверка host = it->second[0] и порта = it->second[1], если порт указан, иначе там мусор
+				std::cout << it->first << ": " << it->second[0];
+				if ()
+				<< ":" << it->second.size() << std::endl;
+			}
+		}
+	}
 	return 0;
 }
