@@ -18,7 +18,7 @@ Request::value_type split(std::string const &raw, char delim) {
 	Request::value_type res;
 	std::string k;
 	for( size_t i = 0; i != raw.size(); ++i) {
-		if (raw[i] == delim && k.size() > 1) {
+		if (raw[i] == delim && k.size() >= 1) {
 			res.push_back(k);
 			k = "";
 		} else if (raw[i] != delim)
@@ -58,7 +58,7 @@ Request::Request(std::string const &raw_data)
 											: _isbadrequest(false), _body("") {
 	std::string tmp = raw_data;
 	trim(tmp);
-	if (tmp.empty() || tmp[0] == '\n') {
+	if (tmp.empty() || (tmp[0] == '\r' && tmp[1] == '\n')) {
 		_isbadrequest = true;
 		return;
 	}
@@ -67,7 +67,7 @@ Request::Request(std::string const &raw_data)
 	for(std::size_t i = 0; i != raw_data.size(); i = pos) {
 		if (pos >= raw_data.size())
 			break;
-		pos++;
+		pos += 2;
 		if (raw_data[pos] == '\n') {
 			_body = raw_data.substr(pos + 1, pos + raw_data.size());
 			check_common();
@@ -75,7 +75,7 @@ Request::Request(std::string const &raw_data)
 		}
 		pos = raw_data.find('\n', pos);
 		if (first_str) {
-			std::string fstr = raw_data.substr(0, pos);
+			std::string fstr = raw_data.substr(0, pos - 1);
 			if (std::count(fstr.begin(), fstr.end(),' ') > 2)
 				_isbadrequest = true;
 			_data["head"] = split(fstr, ' ');
@@ -84,7 +84,7 @@ Request::Request(std::string const &raw_data)
 			first_str = false;
 			continue;
 		}
-		value_type header = split(raw_data.substr(i, pos - i), ':');
+		value_type header = split(raw_data.substr(i, pos - i - 1), ':');
 		std::string key(++header[0].begin(), header[0].end());
 		if (*--key.end() == ' ')
 			_isbadrequest = true;
