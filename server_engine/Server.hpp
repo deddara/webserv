@@ -20,6 +20,5 @@ public:
 };
 
 void response_prepare(Server & serv);
-std::string my_localtime();
 
 #endif

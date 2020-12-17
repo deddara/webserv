@@ -143,6 +143,33 @@ webserv/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/build
 .PHONY : webserv/fast
 
+server_engine/Server.o: server_engine/Server.cpp.o
+
+.PHONY : server_engine/Server.o
+
+# target to build an object file
+server_engine/Server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/Server.cpp.o
+.PHONY : server_engine/Server.cpp.o
+
+server_engine/Server.i: server_engine/Server.cpp.i
+
+.PHONY : server_engine/Server.i
+
+# target to preprocess a source file
+server_engine/Server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/Server.cpp.i
+.PHONY : server_engine/Server.cpp.i
+
+server_engine/Server.s: server_engine/Server.cpp.s
+
+.PHONY : server_engine/Server.s
+
+# target to generate assembly for a file
+server_engine/Server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/Server.cpp.s
+.PHONY : server_engine/Server.cpp.s
+
 server_engine/response.o: server_engine/response.cpp.o
 
 .PHONY : server_engine/response.o
@@ -170,59 +197,32 @@ server_engine/response.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/response.cpp.s
 .PHONY : server_engine/response.cpp.s
 
-server_engine/stol_server.o: server_engine/stol_server.cpp.o
+utils/time.o: utils/time.cpp.o
 
-.PHONY : server_engine/stol_server.o
-
-# target to build an object file
-server_engine/stol_server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.o
-.PHONY : server_engine/stol_server.cpp.o
-
-server_engine/stol_server.i: server_engine/stol_server.cpp.i
-
-.PHONY : server_engine/stol_server.i
-
-# target to preprocess a source file
-server_engine/stol_server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.i
-.PHONY : server_engine/stol_server.cpp.i
-
-server_engine/stol_server.s: server_engine/stol_server.cpp.s
-
-.PHONY : server_engine/stol_server.s
-
-# target to generate assembly for a file
-server_engine/stol_server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/stol_server.cpp.s
-.PHONY : server_engine/stol_server.cpp.s
-
-server_engine/time.o: server_engine/time.cpp.o
-
-.PHONY : server_engine/time.o
+.PHONY : utils/time.o
 
 # target to build an object file
-server_engine/time.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.o
-.PHONY : server_engine/time.cpp.o
+utils/time.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/time.cpp.o
+.PHONY : utils/time.cpp.o
 
-server_engine/time.i: server_engine/time.cpp.i
+utils/time.i: utils/time.cpp.i
 
-.PHONY : server_engine/time.i
+.PHONY : utils/time.i
 
 # target to preprocess a source file
-server_engine/time.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.i
-.PHONY : server_engine/time.cpp.i
+utils/time.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/time.cpp.i
+.PHONY : utils/time.cpp.i
 
-server_engine/time.s: server_engine/time.cpp.s
+utils/time.s: utils/time.cpp.s
 
-.PHONY : server_engine/time.s
+.PHONY : utils/time.s
 
 # target to generate assembly for a file
-server_engine/time.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/server_engine/time.cpp.s
-.PHONY : server_engine/time.cpp.s
+utils/time.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/utils/time.cpp.s
+.PHONY : utils/time.cpp.s
 
 # Help Target
 help:
@@ -233,15 +233,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... webserv"
+	@echo "... server_engine/Server.o"
+	@echo "... server_engine/Server.i"
+	@echo "... server_engine/Server.s"
 	@echo "... server_engine/response.o"
 	@echo "... server_engine/response.i"
 	@echo "... server_engine/response.s"
-	@echo "... server_engine/stol_server.o"
-	@echo "... server_engine/stol_server.i"
-	@echo "... server_engine/stol_server.s"
-	@echo "... server_engine/time.o"
-	@echo "... server_engine/time.i"
-	@echo "... server_engine/time.s"
+	@echo "... utils/time.o"
+	@echo "... utils/time.i"
+	@echo "... utils/time.s"
 .PHONY : help
 
 

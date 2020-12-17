@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "Server.hpp"
 
 int server_setup(){
 	struct sockaddr_in addr;

@@ -1,13 +1,12 @@
 //#include "server.hpp"
 #include <sys/time.h>
 #include "time.h"
-#include "server.hpp"
-
+#include "includes.hpp"
 
 # define SEC_PER_Y 31536000
 # define SEC_PER_V_Y 31622400
 
-int get_year(time_t & sec, int & is_v_y, int & day){
+static int get_year(time_t & sec, int & is_v_y, int & day){
 
 	int count = 0;
 	int y = 1; //because 1972 closest lap year
@@ -45,7 +44,7 @@ int get_year(time_t & sec, int & is_v_y, int & day){
 # define TWENTY_EIGHT_M	2419200
 
 
-int get_month(time_t & sec, int const & is_v_y){
+static int get_month(time_t & sec, int const & is_v_y){
 	int dec = THIRTY_ONE_M;
 	int month = 0;
 	while (sec - dec >= 0)
@@ -67,7 +66,7 @@ int get_month(time_t & sec, int const & is_v_y){
 	return month;
 }
 
-int get_day(time_t & sec, int & day, int const & month, int const & is_v_y)
+static int get_day(time_t & sec, int & day, int const & month, int const & is_v_y)
 {
 	int day_count = 1;
 	while (sec - 86400 >= 0)
@@ -89,7 +88,7 @@ int get_day(time_t & sec, int & day, int const & month, int const & is_v_y)
 	return day_count;
 }
 
-int get_hour(time_t & sec){
+static int get_hour(time_t & sec){
 
 	int dec = 3600;
 	int hour = 0;
@@ -103,7 +102,7 @@ int get_hour(time_t & sec){
 	return hour;
 }
 
-int get_min(time_t & sec) {
+static int get_min(time_t & sec) {
 	int dec = 60;
 	int min = 0;
 	while (sec - dec >= 0)
@@ -114,7 +113,7 @@ int get_min(time_t & sec) {
 	return min;
 }
 
-void get_day_of_week(time_t  sec, int & day){
+static void get_day_of_week(time_t  sec, int & day){
 	while (sec - 86400 >= 0)
 	{
 		day++;
@@ -124,7 +123,7 @@ void get_day_of_week(time_t  sec, int & day){
 	}
 }
 
-std::string date_prepare(time_t & sec, struct tm & t)
+static std::string date_prepare(time_t & sec, struct tm & t)
 {
 	char buffer[40];
 	int is_v_year;

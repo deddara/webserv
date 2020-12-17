@@ -1,5 +1,5 @@
-#include "server.hpp"
-
+#include "Server.hpp"
+#include "includes.hpp"
 void response_prepare(Server & serv)
 {
 	char buff[1000];

@@ -82,13 +82,16 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/deddara/school21/webserv/server_engine/Server.cpp">
+			<Option target="webserv"/>
+		</Unit>
+		<Unit filename="/Users/deddara/school21/webserv/server_engine/Server.hpp">
+			<Option target="webserv"/>
+		</Unit>
 		<Unit filename="/Users/deddara/school21/webserv/server_engine/response.cpp">
 			<Option target="webserv"/>
 		</Unit>
-		<Unit filename="/Users/deddara/school21/webserv/server_engine/stol_server.cpp">
-			<Option target="webserv"/>
-		</Unit>
-		<Unit filename="/Users/deddara/school21/webserv/server_engine/time.cpp">
+		<Unit filename="/Users/deddara/school21/webserv/utils/time.cpp">
 			<Option target="webserv"/>
 		</Unit>
 		<Unit filename="/Users/deddara/school21/webserv/CMakeLists.txt">

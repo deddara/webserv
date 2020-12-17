@@ -6,11 +6,19 @@
 
 #IncludeRegexTransform: 
 
-../includes/server.hpp
+../includes/includes.hpp
 iostream
 -
 vector
 ../includes/vector
+stdint.h
+-
+
+/Users/deddara/school21/webserv/server_engine/Server.hpp
+iostream
+-
+vector
+/Users/deddara/school21/webserv/server_engine/vector
 sys/types.h
 -
 sys/socket.h
@@ -22,11 +30,13 @@ fcntl.h
 sys/select.h
 -
 zconf.h
-../includes/zconf.h
+/Users/deddara/school21/webserv/server_engine/zconf.h
 unistd.h
-../includes/unistd.h
+/Users/deddara/school21/webserv/server_engine/unistd.h
 
-/Users/deddara/school21/webserv/server_engine/stol_server.cpp
-server.hpp
-/Users/deddara/school21/webserv/server_engine/server.hpp
+/Users/deddara/school21/webserv/server_engine/response.cpp
+Server.hpp
+/Users/deddara/school21/webserv/server_engine/Server.hpp
+includes.hpp
+/Users/deddara/school21/webserv/server_engine/includes.hpp
 
