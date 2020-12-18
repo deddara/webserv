@@ -55,7 +55,7 @@ void Request::check_common() {
 // Public functions
 
 Request::Request(std::string const &raw_data)
-											: _isbadrequest(false), _body("") {
+											: _body(""), _isbadrequest(false) {
 	std::string tmp = raw_data;
 	trim(tmp);
 	if (tmp.empty() || tmp[0] == '\n' || (tmp[0] == '\r' && tmp[1] == '\n')) {
@@ -67,9 +67,10 @@ Request::Request(std::string const &raw_data)
 	for(std::size_t i = 0; i != raw_data.size(); i = pos) {
 		if (pos >= raw_data.size())
 			break;
-		pos += 2;
+		else
+			pos += 2;
 		if (raw_data[pos] == '\n') {
-			_body = raw_data.substr(pos + 1, pos + raw_data.size());
+			_body = raw_data.substr(pos + 1);
 			check_common();
 			return;
 		}
@@ -97,7 +98,7 @@ Request::Request(std::string const &raw_data)
 }
 
 Request::Request(Request const &obj)
-					: _isbadrequest(obj._isbadrequest), _body(obj._body) {
+					: _body(obj._body), _isbadrequest(obj._isbadrequest) {
 	map_type::iterator ite = _data.end();
 	for(map_type::iterator it = _data.begin(); it != ite; ++it)
 		it->second.clear();
