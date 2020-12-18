@@ -20,6 +20,7 @@ add_executable(webserv
         request_parse/Request.hpp
         server_engine/Server.cpp
         server_engine/Server.hpp
+        server_engine/Response.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)

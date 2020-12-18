@@ -30,7 +30,7 @@ public:
 	int getStatus() {return state; }
 	void setStatus(int status) { state = status; }
 	Request * getRequest() { return reqst; }
-	Response & getResponse() { return *resp; }
+	Response * getResponse() { return resp; }
 	Client(int fd) : _fd(fd), state(0){
 		reqst = new Request();
 		resp = new Response();
