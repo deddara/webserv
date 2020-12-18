@@ -1,3 +1,0 @@
-/home/deddara/school21_42/webserv/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/deddara/school21_42/webserv/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/deddara/school21_42/webserv/cmake-build-debug/CMakeFiles/webserv.dir
