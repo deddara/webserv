@@ -128,7 +128,6 @@ static std::string date_prepare(time_t & sec, struct tm & t)
 	char buffer[40];
 	int is_v_year;
 	int day;
-	int i = 0;
 
 	bzero(buffer, sizeof(buffer));
 	t.tm_year = get_year(sec, is_v_year, day);

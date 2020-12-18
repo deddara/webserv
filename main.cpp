@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
 	Server	serv;
 
-	ConfParser		confPars(argc == 2 ? argv[1] : "../webserv.conf");
+	ConfParser		confPars(argc == 2 ? argv[1] : "./webserv.conf");
 	std::vector<VirtServer> const &	servers = confPars.getServer();
 	size_t			serversNum = confPars.getServer().size();
 

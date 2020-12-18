@@ -6,7 +6,7 @@
 /*   By: jjeremia <jjeremia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 10:45:13 by jjeremia          #+#    #+#             */
-/*   Updated: 2020/12/14 10:45:14 by jjeremia         ###   ########.fr       */
+/*   Updated: 2020/12/18 14:59:01 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void Request::check_common() {
 // Public functions
 
 Request::Request(std::string const &raw_data)
-											: _isbadrequest(false), _body("") {
+					: _body(""), _isbadrequest(false) {
 	req_init(raw_data);
 }
 
@@ -101,7 +101,7 @@ void	Request::req_init(std::string const &raw_data){
 }
 
 Request::Request(Request const &obj)
-					: _isbadrequest(obj._isbadrequest), _body(obj._body) {
+					: _body(obj._body), _isbadrequest(obj._isbadrequest) {
 	map_type::iterator ite = _data.end();
 	for(map_type::iterator it = _data.begin(); it != ite; ++it)
 		it->second.clear();
