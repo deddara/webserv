@@ -2,31 +2,6 @@
 #include "includes.hpp"
 #include "Request.hpp"
 
-void Server::response_prepare()
-{
-	char buff[2048];
-	bzero(buff, sizeof(buff));
-	body.clear();
-	date.clear();
-	date = my_localtime();
-	int fd = open("../html_files/index.html", O_RDONLY);
-	if (fd < 0){
-		perror("open");
-		return ;
-	}
-	while (read(fd, buff, sizeof(buff))) {
-		body.append(buff);
-	}
-	response = "HTTP/1.1 200 OK\r\nDate: ";
-	response.append(date);
-	response.append("Server: webserv0.0\r\nContent-Length: ");
-	response.append(std::to_string(body.length())); response.append("\r\n");
-	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
-	response.append(body);
-	response.append("\r\n\r\n");
-	std::cout << response;
-}
-
 int Server::setup(std::string const & host, int const port){
 	struct sockaddr_in addr;
 	int listen_sock;
@@ -64,7 +39,7 @@ void Server::set_prepare()
 		FD_SET(*it, &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		FD_SET((*it)->getFd(), &readset);
-		if (this->response.length() != 0){
+		if ((*it)->getResponse().getStr().length() != 0){
 			FD_SET((*it)->getFd(), &writeset);
 		}
 		if ((*it)->getFd() > max_fd)
@@ -87,30 +62,6 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(1);
 }
 
-void Server::response_prepare_2(){
-	char buff[2048];
-	bzero(buff, sizeof(buff));
-	body.clear();
-	date.clear();
-	date = my_localtime();
-	int fd = open("../html_files/50x.html", O_RDONLY);
-	if (fd < 0){
-		perror("open");
-		return ;
-	}
-	while (read(fd, buff, sizeof(buff))) {
-		body.append(buff);
-	}
-	response = "HTTP/1.1 200 OK\r\nDate: ";
-	response.append(date);
-	response.append("Server: webserv0.0\r\nContent-Length: ");
-	response.append(std::to_string(body.length())); response.append("\r\n");
-	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
-	response.append(body);
-	response.append("\r\n\r\n");
-	std::cout << response;
-}
-
 void Server::closeConnection(std::vector<Client*>::iterator it){
 	close((*it)->getFd());
 	client_session.erase(it);
@@ -118,19 +69,16 @@ void Server::closeConnection(std::vector<Client*>::iterator it){
 
 int Server::launch() {
 	for (;;){
-		max_fd = 0;
-		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
-			if (*it > max_fd)
-				max_fd = *it;
-		}
+		max_fd = server_socks.back();
 		set_prepare();
 		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0)
 			return (1);
 		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
 			if (FD_ISSET(*it, &readset)) {
 				int accept_sock;
-
-				if ((accept_sock = accept(*it, NULL, NULL)) < 0) {
+				struct sockaddr_storage ss;
+				socklen_t slen = sizeof(ss);
+				if ((accept_sock = accept(*it, (struct sockaddr *) &ss, &slen)) < 0) {
 					perror("accept");
 					return (1);
 				}
@@ -141,19 +89,21 @@ int Server::launch() {
 		for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it) {
 			if (FD_ISSET((*it)->getFd(), &readset))
 			{
-				switch ((*it)->getStatus())
-				{
+				switch ((*it)->getStatus()) {
 					case rdy_recv:
 						recv_msg(it);
 					case rdy_parse:
-						(*it)->getRequest()->req_init(((*it)->getBuff()));
+						if ((*it)->getStatus() != 3)
+						{(*it)->getRequest()->req_init(((*it)->getBuff()));
 						if ((*it)->getRequest()->error()) {
-							response_prepare_2();
+							(*it)->getResponse().response_prepare(1);
 						}
 						else
-							response_prepare();
+							(*it)->getResponse().response_prepare(0);
+						(*it)->getResponse().response_prepare(0);
 						(*it)->setStatus(2);
-						break;
+						(*it)->clearBuff();
+						break;}
 					case finish:
 						closeConnection(it);
 						is_closed = 1;
@@ -176,12 +126,13 @@ int Server::launch() {
 //					response_prepare();
 			}
 			if (FD_ISSET((*it)->getFd(), &writeset)){
-				if ((send((*it)->getFd(), response.c_str(), response.length(), 0)) < 0)
+				if ((send((*it)->getFd(), (*it)->getResponse().getStr().c_str(),  (*it)->getResponse().getStr().length(), 0)) < 0)
 				{
 					perror("send");
 					return 1;
 				}
-				response.clear();
+				(*it)->getResponse().clearStr();
+				(*it)->setStatus(0);
 			}
 		}
 	}

@@ -14,9 +14,6 @@
 class Server{
 
 private:
-	std::string response;
-	std::string body;
-	std::string date;
 	std::vector<Client*> client_session;
 	std::vector<int> server_socks;
 	fd_set readset, writeset;
@@ -30,8 +27,6 @@ public:
 	int setup(std::string const & host, int const port);
 	void set_prepare();
 	void recv_msg(std::vector<Client*>::iterator it);
-	void response_prepare();
-	void response_prepare_2();
 	void closeConnection(std::vector<Client*>::iterator it);
 
 };
