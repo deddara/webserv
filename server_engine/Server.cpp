@@ -57,6 +57,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	char buff[2048];
 	bzero(&buff, 2048);
 	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
+
 	if (n <= 0)
 	{
 		(*it)->setStatus(3);
