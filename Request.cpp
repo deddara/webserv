@@ -58,7 +58,7 @@ Request::Request(std::string const &raw_data)
 											: _isbadrequest(false), _body("") {
 	std::string tmp = raw_data;
 	trim(tmp);
-	if (tmp.empty() || (tmp[0] == '\r' && tmp[1] == '\n')) {
+	if (tmp.empty() || tmp[0] == '\n' || (tmp[0] == '\r' && tmp[1] == '\n')) {
 		_isbadrequest = true;
 		return;
 	}

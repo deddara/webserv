@@ -3,19 +3,19 @@
 #include "Request.hpp"
 
 int main() {
-	std::string raw = "POST /hello.txt HTTP/1.1\n"
-	                  "User-Agent: curl/7.16.3 libcurl/7.16.3 OpenSSL/0.9.7l zlib/1.2.3\n"
-	                  "Host: www.example.com\n"
-	                  "Accept-language:en, mi\n"
-	                  "accept-charset: utf-8\n"
-	                  "Allow:\n"
-	                  "Authorization:\n"
-	                  "Referer:\n"
-	                  "Content-Language: en\n"
-	                  "Content-Length:\n"
-	                  "Content-Location:\n"
-	                  "Content-Type:\n"
-	                  "\n"
+	std::string raw = "POST / HTTP/1.1\r\n"
+	                  "User-Agent: curl/7.16.3 libcurl/7.16.3 OpenSSL/0.9.7l zlib/1.2.3\r\n"
+	                  "Host: /\r\n"
+	                  "Accept-language:en, mi\r\n"
+	                  "accept-charset: utf-8\r\n"
+	                  "Allow: GET, HEAD, POST\r\n"
+	                  "Authorization:credentials\r\n"
+	                  "Referer:/\r\n"
+	                  "Content-Language: en\r\n"
+	                  "Content-Length: 727\r\n"
+	                  "Content-Location:\r\n"
+	                  "Content-Type:\r\n"
+	                  "\r\n"
 	                  "<!DOCTYPE html>\n"
 	                  "<html>\n"
 	                  " <head>\n"
@@ -51,14 +51,31 @@ int main() {
 	for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
 		if (req.is_valid_value(it->first)) {
 			if (it->first == "head") {
-				// проверка существования url = it->first
+				// проверка существования url = it->first - status = TODO
 				std::cout << it->first << ": " << it->second[0] << " " << it->second[1] << std::endl;
 			}
 			else if (it->first == "host") {
-				// проверка host = it->second[0] и порта = it->second[1], если порт указан, иначе там мусор
+				// проверка host = it->second[0] и порта = it->second[1], если порт указан
+				// status = TODO
 				std::cout << it->first << ": " << it->second[0];
-				if ()
-				<< ":" << it->second.size() << std::endl;
+				if (it->second.size() == 2)
+					std::cout << ":" << it->second[1] << std::endl;
+				else
+					std::cout << std::endl;
+			}
+			else if (it->first == "accept-charset" ||
+					it->first == "accept-language" ||
+					it->first == "allow" ||
+					it->first == "authorization" ||
+					it->first == "referer" ||
+					it->first == "user-agent") {
+				// проверка ?  - нужна? statuses = TODO
+				std::cout << it->first << ": " << it->second[0] << std::endl;
+			}
+			else if (it->first == "content-length") {
+				// сравнение значения хедера и длины поля = TODO
+				std::cout << it->first << ": " << std::stod(it->second[0]) << std::endl;
+				std::cout << "  body length = " << req.get_body().size() << std::endl;
 			}
 		}
 	}
