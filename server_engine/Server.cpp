@@ -62,13 +62,13 @@ void Server::set_prepare()
 	FD_ZERO(&writeset);
 	for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it)
 		FD_SET(*it, &readset);
-	for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it){
-		FD_SET(*it, &readset);
+	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
+		FD_SET((*it)->getFd(), &readset);
 		if (this->response.length() != 0){
-			FD_SET(*it, &writeset);
+			FD_SET((*it)->getFd(), &writeset);
 		}
-		if (*it > max_fd)
-			max_fd = *it;
+		if ((*it)->getFd() > max_fd)
+			max_fd = (*it)->getFd();
 	}
 }
 
@@ -145,9 +145,8 @@ int Server::launch() {
 				{
 					case rdy_recv:
 						recv_msg(it);
-						break;
 					case rdy_parse:
-						(*it)->getRequest()->req_init((*it)->getBuff());
+						(*it)->getRequest()->req_init(((*it)->getBuff()));
 						if ((*it)->getRequest()->error()) {
 							response_prepare_2();
 						}

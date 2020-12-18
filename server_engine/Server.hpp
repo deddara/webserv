@@ -17,7 +17,6 @@ private:
 	std::string response;
 	std::string body;
 	std::string date;
-	std::vector<int> client_fd;
 	std::vector<Client*> client_session;
 	std::vector<int> server_socks;
 	fd_set readset, writeset;

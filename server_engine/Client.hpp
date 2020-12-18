@@ -23,17 +23,19 @@ private:
 
 public:
 	void setFd(int fd) { _fd = fd; }
-	int const & getFd() { return _fd; }
+	int getFd() { return _fd; }
 	int const & getStatus() {return state; }
 	void setStatus(int status) { state = status; }
 	Request * getRequest() { return reqst; }
-	Client(int fd) : _fd(fd), state(0) {}
+	Client(int fd) : _fd(fd), state(0){
+		reqst = new Request();
+	}
 	~Client();
 	void buffAppend(std::string const & buff) {
 		read_buff.append(buff);
 	};
 
-	std::string const & getBuff(){ return read_buff; }
+	std::string const &getBuff(){ return read_buff; }
 
 
 };
