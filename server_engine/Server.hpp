@@ -28,6 +28,8 @@ public:
 	void set_prepare();
 	void recv_msg(std::vector<Client*>::iterator it);
 	void closeConnection(std::vector<Client*>::iterator it);
+	int newSession();
+	int clientSessionHandler();
 
 };
 
