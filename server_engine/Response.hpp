@@ -20,9 +20,9 @@ public:
 		date.clear();
 		date = my_localtime();
 		if (num == 0)
-			fd = open("../html_files/index.html", O_RDONLY);
+			fd = open("./html_files/index.html", O_RDONLY);
 		else
-			fd = open("../html_files/50x.html", O_RDONLY);
+			fd = open("./html_files/50x.html", O_RDONLY);
 		if (fd < 0){
 			perror("open");
 			return ;
