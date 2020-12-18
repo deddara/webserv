@@ -148,14 +148,23 @@ int Server::launch() {
 						break;
 					case rdy_parse:
 						(*it)->getRequest()->req_init((*it)->getBuff());
-						if ((*it)->getRequest()->error())
-						{
-							(*it)->setStatus(2);
+						if ((*it)->getRequest()->error()) {
+							response_prepare_2();
 						}
+						else
+							response_prepare();
+						(*it)->setStatus(2);
 						break;
 					case finish:
 						closeConnection(it);
+						is_closed = 1;
 						break;
+				}
+
+				if (is_closed)
+				{
+					is_closed = 0;
+					break;
 				}
 //				if (recv_msg(it))
 //					break;
@@ -167,8 +176,8 @@ int Server::launch() {
 //				else
 //					response_prepare();
 			}
-			if (FD_ISSET(*it, &writeset)){
-				if ((send(*it, response.c_str(), response.length(), 0)) < 0)
+			if (FD_ISSET((*it)->getFd(), &writeset)){
+				if ((send((*it)->getFd(), response.c_str(), response.length(), 0)) < 0)
 				{
 					perror("send");
 					return 1;

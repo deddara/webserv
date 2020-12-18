@@ -22,9 +22,10 @@ private:
 	std::vector<int> server_socks;
 	fd_set readset, writeset;
 	int max_fd;
+	int is_closed;
 
 public:
-	Server() : max_fd(0) { server_socks.reserve(100); };
+	Server() : max_fd(0), is_closed(0) { server_socks.reserve(100); };
 	~Server(){};
 	int launch();
 	int setup(std::string const & host, int const port);
