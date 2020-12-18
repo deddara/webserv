@@ -68,7 +68,7 @@ void	Request::req_init(std::string const &raw_data){
 	}
 	bool first_str = true;
 	std::size_t pos = 0;
-	for(std::size_t i = 0; i != raw_data.size(); i = pos) {
+	for(std::size_t i = 0; i <= raw_data.size(); i = pos) {
 		pos += 2;
 		if (pos >= raw_data.size())
 			break;
