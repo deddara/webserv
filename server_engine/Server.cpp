@@ -100,7 +100,6 @@ int Server::launch() {
 						}
 						else
 							(*it)->getResponse().response_prepare(0);
-						(*it)->getResponse().response_prepare(0);
 						(*it)->setStatus(2);
 						(*it)->clearBuff();
 						break;}
