@@ -147,10 +147,10 @@ int Server::launch() {
 						recv_msg(it);
 						break;
 					case rdy_parse:
-						Request		req(static_cast<std::string>((*it)->getBuff()));
-						if (req.error())
+						(*it)->getRequest()->req_init((*it)->getBuff());
+						if ((*it)->getRequest()->error())
 						{
-							(*it)->setStatus(2)
+							(*it)->setStatus(2);
 						}
 						break;
 					case finish:

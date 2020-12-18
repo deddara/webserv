@@ -96,6 +96,47 @@ Request::Request(std::string const &raw_data)
 	check_common();
 }
 
+void	Request::req_init(std::string const &raw_data){
+	std::string tmp = raw_data;
+	trim(tmp);
+	if (tmp.empty() || (tmp[0] == '\r' && tmp[1] == '\n')) {
+		_isbadrequest = true;
+		return;
+	}
+	bool first_str = true;
+	std::size_t pos = 0;
+	for(std::size_t i = 0; i != raw_data.size(); i = pos) {
+		if (pos >= raw_data.size())
+			break;
+		pos += 2;
+		if (raw_data[pos] == '\n') {
+			_body = raw_data.substr(pos + 1, pos + raw_data.size());
+			check_common();
+			return;
+		}
+		pos = raw_data.find('\n', pos);
+		if (first_str) {
+			std::string fstr = raw_data.substr(0, pos - 1);
+			if (std::count(fstr.begin(), fstr.end(),' ') > 2)
+				_isbadrequest = true;
+			_data["head"] = split(fstr, ' ');
+			if (_data["head"].size() != 3)
+				_isbadrequest = true;
+			first_str = false;
+			continue;
+		}
+		value_type header = split(raw_data.substr(i, pos - i - 1), ':');
+		std::string key(++header[0].begin(), header[0].end());
+		if (*--key.end() == ' ')
+			_isbadrequest = true;
+		value_type value(++header.begin(), header.end());
+		for(size_t i = 0; i != value.size(); ++i)
+			trim(value[i]);
+		_data[str_to_lower(key)] = value;
+	}
+	check_common();
+}
+
 Request::Request(Request const &obj)
 					: _isbadrequest(obj._isbadrequest), _body(obj._body) {
 	map_type::iterator ite = _data.end();

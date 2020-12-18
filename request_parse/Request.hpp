@@ -24,7 +24,6 @@ public:
 	typedef std::vector<std::string>                            value_type;
 
 private:
-	Request();
 	void check_common();
 
 	map_type    _data;
@@ -33,10 +32,13 @@ private:
 
 public:
 	//Constructors
-	explicit Request(std::string const &raw_data);
+	Request() : _isbadrequest(false), _body("")  {};
+	Request(std::string const &raw_data);
 	Request(Request const &obj);
 	Request &operator=(Request const &obj);
 	~Request();
+
+	void req_init(std::string const &raw_data);
 
 	map_type::const_iterator begin() const;
 
