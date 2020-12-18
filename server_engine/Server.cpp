@@ -4,6 +4,7 @@
 
 void Server::response_prepare()
 {
+	char buff[2048];
 	bzero(buff, sizeof(buff));
 	body.clear();
 	date.clear();
@@ -14,16 +15,15 @@ void Server::response_prepare()
 		return ;
 	}
 	while (read(fd, buff, sizeof(buff))) {
-		body += buff;
+		body.append(buff);
 	}
 	response = "HTTP/1.1 200 OK\r\nDate: ";
 	response.append(date);
 	response.append("Server: webserv0.0\r\nContent-Length: ");
 	response.append(std::to_string(body.length())); response.append("\r\n");
-	response += "Content-Type: text/html; charset=UTF-8\r\n"
-					 "Connection: Keep-Alive\r\n\r\n";
-	response += body;
-	response += "\r\n\r\n";
+	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
+	response.append(body);
+	response.append("\r\n\r\n");
 	std::cout << response;
 }
 
@@ -72,29 +72,26 @@ void Server::set_prepare()
 	}
 }
 
-int Server::recv_msg(std::vector<int>::iterator it){
+void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
-	bzero(&buff, 1024);
-
-	while ((n = recv(*it, buff, sizeof(buff), 0)) > 0)
-	{
-		std::cout << buff;
-		if (buff[n - 1] == '\n')
-			break;
-	}
-
+	char buff[2048];
+	bzero(&buff, 2048);
+	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
 	if (n <= 0)
 	{
-		close(*it);
-		client_fd.erase(it);
-		return (1);
+		(*it)->setStatus(3);
+		return;
 	}
-	return (0);
+	(*it)->buffAppend(buff);
+	if ((*it)->getBuff().rfind("\r\n\r\n") != std::string::npos)
+		(*it)->setStatus(1);
 }
 
 void Server::response_prepare_2(){
+	char buff[2048];
 	bzero(buff, sizeof(buff));
-	body = "\0";
+	body.clear();
+	date.clear();
 	date = my_localtime();
 	int fd = open("../html_files/50x.html", O_RDONLY);
 	if (fd < 0){
@@ -102,21 +99,26 @@ void Server::response_prepare_2(){
 		return ;
 	}
 	while (read(fd, buff, sizeof(buff))) {
-		body += buff;
+		body.append(buff);
 	}
 	response = "HTTP/1.1 200 OK\r\nDate: ";
 	response.append(date);
 	response.append("Server: webserv0.0\r\nContent-Length: ");
 	response.append(std::to_string(body.length())); response.append("\r\n");
-	response += "Content-Type: text/html; charset=UTF-8\r\n"
-				"Connection: Keep-Alive\r\n\r\n";
-	response += body;
-	response += "\r\n\r\n";
+	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
+	response.append(body);
+	response.append("\r\n\r\n");
 	std::cout << response;
+}
+
+void Server::closeConnection(std::vector<Client*>::iterator it){
+	close((*it)->getFd());
+	client_session.erase(it);
 }
 
 int Server::launch() {
 	for (;;){
+		max_fd = 0;
 		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
 			if (*it > max_fd)
 				max_fd = *it;
@@ -126,33 +128,44 @@ int Server::launch() {
 			return (1);
 		for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
 			if (FD_ISSET(*it, &readset)) {
-				struct sockaddr_storage ss;
-				socklen_t slen = sizeof(ss);
-				if ((accept_sock = accept(*it, (struct sockaddr *) &ss, &slen)) < 0) {
+				int accept_sock;
+
+				if ((accept_sock = accept(*it, NULL, NULL)) < 0) {
 					perror("accept");
 					return (1);
 				}
 				fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-				client_fd.push_back(accept_sock);
+				client_session.push_back(new Client(accept_sock));
 			}
 		}
-		for (std::vector<int>::iterator it = client_fd.begin(); it != client_fd.end(); ++it) {
-			if (FD_ISSET(*it, &readset))
+		for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it) {
+			if (FD_ISSET((*it)->getFd(), &readset))
 			{
-				if (recv_msg(it))
-					break;
-				Request req(static_cast<std::string>(buff));
-//				std::cout << "======" << std::endl << static_cast<std::string>(buff) << std::endl << "==========";
-//				for (Request::map_type::const_iterator it = req.begin(); it != req.end(); ++it) {
-//					if (req.is_valid_value(it->first))
-//						std::cout << it->first << ":" << it->second.front() << std::endl;
-//				}
-				if (req.error())
+				switch ((*it)->getStatus())
 				{
-					response_prepare_2();
+					case rdy_recv:
+						recv_msg(it);
+						break;
+					case rdy_parse:
+						Request		req(static_cast<std::string>((*it)->getBuff()));
+						if (req.error())
+						{
+							(*it)->setStatus(2)
+						}
+						break;
+					case finish:
+						closeConnection(it);
+						break;
 				}
-				else
-					response_prepare();
+//				if (recv_msg(it))
+//					break;
+//				Request req(static_cast<std::string>(buff));
+//				if (req.error())
+//				{
+//					response_prepare_2();
+//				}
+//				else
+//					response_prepare();
 			}
 			if (FD_ISSET(*it, &writeset)){
 				if ((send(*it, response.c_str(), response.length(), 0)) < 0)

@@ -9,6 +9,7 @@
 #include <sys/select.h>
 #include "zconf.h"
 #include "unistd.h"
+#include "Client.hpp"
 
 class Server{
 
@@ -17,10 +18,10 @@ private:
 	std::string body;
 	std::string date;
 	std::vector<int> client_fd;
+	std::vector<Client*> client_session;
 	std::vector<int> server_socks;
 	fd_set readset, writeset;
-	char buff[1024];
-	int accept_sock, max_fd;
+	int max_fd;
 
 public:
 	Server() : max_fd(0) { server_socks.reserve(100); };
@@ -28,9 +29,10 @@ public:
 	int launch();
 	int setup(std::string const & host, int const port);
 	void set_prepare();
-	int recv_msg(std::vector<int>::iterator it);
+	void recv_msg(std::vector<Client*>::iterator it);
 	void response_prepare();
 	void response_prepare_2();
+	void closeConnection(std::vector<Client*>::iterator it);
 
 };
 
