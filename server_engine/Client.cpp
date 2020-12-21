@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd) : _fd(fd), state(0), resp(0){
+Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), resp(0), serv_host(host), serv_port(port){
 	reqst = new Request();
 	resp = new Response();
 }

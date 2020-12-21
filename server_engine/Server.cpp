@@ -104,7 +104,7 @@ int Server::newSession() {
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-			client_session.push_back(new Client(accept_sock));
+			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort()));
 		}
 	}
 	return (0);
@@ -114,7 +114,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 	std::string host;
 	map_type::const_iterator map_it = data.find("host");
 	host = map_it->second[0];
-	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++it) {
+	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++serv_it) {
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost())){
 			(*it)->getResponse()->setLocation((*serv_it).getLocation());

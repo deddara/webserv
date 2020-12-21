@@ -27,7 +27,7 @@ private:
 
 public:
 
-	Client(int fd);
+	Client(int fd, std::string const &, int const &);
 	~Client();
 
 	void setFd(int fd);
