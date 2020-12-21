@@ -10,26 +10,32 @@
 #include "zconf.h"
 #include "unistd.h"
 #include "Client.hpp"
+#include "VirtServer.hpp"
 
 class Server{
 
 private:
 	std::vector<Client*> client_session;
-	std::vector<int> server_socks;
+	std::vector<VirtServer> & virt_serv;
 	fd_set readset, writeset;
-	int max_fd;
-	int is_closed;
+	int				max_fd;
+	int				is_closed;
+	size_t			serversNum;
+
 
 public:
-	Server() : max_fd(0), is_closed(0) { server_socks.reserve(100); };
+	Server(std::vector<VirtServer> & vec) : max_fd(0), is_closed(0), virt_serv(vec) {
+		serversNum = virt_serv.size();
+	}
 	~Server(){};
 	int launch();
-	int setup(std::string const & host, int const port);
+	int setup();
 	void set_prepare();
 	void recv_msg(std::vector<Client*>::iterator it);
 	void closeConnection(std::vector<Client*>::iterator it);
 	int newSession();
 	int clientSessionHandler();
+	int createSocket(std::string const & host, int const port, int const & i);
 
 };
 

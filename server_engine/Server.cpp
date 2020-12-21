@@ -7,7 +7,7 @@ void Server::closeConnection(std::vector<Client*>::iterator it){
 	client_session.erase(it);
 }
 
-int Server::setup(std::string const & host, int const port){
+int Server::createSocket(const std::string &host, const int port, int const & i) {
 	struct sockaddr_in addr;
 	int listen_sock;
 
@@ -32,7 +32,22 @@ int Server::setup(std::string const & host, int const port){
 		perror("listen_sock");
 		return (500);
 	}
-	server_socks.push_back(listen_sock);
+	virt_serv[i].setFd(listen_sock);
+	return (0);
+}
+
+int Server::setup(){
+	for (int i = 0; i < serversNum; ++i)
+	{
+		for (int j = 0; j < serversNum; ++j){
+			if (virt_serv[i].getHost() == virt_serv[j].getHost() && virt_serv[i].getPort() == virt_serv[j].getPort() && j != i) {
+				virt_serv[i].setFd(virt_serv[j].getFd());
+				break;
+			}
+		}
+		if (!virt_serv[i].getFd())
+			this->createSocket(virt_serv[i].getHost(), virt_serv[i].getPort(), i);
+	}
 	return (0);
 }
 
@@ -40,8 +55,8 @@ void Server::set_prepare()
 {
 	FD_ZERO(&readset);
 	FD_ZERO(&writeset);
-	for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it)
-		FD_SET(*it, &readset);
+	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it)
+		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		FD_SET((*it)->getFd(), &readset);
 		if ( strlen((*it)->getResponse()->getStr()) != 0){
@@ -69,12 +84,12 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 }
 
 int Server::newSession() {
-	for (std::vector<int>::iterator it = server_socks.begin(); it != server_socks.end(); ++it) {
-		if (FD_ISSET(*it, &readset)) {
+	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it) {
+		if (FD_ISSET((*it).getFd(), &readset)) {
 			int accept_sock;
 			struct sockaddr_storage ss;
 			socklen_t slen = sizeof(ss);
-			if ((accept_sock = accept(*it, (struct sockaddr *) &ss, &slen)) < 0) {
+			if ((accept_sock = accept((*it).getFd(), (struct sockaddr *) &ss, &slen)) < 0) {
 				perror("accept");
 				return (1);
 			}
@@ -131,7 +146,7 @@ int Server::clientSessionHandler() {
 int Server::launch() {
 	//главный цикл жизни сервера (Желательно потом разбить на еще доп методы, это я сделаю сам)
 	for (;;){
-		max_fd = server_socks.back();
+		max_fd = virt_serv.back().getFd();
 		this->set_prepare();
 		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0)
 			return (1);
