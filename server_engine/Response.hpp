@@ -6,6 +6,7 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
+# include "Location.hpp"
 #include "map"
 
 class Response{
@@ -13,11 +14,15 @@ private:
 	std::string response;
 	std::string body;
 	std::string date;
+	std::vector<Location> location;
 	std::map<std::string, std::vector<std::string> > const * _data;
+
 public:
 	typedef std::map<std::string, std::vector<std::string> > const map_type;
 	Response() : _data(nullptr) {};
 	~Response(){};
+
+	void setLocation(std::vector<Location> const & loc) { location = loc; }
 
 	int bad_req();
 	int ok();

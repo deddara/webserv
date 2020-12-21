@@ -110,6 +110,18 @@ int Server::newSession() {
 	return (0);
 }
 
+void Server::getLocation(std::vector<Client *>::iterator it, const map_type &data) {
+	std::string host;
+	map_type::const_iterator map_it = data.find("host");
+	host = map_it->second[0];
+	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++it) {
+		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
+			(host == (*serv_it).getHost())){
+			(*it)->getResponse()->setLocation((*serv_it).getLocation());
+		} // ||servername
+	}
+}
+
 int Server::clientSessionHandler() {
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it) {
 		if (FD_ISSET((*it)->getFd(), &readset))
@@ -125,6 +137,7 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
+						getLocation(it, data);
 						if ((*it)->getResponse()->response_prepare((*it)->getRequest()->error(), (*it)->getStatus(), &data))
 							return 1;
 						(*it)->clearBuff();

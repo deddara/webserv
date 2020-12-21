@@ -36,8 +36,10 @@ public:
 	void setStatus(int status);
 	std::string const &getBuff();
 	Request * getRequest();
-
 	Response * getResponse();
+
+	std::string const & getServHost();
+	int const & getServPort();
 
 	void buffAppend(std::string const & buff);
 	void clearBuff();

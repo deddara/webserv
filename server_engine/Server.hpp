@@ -38,7 +38,7 @@ public:
 	int clientSessionHandler();
 	int createSocket(std::string const & host, int const port, int const & i);
 	void postPutHandler(map_type const & data);
-
+	void getLocation(std::vector<Client*>::iterator it, map_type const &);
 };
 
 

@@ -17,6 +17,10 @@ void Client::setStatus(int status) { state = status; }
 Request * Client::getRequest() { return reqst; }
 Response * Client::getResponse() { return resp; }
 
+const std::string & Client::getServHost() { return serv_host; }
+
+const int & Client::getServPort() { return serv_port; }
+
 void Client::buffAppend(std::string const & buff) {
 	read_buff.append(buff);
 };
