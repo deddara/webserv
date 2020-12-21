@@ -14,6 +14,7 @@ private:
 	std::string response;
 	std::string body;
 	std::string date;
+	int 		err_code;
 	std::vector<Location> location;
 	std::map<std::string, std::vector<std::string> > const * _data;
 
@@ -23,10 +24,11 @@ public:
 	~Response(){};
 
 	void setLocation(std::vector<Location> const & loc) { location = loc; }
+	void setErrcode(int const &num ) { err_code = num; }
 
 	int bad_req();
 	int ok();
-	int response_prepare(int const & errcode, int &, map_type *);
+	int response_prepare(int &, map_type *);
 
 	void clearStr(){
 		response.clear();

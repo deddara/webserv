@@ -118,8 +118,10 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost())){
 			(*it)->getResponse()->setLocation((*serv_it).getLocation());
+			return;
 		} // ||servername
 	}
+	(*it)->getResponse()->setErrcode(400);
 }
 
 int Server::clientSessionHandler() {
@@ -137,8 +139,10 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
+						std::cout << (*it)->getRequest()->error() << std::endl;
+						(*it)->getResponse()->setErrcode((*it)->getRequest()->error());
 						getLocation(it, data);
-						if ((*it)->getResponse()->response_prepare((*it)->getRequest()->error(), (*it)->getStatus(), &data))
+						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
 							return 1;
 						(*it)->clearBuff();
 						break;

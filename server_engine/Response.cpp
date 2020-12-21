@@ -50,7 +50,7 @@ int Response::ok() {
 	return (0);
 }
 
-int Response::response_prepare(int const & err_code, int & status, map_type * data) {
+int Response::response_prepare(int & status, map_type * data) {
 
 	_data = data;
 
