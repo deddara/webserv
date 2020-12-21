@@ -46,7 +46,7 @@ void Request::check_common() {
 	if ((_data["head"][0] != "GET" &&
 	     _data["head"][0] != "HEAD" &&
 	     _data["head"][0] != "POST") ||
-	     _data["head"][2] != "HTTP/1.1")
+			(_data["head"][2] != "HTTP/1.1" && _data["head"][2] != "HTTP/1.0"))
 	     _isbadrequest = true;
 	if (!_data["host"].size() || _data["host"][0].empty())
 		_isbadrequest = true;

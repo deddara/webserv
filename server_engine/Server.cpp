@@ -28,7 +28,7 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 		perror("bind");
 		return (500);
 	}
-	if ((listen(listen_sock, 10)) < 0){
+	if ((listen(listen_sock, 2048)) < 0){
 		perror("listen_sock");
 		return (500);
 	}
@@ -84,7 +84,6 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 	(*it)->buffAppend(buff);
-
 //	(*it)->getRequest()->req_init(((*it)->getBuff()));
 //	map_type const & data = (*it)->getRequest()->getData();
 //	map_type::const_iterator data_it = data.find("head");
@@ -180,8 +179,12 @@ int Server::launch() {
 	for (;;){
 		max_fd = virt_serv.back().getFd();
 		this->set_prepare();
-		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0)
+		std::cout << max_fd << std::endl;
+
+		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0) {
+			std::cout << "AAA" << std::endl;
 			return (1);
+		}
 		if (this->newSession())
 			return (1);
 		if (this->clientSessionHandler())

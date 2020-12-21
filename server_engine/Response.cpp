@@ -22,6 +22,7 @@ int Response::bad_req() {
 	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Closed\r\n\r\n");
 	response.append(body);
 	response.append("\r\n\r\n");
+	close(fd);
 	return (0);
 }
 
@@ -47,12 +48,13 @@ int Response::ok() {
 	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
 	response.append(body);
 	response.append("\r\n\r\n");
+	close(fd);
 	return (0);
 }
 
 void Response::connectionHandler(int & status) {
 	map_type::const_iterator it = _data->find("connection");
-	if (it != _data->end() && it->second[0] == "closed")
+	if (it != _data->end() && it->second[0] == "close")
 		status = 3;
 }
 
@@ -66,6 +68,7 @@ int Response::response_prepare(int & status, map_type * data) {
 		if (bad_req()) {
 			return 1;
 		}
+		status = 3;
 	}
 	else {
 		if (ok()){
