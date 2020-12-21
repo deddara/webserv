@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 20:06:24 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/21 15:49:59 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ std::vector<std::string> const &	VirtServer::getServerName() const {
 	return pr_serverName;
 }
 
-std::string const &					VirtServer::getErrorPage() const {
+std::map<int, std::string> const &	VirtServer::getErrorPage() const {
 	return pr_errorPage;
 }
 
@@ -66,8 +66,8 @@ void			VirtServer::setServerName(std::string const & str) {
 
 }
 
-void			VirtServer::setErrorPage(std::string const & str) {
-	pr_errorPage = str;
+void			VirtServer::setErrorPage(int num, std::string const & str) {
+	pr_errorPage.insert(std::make_pair(num, str));
 }
 
 void			VirtServer::setLimitClientBody(int const & num) {

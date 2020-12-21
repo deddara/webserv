@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/21 13:54:46 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/21 16:57:35 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath) {
 }
 
 void				ConfParser::errorExit(int code, std::string const & word) {
-	std::string		errors[19] = {
+	std::string		errors[20] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -137,6 +137,8 @@ void				ConfParser::errorExit(int code, std::string const & word) {
 		"Error: unexpected \";\"",
 		"Error: the value of the \"" + word + "\" directive is not set",
 		"Error: duplicate server \"" + word + "\" found",
+		"Error: invalid error number \"" + word
+			+ "\" of \"error page\" directive",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
@@ -233,10 +235,19 @@ VirtServer			ConfParser::serverBlockProc() {
 		}
 		if (i == 3)
 		{
-			server.setErrorPage(val);
+			if (checkStringInt(val))
+				errorExit(5, val);
+			int num = static_cast<int>(std::stold(val));
+			if (num < 100 || num > 599)
+				errorExit(19, val);
 			skipSpaceComm();
 			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
+			if (pr_data[pr_pos] == ';')
+				errorExit(16, "");
+			val = pickWord();
+			server.setErrorPage(num, val);
+			skipSpaceComm();
 			if (pr_data[pr_pos] != ';')
 				errorExit(3, key);
 			pr_pos++;
