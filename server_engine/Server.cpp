@@ -125,8 +125,7 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
-						(*it)->responseInit(data);
-						if ((*it)->getResponse()->response_prepare((*it)->getRequest(), (*it)->getStatus()))
+						if ((*it)->getResponse()->response_prepare((*it)->getRequest()->error(), (*it)->getStatus(), &data))
 							return 1;
 						(*it)->clearBuff();
 						break;

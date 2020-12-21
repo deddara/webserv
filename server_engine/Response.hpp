@@ -2,27 +2,26 @@
 # define RESPONSE_HPP
 # include "iostream"
 # include "includes.hpp"
-# include "Request.hpp"
 # include <fcntl.h>
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-
-class Request;
+#include "map"
 
 class Response{
 private:
 	std::string response;
 	std::string body;
 	std::string date;
-	std::map<std::string, std::vector<std::string> > const & _data;
+	std::map<std::string, std::vector<std::string> > const * _data;
 public:
-	Response(std::map<std::string, std::vector<std::string> > const & data) : _data(data) {};
+	typedef std::map<std::string, std::vector<std::string> > const map_type;
+	Response() : _data(nullptr) {};
 	~Response(){};
 
 	int bad_req();
 	int ok();
-	int response_prepare(const Request *, int &);
+	int response_prepare(int const & errcode, int &, map_type *);
 
 	void clearStr(){
 		response.clear();

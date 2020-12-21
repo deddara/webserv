@@ -50,8 +50,11 @@ int Response::ok() {
 	return (0);
 }
 
-int Response::response_prepare(const Request *req, int & status) {
-	if (req->error()) {
+int Response::response_prepare(int const & err_code, int & status, map_type * data) {
+
+	_data = data;
+
+	if (err_code) {
 		if (bad_req()) {
 			return 1;
 		}

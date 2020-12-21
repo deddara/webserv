@@ -27,7 +27,6 @@ private:
 
 public:
 
-	void responseInit(std::map<std::string, std::vector<std::string> > const & data);
 	Client(int fd);
 	~Client();
 
