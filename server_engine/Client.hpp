@@ -25,26 +25,22 @@ private:
 	Response	*resp;
 
 public:
-	void setFd(int fd) { _fd = fd; }
-	int getFd() { return _fd; }
-	int getStatus() {return state; }
-	void setStatus(int status) { state = status; }
-	Request * getRequest() { return reqst; }
-	Response * getResponse() { return resp; }
-	Client(int fd) : _fd(fd), state(0){
-		reqst = new Request();
-		resp = new Response();
-	}
-	~Client();
-	void buffAppend(std::string const & buff) {
-		read_buff.append(buff);
-	};
 
-	std::string const &getBuff(){ return read_buff; }
-	void clearBuff()
-	{
-		read_buff.clear();
-	}
+	void responseInit(std::map<std::string, std::vector<std::string> > const & data);
+	Client(int fd);
+	~Client();
+
+	void setFd(int fd);
+	int getFd();
+	int getStatus();
+	void setStatus(int status);
+	std::string const &getBuff();
+	Request * getRequest();
+
+	Response * getResponse();
+
+	void buffAppend(std::string const & buff);
+	void clearBuff();
 
 };
 

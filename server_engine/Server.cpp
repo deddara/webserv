@@ -59,7 +59,7 @@ void Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		FD_SET((*it)->getFd(), &readset);
-		if ( strlen((*it)->getResponse()->getStr()) != 0){
+		if ((*it)->getResponse() && strlen((*it)->getResponse()->getStr())){
 			FD_SET((*it)->getFd(), &writeset);
 		}
 		if ((*it)->getFd() > max_fd)
@@ -113,6 +113,7 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
+						(*it)->responseInit((*it)->getRequest()->getData());
 						if ((*it)->getResponse()->response_prepare((*it)->getRequest()))
 							return 1;
 						(*it)->setStatus(2);

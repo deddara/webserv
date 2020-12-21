@@ -21,6 +21,7 @@ add_executable(webserv
         server_engine/Server.cpp
         server_engine/Server.hpp
         server_engine/Response.cpp
+        server_engine/Client.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)

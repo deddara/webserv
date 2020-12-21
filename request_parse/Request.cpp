@@ -138,6 +138,10 @@ Request::map_type::const_iterator Request::end() const {
 	return _data.end();
 }
 
+const Request::map_type & Request::getData() const {
+	return _data;
+}
+
 bool Request::error() const {
 	return _isbadrequest;
 }

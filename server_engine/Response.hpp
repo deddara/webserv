@@ -15,8 +15,9 @@ private:
 	std::string response;
 	std::string body;
 	std::string date;
+	std::map<std::string, std::vector<std::string> > const & _data;
 public:
-	Response(){};
+	Response(std::map<std::string, std::vector<std::string> > const & data) : _data(data) {};
 	~Response(){};
 
 	int bad_req();

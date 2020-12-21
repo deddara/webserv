@@ -44,6 +44,8 @@ public:
 
 	map_type::const_iterator end() const;
 
+	map_type const & getData() const;
+
 	//Check error
 	bool error() const;
 
