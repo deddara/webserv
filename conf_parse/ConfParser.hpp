@@ -45,7 +45,7 @@ public:
 								ConfParser(std::string const &);
 								~ConfParser();
 
-	std::vector<VirtServer> const &	getServer() const;
+	std::vector<VirtServer> &	getServer();
 };
 
 #endif

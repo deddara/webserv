@@ -25,6 +25,7 @@ class									VirtServer
 	std::string							pr_errorPage; //map
 	int									pr_limitClientBody;
 	std::vector<Location>				pr_location;
+	int									fd;
 
 	std::vector<std::string>			pr_serverFields;
 public:
@@ -33,6 +34,7 @@ public:
 
 	std::string const &					getHost() const;
 	int const &							getPort() const;
+	int const &							getFd() const;
 	std::vector<std::string> const &	getServerName() const;
 	std::string const &					getErrorPage() const;
 	int const &							getLimitClientBody() const;
@@ -43,6 +45,7 @@ public:
 
 	void								setHost(std::string const &);
 	void								setPort(int const &);
+	void								setFd(int const &);
 	void								setServerName(std::string const &);
 	void								setErrorPage(std::string const &);
 	void								setLimitClientBody(int const &);

@@ -406,7 +406,7 @@ void				ConfParser::parser() {
 	checkForDuplicates();
 }
 
-std::vector<VirtServer> const &		ConfParser::getServer() const {
+std::vector<VirtServer> &	ConfParser::getServer() {
 	return pr_server;
 }
 

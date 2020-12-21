@@ -13,7 +13,7 @@
 #include "VirtServer.hpp"
 
 
-VirtServer::VirtServer(): pr_port(0), pr_limitClientBody(-1) {
+VirtServer::VirtServer(): pr_port(0), pr_limitClientBody(-1), fd(0) {
 	pr_serverFields.push_back("host");
 	pr_serverFields.push_back("listen");
 	pr_serverFields.push_back("server_name");
@@ -27,6 +27,10 @@ VirtServer::~VirtServer() {}
 
 std::string const &					VirtServer::getHost() const {
 	return pr_host;
+}
+
+const int & VirtServer::getFd() const {
+	return fd;
 }
 
 int const &							VirtServer::getPort() const {
@@ -55,6 +59,10 @@ std::vector<std::string> const &	VirtServer::getServerFields() const {
 
 void			VirtServer::setHost(std::string const & str) {
 	pr_host = str;
+}
+
+void VirtServer::setFd(const int &num) {
+	fd = num;
 }
 
 void			VirtServer::setPort(int const & num) {
