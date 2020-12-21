@@ -20,7 +20,7 @@ private:
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const map_type;
-	Response() : _data(nullptr) {};
+	Response() : _data(nullptr), err_code(0) {};
 	~Response(){};
 
 	void setLocation(std::vector<Location> const & loc) { location = loc; }

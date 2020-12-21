@@ -54,7 +54,7 @@ int Response::response_prepare(int & status, map_type * data) {
 
 	_data = data;
 
-	if (err_code) {
+	if (err_code == 400) {
 		if (bad_req()) {
 			return 1;
 		}

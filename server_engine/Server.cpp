@@ -139,9 +139,10 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
-						std::cout << (*it)->getRequest()->error() << std::endl;
-						(*it)->getResponse()->setErrcode((*it)->getRequest()->error());
-						getLocation(it, data);
+						if ((*it)->getRequest()->error())
+							(*it)->getResponse()->setErrcode(400);
+						else
+							this->getLocation(it, data);
 						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
 							return 1;
 						(*it)->clearBuff();
