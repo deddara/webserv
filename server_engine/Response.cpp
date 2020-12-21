@@ -50,9 +50,17 @@ int Response::ok() {
 	return (0);
 }
 
+void Response::connectionHandler(int & status) {
+	map_type::const_iterator it = _data->find("connection");
+	if (it != _data->end() && it->second[0] == "closed")
+		status = 3;
+}
+
 int Response::response_prepare(int & status, map_type * data) {
 
 	_data = data;
+
+	connectionHandler(status);
 
 	if (err_code == 400) {
 		if (bad_req()) {

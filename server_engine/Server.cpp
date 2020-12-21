@@ -166,7 +166,10 @@ int Server::clientSessionHandler() {
 				return 1;
 			}
 			(*it)->getResponse()->clearStr();
-			(*it)->setStatus(0);
+			if ((*it)->getStatus() == 3) {
+				this->closeConnection(it);
+				break;
+			}
 		}
 	}
 	return (0);

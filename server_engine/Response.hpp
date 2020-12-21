@@ -16,6 +16,7 @@ private:
 	std::string date;
 	int 		err_code;
 	std::vector<Location> location;
+	std::map<int, std::string>			pr_errorPage;
 	std::map<std::string, std::vector<std::string> > const * _data;
 
 public:
@@ -29,6 +30,8 @@ public:
 	int bad_req();
 	int ok();
 	int response_prepare(int &, map_type *);
+	void connectionHandler(int & status);
+
 
 	void clearStr(){
 		response.clear();
