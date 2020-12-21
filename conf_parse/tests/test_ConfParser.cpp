@@ -22,7 +22,11 @@ int					main(int argc, char **argv)
 		for (size_t j = 0; j < servers[i].getServerName().size(); ++j)
 			std::cout << servers[i].getServerName()[j] << " ";
 		std::cout << std::endl;
-		std::cout << "Error page\t: " << servers[i].getErrorPage() << std::endl;
+		for (std::map<int, std::string>::const_iterator it =
+				servers[i].getErrorPage().begin();
+				it != servers[i].getErrorPage().end(); it++)
+			std::cout << "Error page\t: error: " << it->first
+				<< " filepath: " << it->second << std::endl;
 		std::cout << "Limit body\t: " << servers[i].getLimitClientBody()
 			<< std::endl;
 		for (size_t j = 0; j < servers[i].getLocation().size(); ++j)
