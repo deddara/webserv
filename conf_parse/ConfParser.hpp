@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:35:34 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 20:33:48 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/21 13:45:17 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <algorithm>
 
 # include "VirtServer.hpp"
 # include "Location.hpp"
@@ -39,6 +40,7 @@ class							ConfParser
 	std::string					toLower(std::string);
 	std::string					toUpper(std::string);
 	void						checkCompleteness();
+	void						checkForDuplicates();
 public:
 								ConfParser(std::string const &);
 								~ConfParser();

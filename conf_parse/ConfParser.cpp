@@ -6,14 +6,13 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/17 20:29:56 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/21 13:54:46 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ConfParser.hpp"
 
-int					checkStringInt(std::string const &word)
-{
+int					checkStringInt(std::string const &word) {
 	size_t			len = word.length();
 	for (size_t i = 0; i < len; ++i)
 	{
@@ -23,8 +22,7 @@ int					checkStringInt(std::string const &word)
 	return 0;
 }
 
-int					checkSuspiciousSymbols(std::string const &word)
-{
+int					checkSuspiciousSymbols(std::string const &word) {
 	size_t			len = word.length();
 	for (size_t i = 0; i < len; ++i)
 	{
@@ -34,8 +32,7 @@ int					checkSuspiciousSymbols(std::string const &word)
 	return 0;
 }
 
-int					checkBrackets(char c)
-{
+int					checkBrackets(char c) {
 	if (c == '{')
 		return 1;
 	if (c == '}')
@@ -51,8 +48,7 @@ ConfParser::ConfParser(std::string const & fpath): pr_pos(0) {
 
 ConfParser::~ConfParser() {}
 
-void				ConfParser::skipSpaceComm()
-{
+void				ConfParser::skipSpaceComm() {
 	size_t			newPos = 0;
 	while (pr_pos < pr_len - 1)
 	{
@@ -73,8 +69,7 @@ void				ConfParser::skipSpaceComm()
 	}
 }
 
-std::string			ConfParser::toLower(std::string str)
-{
+std::string			ConfParser::toLower(std::string str) {
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] >= 'A' && str[i] <= 'Z')
@@ -83,8 +78,7 @@ std::string			ConfParser::toLower(std::string str)
 	return str;
 }
 
-std::string			ConfParser::toUpper(std::string str)
-{
+std::string			ConfParser::toUpper(std::string str) {
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] >= 'a' && str[i] <= 'z')
@@ -93,8 +87,7 @@ std::string			ConfParser::toUpper(std::string str)
 	return str;
 }
 
-std::string			ConfParser::pickWord()
-{
+std::string			ConfParser::pickWord() {
 	std::string		word;
 	while (pr_pos < pr_len - 1 && !isspace(pr_data[pr_pos]) \
 			&& pr_data[pr_pos] != ';' \
@@ -103,8 +96,7 @@ std::string			ConfParser::pickWord()
 	return word;
 }
 
-std::string			ConfParser::readConfFile(std::string const & fpath)
-{
+std::string			ConfParser::readConfFile(std::string const & fpath) {
 	int				fd = 0;
 	int				ret = 0;
 	char			buf[128];
@@ -123,9 +115,8 @@ std::string			ConfParser::readConfFile(std::string const & fpath)
 	return data;
 }
 
-void				ConfParser::errorExit(int code, std::string const & word)
-{
-	std::string		errors[18] = {
+void				ConfParser::errorExit(int code, std::string const & word) {
+	std::string		errors[19] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -145,13 +136,13 @@ void				ConfParser::errorExit(int code, std::string const & word)
 			+ "\" of \"allow_methods\" directive",
 		"Error: unexpected \";\"",
 		"Error: the value of the \"" + word + "\" directive is not set",
+		"Error: duplicate server \"" + word + "\" found",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
 }
 
-VirtServer			ConfParser::serverBlockProc()
-{
+VirtServer			ConfParser::serverBlockProc() {
 	skipSpaceComm();
 	if (pr_data[pr_pos] == ';')
 		errorExit(16, "");
@@ -275,8 +266,7 @@ VirtServer			ConfParser::serverBlockProc()
 	return server;
 }
 
-Location				ConfParser::locationBlockProc(std::string const & str)
-{
+Location				ConfParser::locationBlockProc(std::string const & str) {
 	std::string			key;
 	std::string			val;
 	int					ret = 0;
@@ -400,8 +390,7 @@ Location				ConfParser::locationBlockProc(std::string const & str)
 	return location;
 }
 
-void				ConfParser::parser()
-{
+void				ConfParser::parser() {
 	while (pr_pos < pr_len - 1)
 	{
 		skipSpaceComm();
@@ -414,6 +403,7 @@ void				ConfParser::parser()
 		skipSpaceComm();
 	}
 	checkCompleteness();
+	checkForDuplicates();
 }
 
 std::vector<VirtServer> const &		ConfParser::getServer() const {
@@ -436,5 +426,26 @@ void				ConfParser::checkCompleteness() {
 			if (!pr_server[i].getLocation()[j].getRoot().length())
 				errorExit(17, "root");
 		}
+	}
+}
+
+void				ConfParser::checkForDuplicates() {
+	std::vector<std::string>	host;
+
+	for (size_t i = 0; i < pr_server.size(); ++i) {
+		for (size_t j = 0; j < host.size(); j++) {
+			if (pr_server[i].getHost() == host[j]) {
+				if (pr_server[i].getPort() == pr_server[j].getPort()) {
+					for (size_t k = 0;
+							k < pr_server[i].getServerName().size(); ++k)
+						if (std::find(pr_server[j].getServerName().begin(),
+										pr_server[j].getServerName().end(),
+										pr_server[i].getServerName()[k]) !=
+										pr_server[j].getServerName().end())
+							errorExit(18, pr_server[i].getServerName()[k]);
+				}
+			}
+		}
+		host.push_back(pr_server[i].getHost());
 	}
 }
