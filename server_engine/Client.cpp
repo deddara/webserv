@@ -11,7 +11,7 @@ Client::~Client() {
 
 void Client::setFd(int fd) { _fd = fd; }
 int Client::getFd() { return _fd; }
-int Client::getStatus() {return state; }
+int & Client::getStatus() {return state; }
 void Client::setStatus(int status) { state = status; }
 Request * Client::getRequest() { return reqst; }
 Response * Client::getResponse() { return resp; }

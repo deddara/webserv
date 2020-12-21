@@ -67,6 +67,11 @@ void Server::set_prepare()
 	}
 }
 
+void Server::postPutHandler(map_type const & data)
+{
+
+}
+
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	char buff[2048];
@@ -79,6 +84,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 	(*it)->buffAppend(buff);
+
+//	(*it)->getRequest()->req_init(((*it)->getBuff()));
+//	map_type const & data = (*it)->getRequest()->getData();
+//	map_type::const_iterator data_it = data.find("head");
+
 	if ((*it)->getBuff().rfind("\r\n\r\n") != std::string::npos)
 		(*it)->setStatus(1);
 }
@@ -104,6 +114,8 @@ int Server::clientSessionHandler() {
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it) {
 		if (FD_ISSET((*it)->getFd(), &readset))
 		{
+			map_type const & data = (*it)->getRequest()->getData();
+
 			switch ((*it)->getStatus()) {
 				case rdy_recv:
 					recv_msg(it);
@@ -113,10 +125,9 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->getRequest()->req_init(((*it)->getBuff()));
-						(*it)->responseInit((*it)->getRequest()->getData());
-						if ((*it)->getResponse()->response_prepare((*it)->getRequest()))
+						(*it)->responseInit(data);
+						if ((*it)->getResponse()->response_prepare((*it)->getRequest(), (*it)->getStatus()))
 							return 1;
-						(*it)->setStatus(2);
 						(*it)->clearBuff();
 						break;
 					}

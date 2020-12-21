@@ -22,8 +22,7 @@ public:
 
 	int bad_req();
 	int ok();
-	int server_error();
-	int response_prepare(const Request *);
+	int response_prepare(const Request *, int &);
 
 	void clearStr(){
 		response.clear();

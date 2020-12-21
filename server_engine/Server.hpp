@@ -24,6 +24,7 @@ private:
 
 
 public:
+	typedef std::map<std::string, std::vector<std::string> >    map_type;
 	Server(std::vector<VirtServer> & vec) : max_fd(0), is_closed(0), virt_serv(vec) {
 		serversNum = virt_serv.size();
 	}
@@ -36,6 +37,7 @@ public:
 	int newSession();
 	int clientSessionHandler();
 	int createSocket(std::string const & host, int const port, int const & i);
+	void postPutHandler(map_type const & data);
 
 };
 
