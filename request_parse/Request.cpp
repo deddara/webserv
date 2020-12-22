@@ -43,19 +43,18 @@ std::string str_to_lower(std::string &str) {
 // Private functions
 
 void Request::check_common() {
-	if ((_data["head"][0] != "GET" &&
-	     _data["head"][0] != "HEAD" &&
-	     _data["head"][0] != "POST") ||
-			(_data["head"][2] != "HTTP/1.1" && _data["head"][2] != "HTTP/1.0"))
-	     _isbadrequest = true;
+	if (_data["head"][2] != "HTTP/1.1" && _data["head"][2] != "HTTP/1.0")
+		_isbadrequest = true;
 	if (!_data["host"].size() || _data["host"][0].empty())
 		_isbadrequest = true;
 }
 
 // Public functions
 
+Request::Request() : _isbadrequest(false), _body_pos(0) {};
+
 Request::Request(std::string const &raw_data)
-					: _body(""), _isbadrequest(false) {
+					: _isbadrequest(false), _body_pos(0) {
 	req_init(raw_data);
 }
 
@@ -73,7 +72,7 @@ void	Request::req_init(std::string const &raw_data){
 		if (pos >= raw_data.size())
 			break;
 		if (raw_data[pos] == '\n') {
-			_body = raw_data.substr(pos + 1);
+			_body_pos = pos + 1;
 			check_common();
 			return;
 		}
@@ -101,7 +100,7 @@ void	Request::req_init(std::string const &raw_data){
 }
 
 Request::Request(Request const &obj)
-					: _body(obj._body), _isbadrequest(obj._isbadrequest) {
+			: _isbadrequest(obj._isbadrequest), _body_pos(obj._body_pos) {
 	map_type::iterator ite = _data.end();
 	for(map_type::iterator it = _data.begin(); it != ite; ++it)
 		it->second.clear();
@@ -112,7 +111,7 @@ Request::Request(Request const &obj)
 Request &Request::operator=(Request const &obj) {
 	if (this != &obj) {
 		_isbadrequest = obj._isbadrequest;
-		_body = obj._body;
+		_body_pos = obj._body_pos;
 		map_type::iterator ite = _data.end();
 		for(map_type::iterator it = _data.begin(); it != ite; ++it)
 			it->second.clear();
@@ -127,7 +126,6 @@ Request::~Request() {
 	for(map_type::iterator it = _data.begin(); it != ite; ++it)
 		it->second.clear();
 	_data.clear();
-	_body.clear();
 }
 
 Request::map_type::const_iterator Request::begin() const {
@@ -159,6 +157,6 @@ const Request::value_type &Request::find(std::string const &key) const {
 	return _data.find(str_to_lower(low_key))->second;
 }
 
-const std::string & Request::get_body() const {
-	return _body;
+size_t Request::get_body_pos() const {
+	return _body_pos;
 }

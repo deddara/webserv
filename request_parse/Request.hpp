@@ -27,12 +27,12 @@ private:
 	void check_common();
 
 	map_type    _data;
-	std::string _body;
 	bool        _isbadrequest;
+	size_t      _body_pos;
 
 public:
 	//Constructors
-	Request() : _body(""), _isbadrequest(false) {};
+	Request();
 	Request(std::string const &raw_data);
 	Request(Request const &obj);
 	Request &operator=(Request const &obj);
@@ -44,7 +44,7 @@ public:
 
 	map_type::const_iterator end() const;
 
-	map_type const & getData() const;
+	map_type const &getData() const;
 
 	//Check error
 	bool error() const;
@@ -54,7 +54,7 @@ public:
 
 	//Element access
 	const value_type &find(std::string const &key) const;
-	const std::string &get_body() const;
+	size_t get_body_pos() const;
 
 };
 
