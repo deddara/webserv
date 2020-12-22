@@ -17,16 +17,21 @@ void Client::setStatus(int status) { state = status; }
 Request * Client::getRequest() { return reqst; }
 Response * Client::getResponse() { return resp; }
 
+Bytes & Client::getBytes() {
+	return bytes;
+}
+
 const std::string & Client::getServHost() { return serv_host; }
 
 const int & Client::getServPort() { return serv_port; }
 
-void Client::buffAppend(char* buff) {
-	char *tmp;
-	tmp = read_buff;
-	read_buff = ft_strjoin(read_buff, buff);
-	if (tmp)
-		free(tmp);
+int Client::buffAppend(char* buff, const int &len) {
+	if (!read_buff)
+	{
+		if (!(read_buff = bytes.bytesDup(read_buff, buff, len)))
+			return 1;
+	}
+	return (0);
 };
 
 void Client::bodyAppend(char const *buff, int len) {

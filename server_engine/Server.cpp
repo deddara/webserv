@@ -90,6 +90,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	map_type::const_iterator map_it;
 	char buff[2048];
 	bzero(&buff, 2048);
+
 	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
 
 	if (n <= 0)
@@ -98,7 +99,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 
-	(*it)->buffAppend(buff);
+	(*it)->getBytes().bytesCount(n);
+
+	if((*it)->buffAppend(buff, n)) {
+		(*it)->getResponse()->setErrcode(500);
+	}
 
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff))) {
 

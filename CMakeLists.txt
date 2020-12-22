@@ -26,4 +26,5 @@ add_executable(webserv
         utils/utils.cpp
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
+        server_engine/Bytes.cpp
         main.cpp)

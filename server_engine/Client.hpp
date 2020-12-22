@@ -4,7 +4,7 @@
 # include "vector"
 # include "Request.hpp"
 # include "Response.hpp"
-
+# include "Bytes.hpp"
 enum states{
 	rdy_recv,
 	rdy_parse,
@@ -24,6 +24,7 @@ private:
 	int 		serv_port;
 	std::string serv_host;
 
+	Bytes		bytes;
 	Request		*reqst;
 	Response	*resp;
 
@@ -42,11 +43,12 @@ public:
 
 	Request * getRequest();
 	Response * getResponse();
+	Bytes	& getBytes();
 
 	std::string const & getServHost();
 	int const & getServPort();
 
-	void buffAppend(char *);
+	int buffAppend(char *, const int &);
 	void bodyAppend(const char *, int len);
 	void clearBuff();
 
