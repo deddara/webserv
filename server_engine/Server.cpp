@@ -115,7 +115,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 			(host == (*serv_it).getHost())){
 			(*it)->getResponse()->setLocation((*serv_it).getLocation());
 			return;
-		} // ||servername
+		}
 	}
 	(*it)->getResponse()->setErrcode(400);
 }
