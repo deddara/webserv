@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/21 16:57:35 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/22 13:39:51 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,9 @@ void				ConfParser::errorExit(int code, std::string const & word) {
 			+ "\" of \"error page\" directive",
 	};
 	std::cout << errors[code] << std::endl;
+	for (size_t i = 0; i < pr_server.size(); ++i) {
+		pr_server[i].eraseLocation();
+	}
 	exit(1);
 }
 
@@ -277,7 +280,7 @@ VirtServer			ConfParser::serverBlockProc() {
 	return server;
 }
 
-Location				ConfParser::locationBlockProc(std::string const & str) {
+Location *				ConfParser::locationBlockProc(std::string const & str) {
 	std::string			key;
 	std::string			val;
 	int					ret = 0;
@@ -287,11 +290,11 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 		errorExit(ret == 1 ? 12 : 13, "");
 	skipSpaceComm();
 
-	Location			location;
+	Location *			location = new(Location);
 
-	location.setPrefix(str);
-	if (location.getPrefix()[0] != '/')
-		location.setPrefix("/" + location.getPrefix());
+	location->setPrefix(str);
+	if (location->getPrefix()[0] != '/')
+		location->setPrefix("/" + location->getPrefix());
 
 	skipSpaceComm();
 	if (pr_data[pr_pos] == ';')
@@ -309,7 +312,7 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 		key = pickWord();
 		for (i = 0; i < 4; ++i)
 		{
-			if (toLower(key) == location.getLocationFields()[i])
+			if (toLower(key) == location->getLocationFields()[i])
 			{
 				skipSpaceComm();
 				if (pr_data[pr_pos] == ';')
@@ -327,13 +330,13 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 		val = pickWord();
 		if (i == 0)
 		{
-			if (location.getIndex().size())
-				location.clearIndex();
+			if (location->getIndex().size())
+				location->clearIndex();
 			if (checkBrackets(pr_data[pr_pos]) == 1)
 				errorExit(9, "");
 			if (checkSuspiciousSymbols(val))
 				errorExit(7, val);
-			location.setIndex(val);
+			location->setIndex(val);
 			skipSpaceComm();
 			while (pr_data[pr_pos] != ';')
 			{
@@ -342,15 +345,15 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 				val = pickWord();
 				if (checkSuspiciousSymbols(val))
 					errorExit(7, val);
-				location.setIndex(val);
+				location->setIndex(val);
 				skipSpaceComm();
 			}
 			pr_pos++;
 		}
 		else if (i == 1)
 		{
-			if (location.getAllowMethods().size())
-				location.clearAllowMethods();
+			if (location->getAllowMethods().size())
+				location->clearAllowMethods();
 			if (checkBrackets(pr_data[pr_pos]) == 1)
 				errorExit(9, "");
 			if (checkSuspiciousSymbols(val))
@@ -358,7 +361,7 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 			std::string	upVal = toUpper(val);
 			if (upVal != "GET" && upVal != "HEAD" && upVal != "POST")
 				errorExit(15, val);
-			location.setAllowMethods(upVal);
+			location->setAllowMethods(upVal);
 			skipSpaceComm();
 			while (pr_data[pr_pos] != ';')
 			{
@@ -367,14 +370,14 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 				val = pickWord();
 				if (checkSuspiciousSymbols(val))
 					errorExit(7, val);
-				location.setAllowMethods(val);
+				location->setAllowMethods(val);
 				skipSpaceComm();
 			}
 			(pr_pos)++;
 		}
 		else if (i == 2)
 		{
-			location.setRoot(val);
+			location->setRoot(val);
 			skipSpaceComm();
 			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
@@ -387,7 +390,7 @@ Location				ConfParser::locationBlockProc(std::string const & str) {
 			std::string	lowVal = toLower(val);
 			if (lowVal != "on" && lowVal != "off")
 				errorExit(14, lowVal);
-			location.setAutoindex(val);
+			location->setAutoindex(val);
 			skipSpaceComm();
 			if ((ret = checkBrackets(pr_data[pr_pos])))
 				errorExit(ret == 1 ? 9 : 8, key);
@@ -430,11 +433,11 @@ void				ConfParser::checkCompleteness() {
 			errorExit(17, "listen");
 		for (size_t j = 0; j < pr_server[i].getLocation().size(); ++j)
 		{
-			if (!pr_server[i].getLocation()[j].getIndex().size())
+			if (!pr_server[i].getLocation()[j]->getIndex().size())
 				errorExit(17, "index");
-			if (!pr_server[i].getLocation()[j].getAllowMethods().size())
+			if (!pr_server[i].getLocation()[j]->getAllowMethods().size())
 				errorExit(17, "allow_methods");
-			if (!pr_server[i].getLocation()[j].getRoot().length())
+			if (!pr_server[i].getLocation()[j]->getRoot().length())
 				errorExit(17, "root");
 		}
 	}

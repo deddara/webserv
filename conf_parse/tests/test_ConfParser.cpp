@@ -34,22 +34,22 @@ int					main(int argc, char **argv)
 			std::cout << std::endl
 				<< "-- Location No. " << j + 1 << " --" << std::endl;
 			std::cout << "Prefix\t\t: "
-				<< servers[i].getLocation()[j].getPrefix() << std::endl;
+				<< servers[i].getLocation()[j]->getPrefix() << std::endl;
 			std::cout << "Index(es)\t: ";
 			for (size_t k = 0; k <
-					servers[i].getLocation()[j].getIndex().size(); ++k)
-			std::cout << servers[i].getLocation()[j].getIndex()[k] << " ";
+					servers[i].getLocation()[j]->getIndex().size(); ++k)
+			std::cout << servers[i].getLocation()[j]->getIndex()[k] << " ";
 			std::cout << std::endl;
 			std::cout << "Allow methods\t: ";
 			for (size_t k = 0; k <
-					servers[i].getLocation()[j].getAllowMethods().size(); ++k)
-			std::cout << servers[i].getLocation()[j].getAllowMethods()[k]
+					servers[i].getLocation()[j]->getAllowMethods().size(); ++k)
+			std::cout << servers[i].getLocation()[j]->getAllowMethods()[k]
 				<< " ";
 			std::cout << std::endl;
 			std::cout << "Root\t\t: "
-				<< servers[i].getLocation()[j].getRoot() << std::endl;
+				<< servers[i].getLocation()[j]->getRoot() << std::endl;
 			std::cout << "Autoindex\t: "
-				<< servers[i].getLocation()[j].getAutoindex() << std::endl;
+				<< servers[i].getLocation()[j]->getAutoindex() << std::endl;
 		}
 
 	}

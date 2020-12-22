@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/21 17:03:00 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/22 13:48:07 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,7 @@ FLS_TEST	= $(addprefix $(DIR_TEST), \
 				)
 
 SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
-# SRC			= $(FLS_TEST) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
+DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
@@ -78,10 +78,7 @@ $(NAME):	$(OBJ)
 	@echo '------------- All done! --------------'
 
 $(OBJ):		$(OBJDIR)%.o: $(SRCDIR)%.cpp
-	mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIR_1) $(DIR_2) $(DIR_3) \
-				$(DIR_4))
-	# mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIR_TEST) $(DIR_1) $(DIR_2) \
-				$(DIR_3) $(DIR_4))
+	mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
 	$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
 
 include $(wildcard $(addprefix $(OBJDIR), $(DFLS)))
@@ -100,7 +97,11 @@ debug:
 run: all
 	./$(NAME)
 
-test: debug
+test_ConfParser:
+	make	FLAGS="$(CFLAGS) $(DBGFLAGS)" \
+			SRC="$(FLS_TEST) $(FLS_1)" \
+			DIRS="$(DIR_TEST) $(DIR_1)" \
+			all
 	./$(NAME)
 
 test_valgrind: debug
@@ -115,5 +116,5 @@ re:	fclean all
 		fclean \
 		re \
 		run \
-		test \
+		test_ConfParser \
 		test_valgrind
