@@ -84,11 +84,8 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 	(*it)->buffAppend(buff);
-//	(*it)->getRequest()->req_init(((*it)->getBuff()));
-//	map_type const & data = (*it)->getRequest()->getData();
-//	map_type::const_iterator data_it = data.find("head");
 
-	if ((*it)->getBuff().rfind("\r\n\r\n") != std::string::npos)
+	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff)))
 		(*it)->setStatus(1);
 }
 
@@ -169,6 +166,7 @@ int Server::clientSessionHandler() {
 				this->closeConnection(it);
 				break;
 			}
+			(*it)->setStatus(0);
 		}
 	}
 	return (0);

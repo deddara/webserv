@@ -15,7 +15,7 @@ enum states{
 
 class Client{
 private:
-	std::string	read_buff;
+	char		*read_buff;
 
 	int			_fd;
 	int 		state;
@@ -34,14 +34,14 @@ public:
 	int getFd();
 	int & getStatus();
 	void setStatus(int status);
-	std::string const &getBuff();
+	char const *getBuff();
 	Request * getRequest();
 	Response * getResponse();
 
 	std::string const & getServHost();
 	int const & getServPort();
 
-	void buffAppend(std::string const & buff);
+	void buffAppend(char *);
 	void clearBuff();
 
 };

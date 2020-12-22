@@ -24,4 +24,6 @@ add_executable(webserv
         server_engine/Client.cpp
         utils/time.cpp
         utils/utils.cpp
+        utils/ft_strjoin.cpp
+        utils/ft_strnstr.cpp
         main.cpp)

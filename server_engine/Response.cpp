@@ -74,6 +74,7 @@ int Response::response_prepare(int & status, map_type * data) {
 		if (ok()){
 			return 1;
 		}
+		status = 2;
 	}
 	return (0);
 }
