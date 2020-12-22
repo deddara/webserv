@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/21 15:49:13 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/22 13:39:34 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class									VirtServer
 	std::vector<std::string>			pr_serverName;
 	std::map<int, std::string>			pr_errorPage;
 	int									pr_limitClientBody;
-	std::vector<Location>				pr_location;
+	std::vector<Location *>				pr_location;
 	int									fd;
 
 	std::vector<std::string>			pr_serverFields;
@@ -39,7 +39,7 @@ public:
 	std::vector<std::string> const &	getServerName() const;
 	std::map<int, std::string> const &	getErrorPage() const;
 	int const &							getLimitClientBody() const;
-	std::vector<Location> const &		getLocation() const;
+	std::vector<Location *> const &		getLocation() const;
 
 	// **** FOR PARSE ****
 	std::vector<std::string> const &	getServerFields() const;
@@ -50,9 +50,10 @@ public:
 	void								setServerName(std::string const &);
 	void								setErrorPage(int, std::string const &);
 	void								setLimitClientBody(int const &);
-	void								setLocation(Location const &);
+	void								setLocation(Location *);
 
 	void								clearServerName();
+	void								eraseLocation();
 };
 
 #endif

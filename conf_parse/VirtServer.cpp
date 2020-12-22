@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/21 15:49:59 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/22 13:39:34 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int const &							VirtServer::getLimitClientBody() const {
 	return pr_limitClientBody;
 }
 
-std::vector<Location> const &		VirtServer::getLocation() const {
+std::vector<Location *> const &		VirtServer::getLocation() const {
 	return pr_location;
 }
 
@@ -83,10 +83,16 @@ void			VirtServer::setLimitClientBody(int const & num) {
 
 }
 
-void			VirtServer::setLocation(Location const & location) {
+void			VirtServer::setLocation(Location * location) {
 	pr_location.push_back(location);
 }
 
 void			VirtServer::clearServerName() {
 	pr_serverName.clear();
+}
+
+void			VirtServer::eraseLocation() {
+	for (size_t i = 0; i < pr_location.size(); ++i) {
+		delete pr_location[i];
+	}
 }

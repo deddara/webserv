@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:35:34 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/21 13:45:17 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/22 12:58:39 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class							ConfParser
 	void						errorExit(int, std::string const &);
 	void						parser();
 	VirtServer					serverBlockProc();
-	Location					locationBlockProc(std::string const &);
+	Location *					locationBlockProc(std::string const &);
 	void						skipSpaceComm();
 	std::string					pickWord();
 	std::string					toLower(std::string);
