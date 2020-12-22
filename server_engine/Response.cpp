@@ -1,4 +1,6 @@
 #include "Response.hpp"
+#include <vector>
+#include <map>
 
 int Response::bad_req() {
 	int fd;
@@ -71,9 +73,32 @@ int Response::response_prepare(int & status, map_type * data) {
 		status = 3;
 	}
 	else {
-		if (ok()){
-			return 1;
-		}
+		// if (ok()){
+		//     return 1;
+		// }
+		// generateFilename();
+		// int			ret = 0;
+		// if ((ret = checkUri()) {
+
+		// }
 	}
 	return (0);
 }
+
+// void				Response::generateFilename() {
+//     std::map<std::string, std::vector<std::string> >::iterator
+//                     it = _data->find("head");
+//     size_t			pos = 0;
+//     for (size_t i = 0; i < location.size(); ++i) {
+//         if ((pos = it->second[1].find(location[i]->getPrefix()))
+//                 != std::string::npos)
+//         {
+//         }
+//     }
+// }
+
+int					Response::checkUri() {
+
+	return 0;
+}
+

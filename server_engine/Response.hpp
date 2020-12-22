@@ -14,10 +14,14 @@ private:
 	std::string response;
 	std::string body;
 	std::string date;
-	int 		err_code;
+	int			err_code;
 	std::vector<Location*> location;
 	std::map<int, std::string>			pr_errorPage;
 	std::map<std::string, std::vector<std::string> > const * _data;
+
+	std::string			fileName;
+	int					checkUri();
+	void				generateFilename();
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const map_type;
