@@ -13,7 +13,7 @@ public:
 	void bytesCount(const int &);
 
 	char* bytesDup(char*, char*,int len);
-	int bytesJoin(const char*, const char*,int len);
+	char * bytesJoin(char*, char*,int len);
 };
 
 #endif

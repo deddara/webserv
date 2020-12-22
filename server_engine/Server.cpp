@@ -88,8 +88,8 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[2048];
-	bzero(&buff, 2048);
+	char buff[300];
+	bzero(&buff, 300);
 
 	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
 
@@ -99,13 +99,14 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 
-	(*it)->getBytes().bytesCount(n);
 
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
+	(*it)->getBytes().bytesCount(n);
 
-	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff))) {
+
+	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
 
 		(*it)->getRequest()->req_init(((*it)->getBuff()));
 		if ((*it)->getRequest()->error())

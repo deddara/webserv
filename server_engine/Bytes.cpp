@@ -1,5 +1,6 @@
 #include "Bytes.hpp"
 #include "stdlib.h"
+#include <iostream>
 Bytes::Bytes() : bytes_count(0) {}
 
 const int & Bytes::getBytes() { return bytes_count; }
@@ -22,6 +23,25 @@ char * Bytes::bytesDup(char *dst, char *src, int len) {
 	return (dst - len);
 }
 
-int Bytes::bytesJoin(const char *, const char *, int len) {
+char *Bytes::bytesJoin(char *dst, char *src, int len) {
+	char *res;
 
+	if (!(res = (char*)malloc(sizeof(char) * (bytes_count + len + 1))))
+		return NULL;
+
+	for (int i = 0; i < bytes_count; ++i)
+	{
+		*res = *dst;
+		res++;
+		dst++;
+	}
+	for (int i = 0; i < len; ++i)
+	{
+		*res = *src;
+		res++;
+		src++;
+	}
+	*res = '\0';
+	std::cout << res - bytes_count - len;
+	return res - bytes_count - len;
 }

@@ -31,6 +31,13 @@ int Client::buffAppend(char* buff, const int &len) {
 		if (!(read_buff = bytes.bytesDup(read_buff, buff, len)))
 			return 1;
 	}
+	else
+	{
+		char *tmp = read_buff;
+		if (!(read_buff = bytes.bytesJoin(read_buff, buff, len)))
+			return 1;
+		free(tmp);
+	}
 	return (0);
 };
 
@@ -48,7 +55,7 @@ void Client::bodyAppend(char const *buff, int len) {
 	}
 	else
 	{
-		int i = bytes_readed;
+		i = bytes_readed;
 		while (i < len)
 		{
 			body_buff[i] = buff[i];
