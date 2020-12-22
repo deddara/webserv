@@ -15,7 +15,7 @@ private:
 	std::string body;
 	std::string date;
 	int 		err_code;
-	std::vector<Location> location;
+	std::vector<Location*> location;
 	std::map<int, std::string>			pr_errorPage;
 	std::map<std::string, std::vector<std::string> > const * _data;
 
@@ -24,7 +24,7 @@ public:
 	Response() : _data(nullptr), err_code(0) {};
 	~Response(){};
 
-	void setLocation(std::vector<Location> const & loc) { location = loc; }
+	void setLocation(std::vector<Location*> const & loc) { location = loc; }
 	void setErrcode(int const &num ) { err_code = num; }
 
 	int bad_req();
