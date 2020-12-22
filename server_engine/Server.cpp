@@ -67,13 +67,27 @@ void Server::set_prepare()
 	}
 }
 
-void Server::postPutHandler(map_type const & data)
+int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int & n)
 {
+	map_type::const_iterator map_it;
+	map_it = data.find("content-length");
+	int content_length = atoi(map_it->second[0].c_str());
 
+	int len = n - ((*it)->getRequest()->get_body_pos() - 1) - (*it)->getBytesReaded();
+
+	if (len > content_length)
+		len = content_length;
+
+	(*it)->bodyAppend((*it)->getBuff() + (*it)->getRequest()->get_body_pos() + (*it)->getBytesReaded(), len);
+
+	if (content_length)
+		(*it)->setStatus(1);
+	return (0);
 }
 
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
+	map_type::const_iterator map_it;
 	char buff[2048];
 	bzero(&buff, 2048);
 	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
@@ -83,10 +97,22 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
+
 	(*it)->buffAppend(buff);
 
-	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff)))
-		(*it)->setStatus(1);
+	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff))) {
+
+		(*it)->getRequest()->req_init(((*it)->getBuff()));
+		if ((*it)->getRequest()->error())
+			return;
+		map_it = (*it)->getRequest()->getData().find("head");
+		if (map_it->second[0] == "post" || map_it->second[0] == "put") {
+			if (postPutHandler((*it)->getRequest()->getData(), it, n))
+				return;
+		}
+		else
+			(*it)->setStatus(1);
+	}
 }
 
 int Server::newSession() {
@@ -134,7 +160,6 @@ int Server::clientSessionHandler() {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
-						(*it)->getRequest()->req_init(((*it)->getBuff()));
 						if ((*it)->getRequest()->error())
 							(*it)->getResponse()->setErrcode(400);
 						else

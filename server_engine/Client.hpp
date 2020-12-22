@@ -16,8 +16,10 @@ enum states{
 class Client{
 private:
 	char		*read_buff;
+	char		*body_buff;
 
 	int			_fd;
+	int 		bytes_readed;
 	int 		state;
 	int 		serv_port;
 	std::string serv_host;
@@ -33,8 +35,11 @@ public:
 	void setFd(int fd);
 	int getFd();
 	int & getStatus();
+	int const & getBytesReaded() { return  bytes_readed; }
 	void setStatus(int status);
 	char const *getBuff();
+	char const *getBody();
+
 	Request * getRequest();
 	Response * getResponse();
 
@@ -42,6 +47,7 @@ public:
 	int const & getServPort();
 
 	void buffAppend(char *);
+	void bodyAppend(const char *, int len);
 	void clearBuff();
 
 };

@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), resp(0), serv_host(host), serv_port(port), read_buff(nullptr){
+Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), serv_host(host), serv_port(port), read_buff(nullptr), body_buff(nullptr), bytes_readed(0){
 	reqst = new Request();
 	resp = new Response();
 }
@@ -29,10 +29,42 @@ void Client::buffAppend(char* buff) {
 		free(tmp);
 };
 
+void Client::bodyAppend(char const *buff, int len) {
+	int i = 0;
+	if (!body_buff)
+	{
+		body_buff = (char*)malloc(sizeof(char) * len + 1);
+		while (i < len) {
+			body_buff[i] = buff[i];
+			i++;
+		}
+		bytes_readed += i;
+		body_buff[len] = '\0';
+	}
+	else
+	{
+		int i = bytes_readed;
+		while (i < len)
+		{
+			body_buff[i] = buff[i];
+			i++;
+		}
+		bytes_readed += i;
+	}
+}
+
 const char * Client::getBuff() { return read_buff; }
+
+const char * Client::getBody() {
+	return body_buff;
+}
 
 void Client::clearBuff()
 {
-	free(read_buff);
+	if (read_buff)
+		free(read_buff);
+	if (body_buff)
+		free(body_buff);
 	read_buff = nullptr;
+	body_buff = nullptr;
 }
