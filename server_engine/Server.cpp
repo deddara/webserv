@@ -73,14 +73,8 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 	map_it = data.find("content-length");
 	int content_length = atoi(map_it->second[0].c_str());
 
-	int len = n - ((*it)->getRequest()->get_body_pos() - 1) - (*it)->getBytesReaded();
-
-	if (len > content_length)
-		len = content_length;
-
-	(*it)->bodyAppend((*it)->getBuff() + (*it)->getRequest()->get_body_pos() + (*it)->getBytesReaded(), len);
-
-	if (content_length)
+	std::cout << (*it)->getBytes().getBytes() << " " << content_length + (*it)->getRequest()->get_body_pos() << std::endl;
+	if ((*it)->getBytes().getBytes() == content_length + (*it)->getRequest()->get_body_pos())  //общее колво сколько должны считать
 		(*it)->setStatus(1);
 	return (0);
 }
@@ -112,7 +106,8 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		if ((*it)->getRequest()->error())
 			return;
 		map_it = (*it)->getRequest()->getData().find("head");
-		if (map_it->second[0] == "post" || map_it->second[0] == "put") {
+		std::cout << map_it->second[0] << std::endl;
+		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			if (postPutHandler((*it)->getRequest()->getData(), it, n))
 				return;
 		}
