@@ -139,8 +139,7 @@ int Server::clientSessionHandler() {
 							(*it)->getResponse()->setErrcode(400);
 						else
 							this->getLocation(it, data);
-						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
-							return 1;
+						(*it)->getResponse()->response_prepare((*it)->getStatus(), &data);
 						(*it)->clearBuff();
 						break;
 					}

@@ -2,100 +2,71 @@
 #include <vector>
 #include <map>
 
-int Response::bad_req() {
-	int fd;
-	char buff[2048];
-	bzero(buff, sizeof(buff));
-	body.clear();
-	date.clear();
-	date = my_localtime();
-	fd = open("./html_files/50x.html", O_RDONLY);
-	if (fd < 0) {
-		perror("open");
-		return 500;
-	}
-	while (read(fd, buff, sizeof(buff))) {
-		body.append(buff);
-	}
-	response = "HTTP/1.1 400 Bad Request\r\nDate: ";
-	response.append(date);
-	response.append("Server: webserv0.0\r\nContent-Length: ");
-	response.append(std::to_string(body.length())); response.append("\r\n");
-	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Closed\r\n\r\n");
-	response.append(body);
-	response.append("\r\n\r\n");
-	close(fd);
-	return (0);
-}
-
-int Response::ok() {
-	int fd;
-	char buff[2048];
-	bzero(buff, sizeof(buff));
-	body.clear();
-	date.clear();
-	date = my_localtime();
-	fd = open("./html_files/index.html", O_RDONLY);
-	if (fd < 0) {
-		perror("open");
-		return 500;
-	}
-	while (read(fd, buff, sizeof(buff))) {
-		body.append(buff);
-	}
-	response = "HTTP/1.1 200 OK\r\nDate: ";
-	response.append(date);
-	response.append("Server: webserv0.0\r\nContent-Length: ");
-	response.append(std::to_string(body.length())); response.append("\r\n");
-	response.append("Content-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\n\r\n");
-	response.append(body);
-	response.append("\r\n\r\n");
-	close(fd);
-	return (0);
-}
-
 void Response::connectionHandler(int & status) {
 	map_type::const_iterator it = _data->find("connection");
 	if (it != _data->end() && it->second[0] == "close")
 		status = 3;
 }
 
-int Response::response_prepare(int & status, map_type * data) {
+void Response::response_prepare(int & status, map_type * data) {
 
 	_data = data;
 
 	connectionHandler(status);
 
 	if (err_code == 400) {
-		if (bad_req()) {
-			return 1;
-		}
+			return ;
 		status = 3;
 	}
 	else {
 		// if (ok()){
 		//     return 1;
 		// }
-		// generateFilename();
-		// int			ret = 0;
-		// if ((ret = checkUri()) {
-
-		// }
+		std::map<int, std::string>::const_iterator	it;
+		struct stat									errPgStatus;
+		if (checkLocation()) {
+			if ((it = pr_errorPage->find(404)) != pr_errorPage->end()) {
+				; // TODO check if error_page is read accesable
+			} else {
+				// generteResponseHead(); // TODO add implementation
+				return ;
+			}
+		}
+		// DEBUG
+		for (std::map<int, std::string>::const_iterator it =
+				pr_errorPage->begin(); it != pr_errorPage->end(); ++it)
+			std::cout << it->second << std::endl;
 	}
-	return (0);
+	return ;
 }
 
-// void				Response::generateFilename() {
-//     std::map<std::string, std::vector<std::string> >::iterator
-//                     it = _data->find("head");
-//     size_t			pos = 0;
-//     for (size_t i = 0; i < location.size(); ++i) {
-//         if ((pos = it->second[1].find(location[i]->getPrefix()))
-//                 != std::string::npos)
-//         {
-//         }
-//     }
-// }
+void				Response::setErrorPage(const std::map<int, std::string>
+																* mapErrPg) {
+	pr_errorPage = mapErrPg;
+}
+
+
+int					Response::checkLocation() {
+	std::map<std::string, std::vector<std::string> >::const_iterator
+					it = _data->find("head");
+	std::cout << it->second[1] << std::endl; // DEBUG
+	size_t			pos = 0;
+	size_t			i = 0;
+	for (; i < location.size(); ++i) {
+		if (!(pos = it->second[1].find(location[i]->getPrefix()), 0) &&
+				(it->second[1][location[i]->getPrefix().length()] == '/' || \
+				it->second[1].length() == location[i]->getPrefix().length())) {
+			std::cout << "Location match found" << std::endl; // DEBUG
+			break ;
+		}
+	}
+	std::cout << location[i]->getPrefix() << std::endl; // DEBUG
+	if (i == location.size()) {
+		err_code = 404;
+		return 1;
+	}
+	return 0;
+}
 
 int					Response::checkUri() {
 
