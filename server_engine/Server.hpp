@@ -39,6 +39,7 @@ public:
 	int createSocket(std::string const & host, int const port, int const & i);
 	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int &);
 	void getLocation(std::vector<Client*>::iterator it, map_type const &);
+	int nameCompare(std::string const &, std::vector<VirtServer>::iterator & it);
 };
 
 

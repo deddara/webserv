@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(webserv)
 
-set(CMAKE_CXX_STANDARD 98)
+set(CMAKE_CXX_STANDARD 14)
 
 include_directories(conf_parse)
 include_directories(includes)
@@ -18,13 +18,16 @@ add_executable(webserv
         includes/includes.hpp
         request_parse/Request.cpp
         request_parse/Request.hpp
+        server_engine/Bytes.cpp
+        server_engine/Bytes.hpp
+        server_engine/Client.cpp
+        server_engine/Client.hpp
+        server_engine/Response.cpp
+        server_engine/Response.hpp
         server_engine/Server.cpp
         server_engine/Server.hpp
-        server_engine/Response.cpp
-        server_engine/Client.cpp
-        utils/time.cpp
-        utils/utils.cpp
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
-        server_engine/Bytes.cpp
+        utils/time.cpp
+        utils/utils.cpp
         main.cpp)

@@ -140,13 +140,22 @@ int Server::newSession() {
 	return (0);
 }
 
+int Server::nameCompare(const std::string &name, std::vector<VirtServer>::iterator &  it) {
+	for(std::vector<std::string>::const_iterator name_it = it->getServerName().begin(); name_it != it->getServerName().end(); ++name_it)
+	{
+		if (name == (*name_it))
+			return (0);
+	}
+	return (1);
+}
+
 void Server::getLocation(std::vector<Client *>::iterator it, const map_type &data) {
 	std::string host;
 	map_type::const_iterator map_it = data.find("host");
 	host = map_it->second[0];
 	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++serv_it) {
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
-			(host == (*serv_it).getHost())){
+			(host == (*serv_it).getHost() || !(nameCompare(host, serv_it)))){
 			(*it)->getResponse()->setLocation((*serv_it).getLocation());
 			return;
 		}
