@@ -41,6 +41,14 @@ int Client::buffAppend(char* buff, const int &len) {
 	return (0);
 };
 
+int Client::buffCut(const unsigned long &len) {
+	char *tmp = read_buff;
+	if (!(read_buff = bytes.bytesCut(read_buff, len)))
+		return 1;
+	free(tmp);
+	return (0);
+}
+
 void Client::bodyAppend(char const *buff, int len) {
 	int i = 0;
 	if (!body_buff)
@@ -77,6 +85,7 @@ void Client::clearBuff()
 		free(read_buff);
 	if (body_buff)
 		free(body_buff);
+	bytes.setBytes(0);
 	read_buff = nullptr;
 	body_buff = nullptr;
 }

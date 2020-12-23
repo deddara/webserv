@@ -49,6 +49,7 @@ public:
 	int const & getServPort();
 
 	int buffAppend(char *, const int &);
+	int buffCut(unsigned long const &);
 	void bodyAppend(const char *, int len);
 	void clearBuff();
 

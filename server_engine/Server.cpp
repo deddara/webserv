@@ -71,11 +71,19 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 {
 	map_type::const_iterator map_it;
 	map_it = data.find("content-length");
-	int content_length = atoi(map_it->second[0].c_str());
+	unsigned long content_length = atoi(map_it->second[0].c_str());
+	unsigned long should_read_len = content_length + (*it)->getRequest()->get_body_pos();
 
-	std::cout << (*it)->getBytes().getBytes() << " " << content_length + (*it)->getRequest()->get_body_pos() << std::endl;
-	if ((*it)->getBytes().getBytes() == content_length + (*it)->getRequest()->get_body_pos())  //общее колво сколько должны считать
+
+	if ((*it)->getBytes().getBytes() == should_read_len)  //общее колво сколько должны считать
 		(*it)->setStatus(1);
+	else if ((*it)->getBytes().getBytes() > should_read_len)
+	{
+		if ((*it)->buffCut(should_read_len))
+			(*it)->getResponse()->setErrcode(500);
+		printf("%s\n", (*it)->getBuff());
+		(*it)->setStatus(1);
+	}
 	return (0);
 }
 
@@ -93,20 +101,19 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 
-
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
-	(*it)->getBytes().bytesCount(n);
+	std::cout <<  (*it)->getBuff();
 
+	(*it)->getBytes().bytesCount(n);
 
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
 
 		(*it)->getRequest()->req_init(((*it)->getBuff()));
 		if ((*it)->getRequest()->error())
-			return;
+			(*it)->setStatus(1);
 		map_it = (*it)->getRequest()->getData().find("head");
-		std::cout << map_it->second[0] << std::endl;
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			if (postPutHandler((*it)->getRequest()->getData(), it, n))
 				return;
@@ -161,6 +168,7 @@ int Server::clientSessionHandler() {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
+
 						if ((*it)->getRequest()->error())
 							(*it)->getResponse()->setErrcode(400);
 						else
@@ -203,10 +211,8 @@ int Server::launch() {
 	for (;;){
 		max_fd = virt_serv.back().getFd();
 		this->set_prepare();
-		std::cout << max_fd << std::endl;
 
 		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0) {
-			std::cout << "AAA" << std::endl;
 			return (1);
 		}
 		if (this->newSession())

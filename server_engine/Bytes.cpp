@@ -3,14 +3,15 @@
 #include <iostream>
 Bytes::Bytes() : bytes_count(0) {}
 
-const int & Bytes::getBytes() { return bytes_count; }
+const unsigned long & Bytes::getBytes() const { return bytes_count; }
 
-void Bytes::setBytes(const int &num) { bytes_count = num;}
+void Bytes::setBytes(const unsigned long &num) { bytes_count = num;}
 void Bytes::bytesCount(const int &num){
 	bytes_count += num;
 }
 
-char * Bytes::bytesDup(char *dst, char *src, int len) {
+
+char * Bytes::bytesDup(char *dst, char *src, int const & len) {
 	if (!(dst = (char*)malloc(sizeof(char) * len + 1)))
 		return NULL;
 	for (int i = 0; i < len; ++i)
@@ -19,11 +20,11 @@ char * Bytes::bytesDup(char *dst, char *src, int len) {
 		dst++;
 		src++;
 	}
-	dst[len] = '\0';
+	*dst = '\0';
 	return (dst - len);
 }
 
-char *Bytes::bytesJoin(char *dst, char *src, int len) {
+char *Bytes::bytesJoin(char *dst, char *src, int const & len) {
 	char *res;
 
 	if (!(res = (char*)malloc(sizeof(char) * (bytes_count + len + 1))))
@@ -42,6 +43,22 @@ char *Bytes::bytesJoin(char *dst, char *src, int len) {
 		src++;
 	}
 	*res = '\0';
-	std::cout << res - bytes_count - len;
 	return res - bytes_count - len;
+}
+
+char * Bytes::bytesCut(char *src, unsigned long const & len) {
+	char *res;
+
+	if (!(res = (char*)malloc(sizeof(char) * len + 1)))
+		return NULL;
+
+	for (unsigned long i = 0; i < len; ++i)
+	{
+		*res = *src;
+		src++;
+		res++;
+	}
+	*res = '\0';
+	bytes_count = len;
+	return res - len;
 }
