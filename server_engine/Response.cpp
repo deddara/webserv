@@ -1,3 +1,15 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Response.cpp                                               | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/24/20 20:58:58 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/24/20 20:59:58 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #include "Response.hpp"
 
 int Response::bad_req() {
@@ -63,7 +75,8 @@ int Response::response_prepare(int & status, map_type * data) {
 	_data = data;
 
 	connectionHandler(status);
-	if (err_code == 400 || err_code == 405) {
+	std::cout << err_code << std::endl;
+	if (err_code == 400 || err_code == 405 || err_code == 411) {
 		if (bad_req()) {
 			return 1;
 		}

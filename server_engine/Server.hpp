@@ -1,3 +1,15 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Server.hpp                                                 | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/24/20 21:37:23 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/24/20 21:37:23 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #ifndef SERVER_H
 # define SERVER_H
 #include <iostream>
@@ -42,6 +54,7 @@ public:
 	void getLocation(std::vector<Client*>::iterator it, map_type const &);
 	int nameCompare(std::string const &, std::vector<VirtServer>::iterator & it);
 	int error_headers(Request const &req);
+	void chunkHandler();
 };
 
 

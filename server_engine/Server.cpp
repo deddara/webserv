@@ -1,3 +1,15 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Server.cpp                                                 | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/24/20 22:23:47 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #include "Server.hpp"
 #include "includes.hpp"
 #include "Request.hpp"
@@ -88,7 +100,6 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 	{
 		if ((*it)->buffCut(should_read_len))
 			(*it)->getResponse()->setErrcode(500);
-		printf("%s\n", (*it)->getBuff());
 		(*it)->setStatus(1);
 	}
 	return (0);
@@ -106,12 +117,20 @@ int Server::error_headers(Request const &req) {
 		if (!is_allowed_method)
 			return 405;
 	}
-	Request::map_type map = req.getData();
-	if ((method == "POST" || method == "PUT") &&
-		(map["content-length"].empty() || map["content-length"][0].empty()))
-		return 411;
+	map_type const & map_data = req.getData();
+	map_type::const_iterator cont_it = map_data.find("content-length");
+	map_type::const_iterator chunk_it = map_data.find("transfer-encoding");
+	if ((method == "POST" || method == "PUT")) {
+		if (cont_it == map_data.end() && chunk_it == map_data.end())
+			return 411;
+	}
 	return 0;
 }
+
+void Server::chunkHandler() {
+
+}
+
 
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
@@ -140,11 +159,15 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 			(*it)->getResponse()->setErrcode(err);
 			return;
 		}
-
-		map_it = (*it)->getRequest()->getData().find("head");
+		map_type const & map_data = (*it)->getRequest()->getData();
+		map_it = map_data.find("head");
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
-			if (postPutHandler((*it)->getRequest()->getData(), it, n))
-				return;
+			map_it = map_data.find("transfer-encoding");
+			if (map_it != map_data.end())
+				chunkHandler();
+			else
+				postPutHandler((*it)->getRequest()->getData(), it, n);
+
 		}
 		else
 			(*it)->setStatus(1);
