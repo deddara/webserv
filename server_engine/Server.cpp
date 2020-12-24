@@ -37,9 +37,9 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 }
 
 int Server::setup(){
-	for (int i = 0; i < serversNum; ++i)
+	for (size_t i = 0; i < serversNum; ++i)
 	{
-		for (int j = 0; j < serversNum; ++j){
+		for (size_t j = 0; j < serversNum; ++j){
 			if (virt_serv[i].getHost() == virt_serv[j].getHost() && virt_serv[i].getPort() == virt_serv[j].getPort() && j != i) {
 				virt_serv[i].setFd(virt_serv[j].getFd());
 				break;
@@ -69,7 +69,7 @@ void Server::set_prepare()
 
 void Server::postPutHandler(map_type const & data)
 {
-
+	(void)data; // DEBUG
 }
 
 void Server::recv_msg(std::vector<Client*>::iterator it){

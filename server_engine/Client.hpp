@@ -18,9 +18,9 @@ private:
 	char		*read_buff;
 
 	int			_fd;
-	int 		state;
-	int 		serv_port;
+	int			state;
 	std::string serv_host;
+	int			serv_port;
 
 	Request		*reqst;
 	Response	*resp;

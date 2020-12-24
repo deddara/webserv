@@ -12,29 +12,31 @@
 
 class Response{
 private:
+	std::map<std::string, std::vector<std::string> > const *
+										_data;
+	int									errCode;
 	std::string							response;
 	char *								body;
-	int									err_code;
-
+	std::string							redirectURI;
 	std::vector<Location*>				location;
 	std::map<int, std::string> const *	errorPage;
-	std::map<std::string, std::vector<std::string> > const * _data;
 
 	std::string			fileName;
 	int					checkUri();
 	int					checkLocation();
 	void				error403Handler();
 	void				error404Handler();
-	int					checkIfFileExist(std::string const &);
+	void				generateRedirectURI(int);
+	void				generateBody();
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const map_type;
-	Response() : _data(nullptr), err_code(0) {};
+	Response() : _data(nullptr), errCode(0) {};
 	~Response(){};
 
 	void setLocation(std::vector<Location*> const & loc) { location = loc; }
 	void setErrorPage(const std::map<int, std::string> *);
-	void setErrcode(int const &num ) { err_code = num; }
+	void setErrcode(int const &num ) { errCode = num; }
 
 	void response_prepare(int &, map_type *);
 	void connectionHandler(int & status);

@@ -15,12 +15,12 @@
 class Server{
 
 private:
-	std::vector<Client*> client_session;
-	std::vector<VirtServer> & virt_serv;
-	fd_set readset, writeset;
-	int				max_fd;
-	int				is_closed;
-	size_t			serversNum;
+	int							max_fd;
+	int							is_closed;
+	std::vector<VirtServer> &	virt_serv;
+	std::vector<Client*>		client_session;
+	fd_set						readset, writeset;
+	size_t						serversNum;
 
 
 public:
