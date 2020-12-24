@@ -1,3 +1,15 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Client.hpp                                                 | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/24/20 19:19:04 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/24/20 19:55:25 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 # include "iostream"
@@ -15,18 +27,19 @@ enum states{
 
 class Client{
 private:
-	char		*read_buff;
-	char		*body_buff;
+	char			*read_buff;
+	char			*body_buff;
 
-	int			_fd;
-	int 		bytes_readed;
-	int 		state;
-	int 		serv_port;
-	std::string serv_host;
+	int				_fd;
+	int 			bytes_readed;
+	int 			state;
+	int 			serv_port;
+	std::string		serv_host;
 
-	Bytes		bytes;
-	Request		*reqst;
-	Response	*resp;
+	Bytes			bytes;
+	Request			*reqst;
+	Response		*resp;
+	struct timeval	last_msg;
 
 public:
 
@@ -52,6 +65,9 @@ public:
 	int buffCut(unsigned long const &);
 	void bodyAppend(const char *, int len);
 	void clearBuff();
+
+	struct timeval & getLastMsg();
+	void		setLastMsg();
 
 };
 

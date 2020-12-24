@@ -1,8 +1,10 @@
 #include "Client.hpp"
+#include "sys/time.h"
 
 Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), serv_host(host), serv_port(port), read_buff(nullptr), body_buff(nullptr), bytes_readed(0){
 	reqst = new Request();
 	resp = new Response();
+	gettimeofday(&last_msg, NULL);
 }
 
 Client::~Client() {
@@ -77,6 +79,14 @@ const char * Client::getBuff() { return read_buff; }
 
 const char * Client::getBody() {
 	return body_buff;
+}
+
+struct timeval &Client::getLastMsg(){
+	return last_msg;
+}
+
+void		Client::setLastMsg(){
+	gettimeofday(&last_msg, NULL);
 }
 
 void Client::clearBuff()

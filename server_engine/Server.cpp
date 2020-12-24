@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include "includes.hpp"
 #include "Request.hpp"
-
+#include "sys/time.h"
 void Server::closeConnection(std::vector<Client*>::iterator it){
 	close((*it)->getFd());
 	client_session.erase(it);
@@ -51,13 +51,19 @@ int Server::setup(){
 	return (0);
 }
 
-void Server::set_prepare()
+int Server::set_prepare()
 {
 	FD_ZERO(&readset);
 	FD_ZERO(&writeset);
 	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it)
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
+		gettimeofday(&t, NULL);
+		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 30)
+		{
+			closeConnection(it);
+			return (1);
+		}
 		FD_SET((*it)->getFd(), &readset);
 		if ((*it)->getResponse() && strlen((*it)->getResponse()->getStr())){
 			FD_SET((*it)->getFd(), &writeset);
@@ -65,6 +71,7 @@ void Server::set_prepare()
 		if ((*it)->getFd() > max_fd)
 			max_fd = (*it)->getFd();
 	}
+	return (0);
 }
 
 int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int & n)
@@ -112,6 +119,8 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	char buff[300];
 	bzero(&buff, 300);
 	int err = 400;
+
+	(*it)->setLastMsg();
 
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
 	{
@@ -234,12 +243,18 @@ int Server::clientSessionHandler() {
 int Server::launch() {
 	//главный цикл жизни сервера (Желательно потом разбить на еще доп методы, это я сделаю сам)
 	for (;;){
+		int select_res;
 		max_fd = virt_serv.back().getFd();
-		this->set_prepare();
+		if (this->set_prepare())
+			continue;
+		t.tv_sec = 30;
+		t.tv_usec = 0;
 
-		if (select(max_fd + 1, &readset, &writeset, NULL, NULL) < 0) {
+		if ((select_res = select(max_fd + 1, &readset, &writeset, NULL, &t)) < 0) {
 			return (1);
 		}
+		if (select_res == 0)
+			continue;
 		if (this->newSession())
 			return (1);
 		if (this->clientSessionHandler())

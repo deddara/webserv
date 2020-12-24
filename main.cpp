@@ -15,5 +15,5 @@ int main(int argc, char **argv)
 	//поднимаем сервер
 	if (serv.launch())
 		return 1;
-
+	return (0);
 }

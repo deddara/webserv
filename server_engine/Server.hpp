@@ -21,6 +21,7 @@ private:
 	int				max_fd;
 	int				is_closed;
 	size_t			serversNum;
+	struct timeval	t;
 
 
 public:
@@ -31,7 +32,7 @@ public:
 	~Server(){};
 	int launch();
 	int setup();
-	void set_prepare();
+	int set_prepare();
 	void recv_msg(std::vector<Client*>::iterator it);
 	void closeConnection(std::vector<Client*>::iterator it);
 	int newSession();
