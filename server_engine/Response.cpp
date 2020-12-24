@@ -19,13 +19,10 @@ void Response::response_prepare(int & status, map_type * data) {
 		status = 3;
 	}
 	else {
-		// if (ok()){
-		//     return 1;
-		// }
 		std::map<int, std::string>::const_iterator	it;
 		struct stat									errPgStatus;
 		if (checkLocation()) {
-			if ((it = pr_errorPage->find(404)) != pr_errorPage->end()) {
+			if ((it = errorPage->find(404)) != errorPage->end()) {
 				; // TODO check if error_page is read accesable
 			} else {
 				// generteResponseHead(); // TODO add implementation
@@ -34,17 +31,43 @@ void Response::response_prepare(int & status, map_type * data) {
 		}
 		// DEBUG
 		for (std::map<int, std::string>::const_iterator it =
-				pr_errorPage->begin(); it != pr_errorPage->end(); ++it)
+				errorPage->begin(); it != errorPage->end(); ++it)
 			std::cout << it->second << std::endl;
 	}
 	return ;
 }
 
 void				Response::setErrorPage(const std::map<int, std::string>
-																* mapErrPg) {
-	pr_errorPage = mapErrPg;
+																* errPg) {
+	errorPage = errPg;
 }
 
+int					Response::checkIfFileExist(std::string const & path) {
+	struct stat		buf;
+	int				res;
+	if (!(res = stat(path.c_str(), & buf))) {
+		return 1;
+	}
+	return 0;
+}
+
+void				Response::error403Handler() {
+	std::map<int, std::string>::const_iterator it;
+	if (errorPage->size()) {
+		if (errorPage->count(403)) {
+			if ((it = errorPage->find(403)) != errorPage->end()) {
+				if (checkIfFileExist(it->second)) {
+				//     if (checkIfFileReadble(it->second())) {
+
+				//     }
+				// }// TODO function
+				}
+			}
+		}
+	}
+	err_code = 403;
+	// generateBody(err_code); // TODO function
+}
 
 int					Response::checkLocation() {
 	std::map<std::string, std::vector<std::string> >::const_iterator
@@ -67,9 +90,3 @@ int					Response::checkLocation() {
 	}
 	return 0;
 }
-
-int					Response::checkUri() {
-
-	return 0;
-}
-
