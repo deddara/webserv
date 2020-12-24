@@ -63,8 +63,7 @@ int Response::response_prepare(int & status, map_type * data) {
 	_data = data;
 
 	connectionHandler(status);
-
-	if (err_code == 400) {
+	if (err_code == 400 || err_code == 405) {
 		if (bad_req()) {
 			return 1;
 		}

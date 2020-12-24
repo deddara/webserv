@@ -13,6 +13,7 @@ class Response{
 private:
 	std::string response;
 	std::string body;
+	std::string head;
 	std::string date;
 	int 		err_code;
 	std::vector<Location*> location;
@@ -31,7 +32,6 @@ public:
 	int ok();
 	int response_prepare(int &, map_type *);
 	void connectionHandler(int & status);
-
 
 	void clearStr(){
 		response.clear();

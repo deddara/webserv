@@ -87,15 +87,33 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 	return (0);
 }
 
+int Server::error_headers(Request const &req) {
+	std::string methods[4] = {"GET", "HEAD", "POST", "PUT"};
+	std::string method;
+	bool is_allowed_method = false;
+	if (req.is_valid_value("head")) {
+		method = req.find("head").front();
+		for (int i = 0; i <= methods->size(); ++i)
+			if (method == methods[i])
+				is_allowed_method = true;
+		if (!is_allowed_method)
+			return 405;
+	}
+	Request::map_type map = req.getData();
+	if ((method == "POST" || method == "PUT") &&
+		(map["content-length"].empty() || map["content-length"][0].empty()))
+		return 411;
+	return 0;
+}
+
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
 	char buff[300];
 	bzero(&buff, 300);
+	int err = 400;
 
-	n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC);
-
-	if (n <= 0)
+	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
 	{
 		(*it)->setStatus(3);
 		return;
@@ -104,15 +122,16 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
-	std::cout <<  (*it)->getBuff();
-
 	(*it)->getBytes().bytesCount(n);
-
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
-
+		//parse and chech parse errror codes
 		(*it)->getRequest()->req_init(((*it)->getBuff()));
-		if ((*it)->getRequest()->error())
+		if ((*it)->getRequest()->error() || (err = error_headers(*(*it)->getRequest()))) {
 			(*it)->setStatus(1);
+			(*it)->getResponse()->setErrcode(err);
+			return;
+		}
+
 		map_it = (*it)->getRequest()->getData().find("head");
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			if (postPutHandler((*it)->getRequest()->getData(), it, n))
@@ -177,14 +196,11 @@ int Server::clientSessionHandler() {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
-
-						if ((*it)->getRequest()->error())
-							(*it)->getResponse()->setErrcode(400);
-						else
+						(*it)->clearBuff();
+						if (!(*it)->getRequest()->error())
 							this->getLocation(it, data);
 						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
 							return 1;
-						(*it)->clearBuff();
 						break;
 					}
 				case finish:

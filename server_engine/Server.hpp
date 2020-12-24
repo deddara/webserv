@@ -40,6 +40,7 @@ public:
 	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int &);
 	void getLocation(std::vector<Client*>::iterator it, map_type const &);
 	int nameCompare(std::string const &, std::vector<VirtServer>::iterator & it);
+	int error_headers(Request const &req);
 };
 
 
