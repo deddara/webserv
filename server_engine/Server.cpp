@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:37:38 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 00:27:51 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -131,12 +131,19 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 
 	Chunk & chunk = (*it)->getChunk();
 	Bytes & bytes = (*it)->getBytes();
+	const int & body_pos = (*it)->getRequest()->get_body_pos();
+	const char * read_buff = (*it)->getBuff();
+	read_buff += body_pos;
 
-	while (bytes.getBytes() > chunk.getLenSum()){
+	while (bytes.getBytes() > body_pos + chunk.getLenSum()){
 		if (chunk.getCount() % 2)
 		{
-			(*it)->bodyAppend(&(*it)->getBuff()[(*it)->getRequest()->get_body_pos()] + chunk.getLenSum(), chunk.getLen());
+			(*it)->bodyAppend(read_buff + chunk.getLenSum(), chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
+			chunk.setLenSum(chunk.getLenSum() + chunk.getLen());
+		}
+		else {
+			chunk.takeNum(read_buff + chunk.getLenSum(), bytes.getBytes() - body_pos);
 		}
 	}
 }

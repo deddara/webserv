@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:36:08 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:31:19 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 00:04:09 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -32,6 +32,7 @@ public:
 	void	setLenSum(const int &);
 	void	setLen(const int &);
 	void	setCount(const int &);
+	int		takeNum(const char *,const int &);
 
 
 };
