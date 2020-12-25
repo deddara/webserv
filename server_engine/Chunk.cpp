@@ -1,32 +1,21 @@
 /* *************************************************************************************/
 /*                                                                                     */
 /*                                                             |\---/|                 */
-/*  Bytes.hpp                                                  | o_o |                 */
+/*  Chunk.cpp                                                  | o_o |                 */
 /*                                                             ‾‾‾‾‾‾‾                 */
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
-/*  created: 12/25/20 23:30:46 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*  created: 12/25/20 22:50:02 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/25/20 23:28:27 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
-#ifndef BYTES_H
-# define BYTES_H
+#include "Chunk.hpp"
 
-class Bytes{
-private:
-	unsigned long bytes_count;
+const int & Chunk::getCount(void){ return count; }
+const int & Chunk::getLenSum(void) { return len_sum; }
+const int & Chunk::getLen(void) { return len; }
 
-public:
-	Bytes();
-
-	const unsigned long & getBytes() const;
-	void setBytes(const unsigned long &);
-	void bytesCount(const int &);
-
-	char* bytesDup(char*, const char*,int const & len);
-	char * bytesJoin(char*, const char*,int const & len);
-	char * bytesCut(char*, unsigned long const &);
-};
-
-#endif
+void	Chunk::setLenSum(const int &num) { len_sum = num; }
+void	Chunk::setLen(const int &num) { len = num; }
+void	Chunk::setCount(const int &num) { count = num; }

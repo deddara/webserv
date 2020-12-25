@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 22:29:27 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -86,7 +86,7 @@ int Server::set_prepare()
 	return (0);
 }
 
-int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int & n)
+int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it)
 {
 	map_type::const_iterator map_it;
 	map_it = data.find("content-length");
@@ -127,10 +127,17 @@ int Server::error_headers(Request const &req) {
 	return 0;
 }
 
-void Server::chunkHandler() {
+void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 
-	while (1)
-	{}
+	Chunk & chunk = (*it)->getChunk();
+	Bytes & bytes = (*it)->getBytes();
+
+	while (bytes.getBytes() > chunk.getLenSum()){
+		if (chunk.getCount() % 2)
+		{
+			(*it)->bodyAppend((*it)->getBuff() + chunk.getLenSum(), chunk.getLen());
+		}
+	}
 }
 
 
@@ -166,9 +173,9 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			map_it = map_data.find("transfer-encoding");
 			if (map_it != map_data.end() && map_it->second[0] == "chunked")
-				chunkHandler();
+				chunkHandler(it);
 			else
-				postPutHandler((*it)->getRequest()->getData(), it, n);
+				postPutHandler((*it)->getRequest()->getData(), it);
 
 		}
 		else

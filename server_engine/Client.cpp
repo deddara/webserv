@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:28:34 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 22:29:15 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -35,11 +35,31 @@ Bytes & Client::getBytes() {
 	return bytes;
 }
 
+Chunk & Client::getChunk() {
+	return chunk;
+}
+
 const std::string & Client::getServHost() { return serv_host; }
 
 const int & Client::getServPort() { return serv_port; }
 
-int Client::buffAppend(char* buff, const int &len) {
+int Client::bodyAppend(char const *buff, const int &len) {
+	if (!body_buff)
+	{
+		if (!(body_buff = bytes.bytesDup(body_buff, buff, len)))
+			return 1;
+	}
+	else
+	{
+		char *tmp = body_buff;
+		if (!(body_buff = bytes.bytesJoin(body_buff, buff, len)))
+			return 1;
+		free(tmp);
+	}
+	return (0);
+}
+
+int Client::buffAppend(char const * buff, const int &len) {
 	if (!read_buff)
 	{
 		if (!(read_buff = bytes.bytesDup(read_buff, buff, len)))

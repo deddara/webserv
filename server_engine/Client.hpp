@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 19:19:04 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 22:28:53 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -17,6 +17,8 @@
 # include "Request.hpp"
 # include "Response.hpp"
 # include "Bytes.hpp"
+# include "Chunk.hpp"
+
 enum states{
 	rdy_recv,
 	rdy_parse,
@@ -38,6 +40,8 @@ private:
 	Bytes			bytes;
 	Request			*reqst;
 	Response		*resp;
+	Chunk			chunk;
+
 	struct timeval	last_msg;
 
 public:
@@ -55,11 +59,13 @@ public:
 	Request * getRequest();
 	Response * getResponse();
 	Bytes	& getBytes();
+	Chunk	& getChunk();
 
 	std::string const & getServHost();
 	int const & getServPort();
 
-	int buffAppend(char *, const int &);
+	int buffAppend(char const *, const int &);
+	int bodyAppend(char const *, const int &);
 	int buffCut(unsigned long const &);
 	void clearBuff();
 

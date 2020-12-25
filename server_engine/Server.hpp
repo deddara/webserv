@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 21:37:23 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 21:37:23 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 23:24:29 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -42,6 +42,7 @@ public:
 		serversNum = virt_serv.size();
 	}
 	~Server(){};
+
 	int launch();
 	int setup();
 	int set_prepare();
@@ -50,11 +51,11 @@ public:
 	int newSession();
 	int clientSessionHandler();
 	int createSocket(std::string const & host, int const port, int const & i);
-	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it, int &);
+	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it);
 	void getLocation(std::vector<Client*>::iterator it, map_type const &);
 	int nameCompare(std::string const &, std::vector<VirtServer>::iterator & it);
 	int error_headers(Request const &req);
-	void chunkHandler();
+	void chunkHandler(std::vector<Client*>::iterator & it);
 };
 
 

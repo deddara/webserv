@@ -1,3 +1,15 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Bytes.cpp                                                  | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/25/20 23:30:46 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #include "Bytes.hpp"
 #include "stdlib.h"
 #include <iostream>
@@ -11,7 +23,7 @@ void Bytes::bytesCount(const int &num){
 }
 
 
-char * Bytes::bytesDup(char *dst, char *src, int const & len) {
+char * Bytes::bytesDup(char *dst, const char *src, int const & len) {
 	if (!(dst = (char*)malloc(sizeof(char) * len + 1)))
 		return NULL;
 	for (int i = 0; i < len; ++i)
@@ -24,7 +36,7 @@ char * Bytes::bytesDup(char *dst, char *src, int const & len) {
 	return (dst - len);
 }
 
-char *Bytes::bytesJoin(char *dst, char *src, int const & len) {
+char *Bytes::bytesJoin(char *dst, const char *src, int const & len) {
 	char *res;
 
 	if (!(res = (char*)malloc(sizeof(char) * (bytes_count + len + 1))))
