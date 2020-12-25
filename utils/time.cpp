@@ -157,3 +157,12 @@ std::string my_localtime()
 	date = date_prepare(time_in_sec, dmt);
 	return (date);
 }
+
+std::string modifiedTimeToStr(time_t time)
+{
+	struct tm	dmt;
+	std::string	date;
+
+	date = date_prepare(time, dmt);
+	return (date);
+}

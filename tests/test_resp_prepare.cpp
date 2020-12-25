@@ -58,7 +58,7 @@ int					main(int argc, char **argv)
 	//     }
 	// }
 
-	std::string raw = "GET /txt HTTP/1.1\r\n"
+	std::string raw = "GET /txt/hello.txt HTTP/1.1\r\n"
 	"User-Agent: curl/7.16.3 libcurl/7.16.3 OpenSSL/0.9.7l zlib/1.2.3\r\n"
 	"Host: www.example.com\r\n"
 	"Accept-language:en, mi\r\n"
@@ -103,6 +103,6 @@ int					main(int argc, char **argv)
 	Response		res;
 	res.setErrorPage(&confPars.getServer()[0].getErrorPage());
 	res.setLocation(confPars.getServer()[0].getLocation());
-	res.response_prepare(status, &req.getData());
+	res.responsePrepare(status, &req.getData());
 	return 0;
 }

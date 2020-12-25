@@ -59,7 +59,7 @@ void Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		FD_SET((*it)->getFd(), &readset);
-		if ((*it)->getResponse() && strlen((*it)->getResponse()->getStr())){
+		if ((*it)->getResponse() && ((*it)->getResponse()->getResponseStruct().length)){
 			FD_SET((*it)->getFd(), &writeset);
 		}
 		if ((*it)->getFd() > max_fd)
@@ -139,7 +139,7 @@ int Server::clientSessionHandler() {
 							(*it)->getResponse()->setErrcode(400);
 						else
 							this->getLocation(it, data);
-						(*it)->getResponse()->response_prepare((*it)->getStatus(), &data);
+						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data);
 						(*it)->clearBuff();
 						break;
 					}
@@ -155,12 +155,12 @@ int Server::clientSessionHandler() {
 			}
 		}
 		if (FD_ISSET((*it)->getFd(), &writeset)){
-			if ((send((*it)->getFd(), (*it)->getResponse()->getStr(),  strlen((*it)->getResponse()->getStr()), 0)) < 0)
+			if ((send((*it)->getFd(), (*it)->getResponse()->getResponseStruct().data, ((*it)->getResponse()->getResponseStruct().length), 0)) < 0)
 			{
 				perror("send");
 				return 1;
 			}
-			(*it)->getResponse()->clearStr();
+			(*it)->getResponse()->clearResponseData();
 			if ((*it)->getStatus() == 3) {
 				this->closeConnection(it);
 				break;

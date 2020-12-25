@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/25 20:06:47 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 01:47:21 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,36 @@
 						bodyLength = 0;
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
+						response.data = nullptr;
+						response.length = 0;
+						errHandlersFlags = 0;
 					};
 
 void				Response::errorExit(int code, std::string const & word) {
-	std::string		errors[1] = {
+	std::string		errors[3] = {
+		"Error: file open fails",
+		"Error: read fails",
 		"Error: malloc fails",
 	};
 	std::cout << errors[code] << std::endl;
 	exit(1);
+}
+
+void				Response::clearResponseData() {
+	_data = nullptr;
+	errCode = 0;
+	if (response.data) {
+		free(response.data);
+		response.data = nullptr;
+	}
+	if (body) {
+		free(body);
+		body = nullptr;
+	}
+	bodyLength = 0;
+	currLocationInd = std::string::npos;
+	errorPage = nullptr;
+	errHandlersFlags = 0;
 }
 
 void Response::connectionHandler(int & status) {
@@ -35,50 +57,78 @@ void Response::connectionHandler(int & status) {
 		status = 3;
 }
 
-void				Response::errorHandler() {
-	if (errCode == 304) {
-		// erro304handler(); // DEBUG
-	} else if (errCode == 403) {
-		error403Handler();
-	} else if (errCode = 404) {
-		// error404Handler(); // DEBUG
-	}
+void				Response::buildResponse() {
+
 }
 
-void				Response::response_prepare(int & status, map_type * data) {
+void				Response::responsePrepare(int & status, map_type * data) {
 
 	_data = data;
 
 	connectionHandler(status);
 
-	if (errCode == 400) {
-			return ;
-		status = 3;
-	}
-	else {
-		std::map<int, std::string>::const_iterator	it;
-		// struct stat									errPgStatus;
+	if (errCode) {
+		errorHandler();
+		status = 3; // QUESTION where should be set and which value
+		// buildResponse(); // TODO
+		return ;
+	} else {
 		if (checkLocation()) {
-			// errorHandler(); // TODO
+			error404Handler();
+			// buildResponse(); // TODO
 			return ;
 		}
 		if (checkFile()) {
-			std::cout << filePath << std::endl; // DEBUG
-			// errorHandler(); // TODO
+			if (errCode == 403) {
+				error403Handler();
+				// buildResponse(); // TODO
+			} else if (errCode = 404) {
+				error404Handler();
+				// buildResponse(); // TODO
+			}
+			return ;
 		}
-			std::cout << errCode << std::endl; // DEBUG
-			// errorHandler(); // TODO
-		// std::cout << filePath << std::endl; // DEBUG
-		error403Handler(); // DEBUG
-		// std::map<int, std::string>::iterator it2 = errorPageTemplates.find(500);
-		// std::cout << it2->second << std::endl; //DEBUG
-		// std::cout << redirectURI << std::endl; // DEBUG
-		// DEBUG
-		// for (std::map<int, std::string>::const_iterator it =
-		//         errorPage->begin(); it != errorPage->end(); ++it)
-		//     std::cout << it->second << std::endl;
+		generateBody();
+		// buildResponse(); // TODO
+		return ;
 	}
 	return ;
+}
+
+void				Response::errorHandler() {
+	if (!errorPage->count(errCode)) {
+		generateBody(); // TODO check if all possible templates are implemented
+		return ;
+	}
+
+	struct stat		statbuf;
+	std::map<int, std::string>::const_iterator
+					it = errorPage->find(errCode);
+
+	if (!(stat(it->second.c_str(), & statbuf))) {
+		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
+			generateRedirectURI(errCode);
+			errCode = 302;
+			return ;
+		} else {
+			if (!(errHandlersFlags & 1)) {
+				error403Handler();
+				return ;
+			} else {
+			errCode = 403;
+			generateBody();
+			return ;
+			}
+		}
+	}
+	if (!(errHandlersFlags & 2)) {
+		error404Handler();
+		return ;
+	} else {
+	errCode = 404;
+	generateBody();
+	return ;
+	}
 }
 
 void				Response::setErrorPage(const std::map<int, std::string>
@@ -102,12 +152,52 @@ void				Response::generateFilePath() {
 
 void				Response::generateBody() {
 	if (errCode == 200) {
-		// TODO function to get body from file
+		int			fd;
+		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
+			errorExit(0, "");
+		}
+		size_t		ret = 0;
+		char *		buf = nullptr;
+		size_t		len = 512;
+		char *		tmp = nullptr;
+		size_t		oldBodyLength = 0;
+
+		if(!(buf = (char*)malloc(len))) {
+			errorExit(2, "");
+		}
+		while ((ret = read(fd, buf, len)) > 0) {
+			if (body) {
+				tmp = body;
+				oldBodyLength = bodyLength;
+				if(!(body = (char*)malloc((bodyLength += ret)))) {
+					errorExit(2, "");
+				}
+				ft_memcpy(body, tmp, oldBodyLength);
+				ft_memcpy(body + oldBodyLength, buf, ret);
+				free(tmp);
+			} else {
+				if (!(body = (char*)malloc((bodyLength = ret)))) {
+					errorExit(2, "");
+				}
+				ft_memcpy(body, buf, ret);
+			}
+			if (ret == len) {
+				free(buf);
+				if(!(buf = (char*)malloc((len *= 2)))) {
+					errorExit(2, "");
+				}
+			} else {
+				free(buf);
+			}
+		}
+		if (ret < 0) {
+			errorExit(1, "");
+		}
 		return ;
 	}
 	std::map<int, std::string>::iterator it = errorPageTemplates.find(errCode);
 	if(!(body = (char*)malloc((bodyLength = it->second.length())))) {
-		errorExit(0, "");
+		errorExit(2, "");
 	}
 	ft_memcpy(body, it->second.c_str(), bodyLength);
 }
@@ -148,37 +238,69 @@ void				Response::generateRedirectURI(int err) {
 	}
 }
 
-void				Response::error403Handler() {
-	if (!errorPage->count(403)) {
-		errCode = 403;
+void				Response::error404Handler() {
+	errHandlersFlags = (errHandlersFlags | 2); // set 0bXXXXXX1X
+	if (!errorPage->count(404)) {
+		errCode = 404;
 		generateBody();
-		// DEBUG
-		if (bodyLength) {
-			write(1, body, bodyLength);
-			std::cout << std::endl;
-		}
 		return ;
 	}
 
 	struct stat		statbuf;
 	std::map<int, std::string>::const_iterator
-					it;
+					it = errorPage->find(404);
 
-	if ((it = errorPage->find(403)) != errorPage->end()) {
-		if (!(stat(it->second.c_str(), & statbuf))) {
-			if (statbuf.st_mode & S_IRUSR) {
-				generateRedirectURI(403);
-				errCode = 302;
+	if (!(stat(it->second.c_str(), & statbuf))) {
+		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
+			generateRedirectURI(404);
+			errCode = 302;
+			return ;
+		} else {
+			if (!(errHandlersFlags & 1)) {
+				error403Handler();
 				return ;
 			} else {
-				errCode = 403;
-				generateBody();
-				return ;
+			errCode = 403;
+			generateBody();
+			return ;
 			}
 		}
-		errCode = 404;
+	}
+	errCode = 404;
+	generateBody();
+	return ;
+}
+
+void				Response::error403Handler() {
+	errHandlersFlags = (errHandlersFlags | 1); // set 0bXXXXXXX1
+	if (!errorPage->count(403)) {
+		errCode = 403;
 		generateBody();
 		return ;
+	}
+
+	struct stat		statbuf;
+	std::map<int, std::string>::const_iterator
+					it = errorPage->find(403);
+
+	if (!(stat(it->second.c_str(), & statbuf))) {
+		if (statbuf.st_mode & S_IRUSR) {
+			generateRedirectURI(403);
+			errCode = 302;
+			return ;
+		} else {
+			errCode = 403;
+			generateBody();
+			return ;
+		}
+	}
+	if (!(errHandlersFlags & 2)) {
+		error404Handler();
+		return ;
+	} else {
+	errCode = 404;
+	generateBody();
+	return ;
 	}
 }
 
@@ -211,9 +333,11 @@ int					Response::checkFile() {
 	struct stat		statbuf;
 
 	if (!(stat(filePath.c_str(), & statbuf))) {
-		if (statbuf.st_mode & S_IRUSR) {
-			// TODO 304 error handling (not modified)
+		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
 			errCode = 200;
+			// DEBUG
+			std::cout << modifiedTimeToStr(statbuf.st_mtime) << std::endl;
+			std::cout << my_localtime() << std::endl;
 			return 0;
 		} else {
 			errCode = 403;
@@ -222,4 +346,17 @@ int					Response::checkFile() {
 	}
 	errCode = 404;
 	return 1;
+}
+
+void				Response::setLocation(std::vector<Location *> const & loc) {
+	location = loc;
+}
+
+void				Response::setErrcode(int const & num) {
+	errCode = num;
+}
+
+const struct s_response &
+					Response::getResponseStruct() const {
+	return response;
 }
