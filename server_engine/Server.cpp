@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 23:37:38 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -135,7 +135,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 	while (bytes.getBytes() > chunk.getLenSum()){
 		if (chunk.getCount() % 2)
 		{
-			(*it)->bodyAppend((*it)->getBuff() + chunk.getLenSum(), chunk.getLen());
+			(*it)->bodyAppend(&(*it)->getBuff()[(*it)->getRequest()->get_body_pos()] + chunk.getLenSum(), chunk.getLen());
+			chunk.setCount(chunk.getCount() + 1);
 		}
 	}
 }

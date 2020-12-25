@@ -26,6 +26,7 @@ add_executable(webserv
         server_engine/Response.hpp
         server_engine/Server.cpp
         server_engine/Server.hpp
+        server_engine/Chunk.cpp
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
         utils/time.cpp
