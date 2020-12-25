@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
+/*   Updated: 2020/12/25 20:06:47 by awerebea         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Response.hpp"
 
 					Response::Response() {
@@ -7,7 +19,6 @@
 						bodyLength = 0;
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
-						createErrPagesMap();
 					};
 
 void				Response::errorExit(int code, std::string const & word) {
@@ -24,7 +35,17 @@ void Response::connectionHandler(int & status) {
 		status = 3;
 }
 
-void Response::response_prepare(int & status, map_type * data) {
+void				Response::errorHandler() {
+	if (errCode == 304) {
+		// erro304handler(); // DEBUG
+	} else if (errCode == 403) {
+		error403Handler();
+	} else if (errCode = 404) {
+		// error404Handler(); // DEBUG
+	}
+}
+
+void				Response::response_prepare(int & status, map_type * data) {
 
 	_data = data;
 
@@ -38,16 +59,20 @@ void Response::response_prepare(int & status, map_type * data) {
 		std::map<int, std::string>::const_iterator	it;
 		// struct stat									errPgStatus;
 		if (checkLocation()) {
-			// error404Handler(); // TODO
+			// errorHandler(); // TODO
 			return ;
 		}
-		generateFilePath();
-		std::cout << filePath << std::endl; // DEBUG
+		if (checkFile()) {
+			std::cout << filePath << std::endl; // DEBUG
+			// errorHandler(); // TODO
+		}
+			std::cout << errCode << std::endl; // DEBUG
+			// errorHandler(); // TODO
+		// std::cout << filePath << std::endl; // DEBUG
 		error403Handler(); // DEBUG
-		 // DEBUG
-		std::map<int, std::string>::iterator it2 = errorPageTemplates.find(500);
-		std::cout << it2->second << std::endl; //DEBUG
-		std::cout << redirectURI << std::endl; // DEBUG
+		// std::map<int, std::string>::iterator it2 = errorPageTemplates.find(500);
+		// std::cout << it2->second << std::endl; //DEBUG
+		// std::cout << redirectURI << std::endl; // DEBUG
 		// DEBUG
 		// for (std::map<int, std::string>::const_iterator it =
 		//         errorPage->begin(); it != errorPage->end(); ++it)
@@ -60,41 +85,6 @@ void				Response::setErrorPage(const std::map<int, std::string>
 																* errPg) {
 	errorPage = errPg;
 }
-
-void				Response::createErrPagesMap(){
-	errorPageTemplates[400] =
-		"<html>"														\
-		"<head><title>400 Bad Request</title></head>"					\
-		"<body bgcolor=\"white\">"										\
-		"<center><h1>400 Bad Request</h1></center>"						\
-		"<hr><center>webserv/0.1a</center>"								\
-		"</body>"														\
-		"</html>";
-	errorPageTemplates[403] =
-		"<html>"														\
-		"<head><title>403 Forbidden</title></head>"						\
-		"<body bgcolor=\"white\">"										\
-		"<center><h1>403 Forbidden</h1></center>"						\
-		"<hr><center>webserv/0.1a</center>"								\
-		"</body>"														\
-		"</html>";
-	errorPageTemplates[404] =
-		"<html>"														\
-		"<head><title>404 Not Found</title></head>"						\
-		"<body bgcolor=\"white\">"										\
-		"<center><h1>404 Not Found</h1></center>"						\
-		"<hr><center>webserv/0.1a</center>"								\
-		"</body>"														\
-		"</html>";
-	errorPageTemplates[500] =
-		"<html>"														\
-		"<head><title>500 Internal Server Error</title></head>"			\
-		"<body bgcolor=\"white\">"										\
-		"<center><h1>500 Internal Server Error</h1></center>"			\
-		"<hr><center>webserv/0.1a</center>"								\
-		"</body>"														\
-		"</html>";
-	}
 
 void				Response::generateFilePath() {
 	std::map<std::string, std::vector<std::string> >::const_iterator
@@ -128,13 +118,12 @@ void				Response::generateRedirectURI(int err) {
 	size_t			pos = 0;
 	size_t			i = 0;
 	for (; i < location.size(); ++i) {
-		if (((location[i]->getRoot()[location[i]->getRoot().length() - 1]
-				== '/') && !(pos = it->second.find(location[i]->getRoot()), 0))
-				|| (!(pos = it->second.find(location[i]->getRoot()), 0)
-				&& (it->second[location[i]->getRoot().length()] == '/'
-				|| it->second.length() == location[i]->getRoot().length()))) {
-			std::cout << "ErrPage path with location match found"
-				<< std::endl; // DEBUG
+		pos = it->second.find(location[i]->getRoot(), 0);
+		if ((!pos && (location[i]->getRoot()[location[i]->getRoot().length()
+				- 1] == '/')) || (!pos && location[i]->getRoot().length() ==
+				it->second.length()) || (!pos && (it->second[location[i]->
+				getRoot().length()] == '/' || it->second.length() ==
+				location[i]->getRoot().length()))) {
 			break ;
 		}
 	}
@@ -144,11 +133,13 @@ void				Response::generateRedirectURI(int err) {
 	}
 	if (it->second.length() > location[i]->getRoot().length()) {
 		redirectURI = it->second.substr(location[i]->getRoot().length());
-		if (redirectURI[0] == '/' &&
-				location[i]->getPrefix()[location[i]->getPrefix().length() - 1]
-				== '/') {
-			redirectURI.insert(0, location[i]->getPrefix().substr(0,
-										location[i]->getPrefix().length() - 1));
+		if (redirectURI[0] == '/' && location[i]->getPrefix()[location[i]->
+				getPrefix().length() - 1] == '/') {
+			redirectURI.insert(0, location[i]->getPrefix().
+					substr(0, location[i]->getPrefix().length() - 1));
+		} else if (redirectURI[0] != '/' && location[i]->getPrefix()
+					[location[i]->getPrefix().length() - 1] != '/') {
+			redirectURI.insert(0, location[i]->getPrefix() + "/");
 		} else {
 			redirectURI.insert(0, location[i]->getPrefix());
 		}
@@ -160,8 +151,7 @@ void				Response::generateRedirectURI(int err) {
 void				Response::error403Handler() {
 	if (!errorPage->count(403)) {
 		errCode = 403;
-		generateBody(); //TODO function
-		std::cout << bodyLength << std::endl; // DEBUG
+		generateBody();
 		// DEBUG
 		if (bodyLength) {
 			write(1, body, bodyLength);
@@ -177,17 +167,17 @@ void				Response::error403Handler() {
 	if ((it = errorPage->find(403)) != errorPage->end()) {
 		if (!(stat(it->second.c_str(), & statbuf))) {
 			if (statbuf.st_mode & S_IRUSR) {
-				generateRedirectURI(403); // TODO function
+				generateRedirectURI(403);
 				errCode = 302;
 				return ;
 			} else {
 				errCode = 403;
-				// generateBody(); // TODO function
+				generateBody();
 				return ;
 			}
 		}
 		errCode = 404;
-		// generateBody(); // TODO function
+		generateBody();
 		return ;
 	}
 }
@@ -195,18 +185,15 @@ void				Response::error403Handler() {
 int					Response::checkLocation() {
 	std::map<std::string, std::vector<std::string> >::const_iterator
 					it = _data->find("head");
-	std::cout << it->second[1] << std::endl; // DEBUG
 	size_t			pos = 0;
 	size_t			i = 0;
 	for (; i < location.size(); ++i) {
-		if ((!(pos = it->second[1].find(location[i]->getPrefix()), 0)
-				&& location[i]->getPrefix()[location[i]->getPrefix().length()
-				- 1] == '/') || (pos == 0 &&
+		pos = it->second[1].find(location[i]->getPrefix(), 0);
+		if ((!pos &&
+				location[i]->getPrefix()[location[i]->getPrefix().length() - 1]
+				== '/') || (!pos &&
 				(it->second[1][location[i]->getPrefix().length()] == '/' ||
 				it->second[1].length() == location[i]->getPrefix().length()))) {
-			std::cout << pos << std::endl; // DEBUG
-			std::cout << "Location match found" << std::endl; // DEBUG
-			std::cout << location[i]->getPrefix() << std::endl; // DEBUG
 			break ;
 		}
 	}
@@ -216,4 +203,23 @@ int					Response::checkLocation() {
 	}
 	currLocationInd = i;
 	return 0;
+}
+
+int					Response::checkFile() {
+	generateFilePath();
+
+	struct stat		statbuf;
+
+	if (!(stat(filePath.c_str(), & statbuf))) {
+		if (statbuf.st_mode & S_IRUSR) {
+			// TODO 304 error handling (not modified)
+			errCode = 200;
+			return 0;
+		} else {
+			errCode = 403;
+			return 1;
+		}
+	}
+	errCode = 404;
+	return 1;
 }

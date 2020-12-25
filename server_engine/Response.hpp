@@ -1,16 +1,15 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
-# include <map>
+# include "ErrorPages.hpp"
+# include "Location.hpp"
+# include "includes.hpp"
 # include <fcntl.h>
-# include <sys/types.h>
+# include <map>
 # include <sys/stat.h>
+# include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-# include "includes.hpp"
-# include "Location.hpp"
-
-static std::map<int, std::string>		errorPageTemplates;
 
 class Response{
 private:
@@ -30,6 +29,9 @@ private:
 	void								errorExit(int, std::string const &);
 	int									checkUri();
 	int									checkLocation();
+	int									checkFile();
+	void								errorHandler();
+	void								error304Handler();
 	void								error403Handler();
 	void								error404Handler();
 	void								generateRedirectURI(int);

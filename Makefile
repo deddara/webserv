@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/25 09:21:56 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/25 17:37:55 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,6 +48,7 @@ INCLUDES	+= -I $(DIR_2)
 DIR_3		= server_engine/
 FLS_3		= $(addprefix $(DIR_3), \
 				Client \
+				ErrorPages \
 				Response \
 				Server \
 				)
