@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 22:23:47 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 22:29:27 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -129,6 +129,8 @@ int Server::error_headers(Request const &req) {
 
 void Server::chunkHandler() {
 
+	while (1)
+	{}
 }
 
 
@@ -163,7 +165,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		map_it = map_data.find("head");
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			map_it = map_data.find("transfer-encoding");
-			if (map_it != map_data.end())
+			if (map_it != map_data.end() && map_it->second[0] == "chunked")
 				chunkHandler();
 			else
 				postPutHandler((*it)->getRequest()->getData(), it, n);

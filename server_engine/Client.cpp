@@ -1,7 +1,19 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Client.cpp                                                 | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/25/20 22:28:34 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/25/20 22:29:15 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #include "Client.hpp"
 #include "sys/time.h"
 
-Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), serv_host(host), serv_port(port), read_buff(nullptr), body_buff(nullptr), bytes_readed(0){
+Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), serv_host(host), serv_port(port), read_buff(nullptr), body_buff(nullptr){
 	reqst = new Request();
 	resp = new Response();
 	gettimeofday(&last_msg, NULL);
@@ -49,30 +61,6 @@ int Client::buffCut(const unsigned long &len) {
 		return 1;
 	free(tmp);
 	return (0);
-}
-
-void Client::bodyAppend(char const *buff, int len) {
-	int i = 0;
-	if (!body_buff)
-	{
-		body_buff = (char*)malloc(sizeof(char) * len + 1);
-		while (i < len) {
-			body_buff[i] = buff[i];
-			i++;
-		}
-		bytes_readed += i;
-		body_buff[len] = '\0';
-	}
-	else
-	{
-		i = bytes_readed;
-		while (i < len)
-		{
-			body_buff[i] = buff[i];
-			i++;
-		}
-		bytes_readed += i;
-	}
 }
 
 const char * Client::getBuff() { return read_buff; }

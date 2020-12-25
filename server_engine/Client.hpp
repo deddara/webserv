@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 19:19:04 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 19:55:25 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/25/20 22:28:53 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -31,7 +31,6 @@ private:
 	char			*body_buff;
 
 	int				_fd;
-	int 			bytes_readed;
 	int 			state;
 	int 			serv_port;
 	std::string		serv_host;
@@ -49,7 +48,6 @@ public:
 	void setFd(int fd);
 	int getFd();
 	int & getStatus();
-	int const & getBytesReaded() { return  bytes_readed; }
 	void setStatus(int status);
 	char const *getBuff();
 	char const *getBody();
@@ -63,7 +61,6 @@ public:
 
 	int buffAppend(char *, const int &);
 	int buffCut(unsigned long const &);
-	void bodyAppend(const char *, int len);
 	void clearBuff();
 
 	struct timeval & getLastMsg();
