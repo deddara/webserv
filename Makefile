@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/22 16:05:52 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/25 09:21:56 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,6 +55,7 @@ INCLUDES	+= -I $(DIR_3)
 
 DIR_4		= utils/
 FLS_4		= $(addprefix $(DIR_4), \
+				ft_memcpy \
 				ft_strjoin \
 				ft_strnstr \
 				time \
@@ -107,7 +108,7 @@ test_ConfParser:
 	./$(NAME)
 
 test_resp_prepare:
-	make	FLAGS="-Wall -Wextra $(DBGFLAGS)" \
+	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
 			$(FLS_3) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)" \

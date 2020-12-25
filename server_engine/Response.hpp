@@ -1,14 +1,16 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
-# include "iostream"
-# include "includes.hpp"
+
+# include <map>
 # include <fcntl.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <sys/uio.h>
 # include <unistd.h>
+# include "includes.hpp"
 # include "Location.hpp"
-#include "map"
+
+static std::map<int, std::string>		errorPageTemplates;
 
 class Response{
 private:
@@ -17,22 +19,28 @@ private:
 	int									errCode;
 	std::string							response;
 	char *								body;
+	size_t								bodyLength;
 	std::string							redirectURI;
 	std::vector<Location*>				location;
+	size_t								currLocationInd;
 	std::map<int, std::string> const *	errorPage;
+	std::string							filePath;
 
-	std::string			fileName;
-	int					checkUri();
-	int					checkLocation();
-	void				error403Handler();
-	void				error404Handler();
-	void				generateRedirectURI(int);
-	void				generateBody();
+	void								createErrPagesMap();
+	void								errorExit(int, std::string const &);
+	int									checkUri();
+	int									checkLocation();
+	void								error403Handler();
+	void								error404Handler();
+	void								generateRedirectURI(int);
+	void								generateBody();
+	void								generateFilePath();
 
 public:
-	typedef std::map<std::string, std::vector<std::string> > const map_type;
-	Response() : _data(nullptr), errCode(0) {};
-	~Response(){};
+	typedef std::map<std::string, std::vector<std::string> > const
+										map_type;
+										Response();
+										~Response(){};
 
 	void setLocation(std::vector<Location*> const & loc) { location = loc; }
 	void setErrorPage(const std::map<int, std::string> *);
