@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:04 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 12:31:55 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 12:45:45 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,15 @@
 
 ErrorPages::ErrorPages() {
 	std::vector<std::string>		val(2, "");
+	val[1] = "OK";
+	errorPageTemplates[200] = val;
+	valClear(val);
+	val[1] = "Moved Permanently";
+	errorPageTemplates[301] = val;
+	valClear(val);
+	val[1] = "Found";
+	errorPageTemplates[302] = val;
+	valClear(val);
 	val[0] =
 		"<html>\n"														\
 		"<head><title>400 Bad Request</title></head>\n"					\

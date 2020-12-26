@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:35:34 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/22 12:58:39 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 14:20:29 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 # include "VirtServer.hpp"
 # include "Location.hpp"
+# include "includes.hpp"
 
 class							ConfParser
 {

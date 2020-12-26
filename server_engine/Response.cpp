@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 12:41:32 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 16:11:15 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 						bodyLength = 0;
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
+						webservVersion = "webserv/0.1a";
 						response.data = nullptr;
 						response.length = 0;
 						errHandlersFlags = 0;
@@ -64,10 +65,74 @@ void Response::connectionHandler(int & status) {
 }
 
 void				Response::buildResponse() {
-	std::map<std::string, std::vector<std::string> >::const_iterator
-					it = _data->find("head");
-	responseHeaders = it->second[2] + " ";
-	// responseHeaders =
+	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
+	std::map<int, std::vector<std::string> >::const_iterator			itErr;
+	char *	numStr = nullptr;
+
+	itReq = _data->find("head");
+
+	// HTTP/1.X
+	responseHeaders = itReq->second[2] + " ";
+
+	// errCode
+	if(!(numStr = ft_itoa(errCode))) {
+		errorExit(2, "");
+	}
+	responseHeaders.append(numStr);
+	free(numStr);
+	numStr = nullptr;
+
+	// Message
+	itErr = errorPageTempl->find(errCode);
+	responseHeaders.append(" " + itErr->second[1] + "\r\n");
+
+	// Server
+	responseHeaders.append("Server: " + webservVersion + "\r\n");
+
+	// Date
+	responseHeaders.append("Date: " + my_localtime() + "\r\n");
+
+	// Content-Length
+	if (bodyLength) {
+		if(!(numStr = ft_itoa(bodyLength))) {
+			errorExit(2, "");
+		}
+		responseHeaders.append("Content-Length: ");
+		responseHeaders.append(numStr);
+		responseHeaders.append("\r\n");
+		free(numStr);
+		numStr = nullptr;
+	}
+
+	// Last-Modified
+	if (errCode == 200) {
+		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
+	}
+
+	// Connection
+	if (_data->count("connection")) {
+		itReq = _data->find("connection");
+		responseHeaders.append("Connection: " + itReq->second[0] + "\r\n");
+	} else if (errCode > 302) {
+		responseHeaders.append("Connection: close\r\n");
+	} else {
+		responseHeaders.append("Connection: keep-alive\r\n");
+	}
+
+	// Append body and make response struct
+	responseHeaders.append("\r\n");
+	response.length = responseHeaders.length() + bodyLength;
+	if(!(response.data = (char*)malloc(responseHeaders.length()))) {
+		errorExit(2, "");
+	}
+	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
+	if (bodyLength) {
+		ft_memcpy(response.data + responseHeaders.length(), body, bodyLength);
+	}
+
+	// DEBUG
+	// std::cout << responseHeaders << std::endl;
+	write(1, response.data, response.length);
 }
 
 void				Response::responsePrepare(int & status, map_type * data) {
@@ -91,7 +156,7 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			if (errCode == 403) {
 				error403Handler();
 				// buildResponse(); // TODO
-			} else if (errCode = 404) {
+			} else if (errCode == 404) {
 				error404Handler();
 				// buildResponse(); // TODO
 			}
@@ -99,7 +164,9 @@ void				Response::responsePrepare(int & status, map_type * data) {
 		}
 		// std::cout << it->second[0] << std::endl;
 		generateBody();
-		// buildResponse(); // TODO
+		// DEBUG
+		// std::cout << errCode << std::endl;
+		buildResponse(); // TODO
 		return ;
 	}
 	return ;
@@ -190,6 +257,7 @@ void				Response::generateBody() {
 				ft_memcpy(body, tmp, oldBodyLength);
 				ft_memcpy(body + oldBodyLength, buf, ret);
 				free(tmp);
+				tmp = nullptr;
 			} else {
 				if (!(body = (char*)malloc((bodyLength = ret)))) {
 					errorExit(2, "");
@@ -198,16 +266,16 @@ void				Response::generateBody() {
 			}
 			if (ret == len) {
 				free(buf);
+				buf = nullptr;
 				if(!(buf = (char*)malloc((len *= 2)))) {
 					errorExit(2, "");
 				}
-			} else {
-				free(buf);
 			}
 		}
 		if (ret < 0) {
 			errorExit(1, "");
 		}
+		free(buf);
 		return ;
 	}
 	std::map<int, std::vector<std::string> >::const_iterator	it;
@@ -351,10 +419,10 @@ int					Response::checkFile() {
 	if (!(stat(filePath.c_str(), & statbuf))) {
 		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
 			errCode = 200;
-			fileModifiedTime = modifiedTimeToStr(statbuf.st_mtime); // FIXME -1y
+			fileModifiedTime = timeToStr(statbuf.st_mtime); // FIXME -1y
 			// DEBUG
-			std::cout << modifiedTimeToStr(statbuf.st_mtime) << std::endl;
-			std::cout << my_localtime() << std::endl;
+			// std::cout << timeToStr(statbuf.st_mtime) << std::endl;
+			// std::cout << my_localtime() << std::endl;
 			return 0;
 		} else {
 			errCode = 403;
@@ -373,7 +441,6 @@ void				Response::setErrcode(int const & num) {
 	errCode = num;
 }
 
-const struct s_response &
-					Response::getResponseStruct() const {
+struct s_response &	Response::getResponseStruct() {
 	return response;
 }

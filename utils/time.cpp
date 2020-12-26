@@ -139,7 +139,7 @@ static std::string date_prepare(time_t & sec, struct tm & t)
 	t.tm_min = get_min(sec);
 	t.tm_sec = sec;
 
-	strftime (buffer, sizeof buffer, "%a, %d %b %G %k:%M:%S GMT\r\n", &t);
+	strftime (buffer, sizeof buffer, "%a, %d %b %G %k:%M:%S GMT", &t);
 	std::string date(buffer);
 	return date;
 }
@@ -158,7 +158,7 @@ std::string my_localtime()
 	return (date);
 }
 
-std::string modifiedTimeToStr(time_t time)
+std::string timeToStr(time_t time)
 {
 	struct tm	dmt;
 	std::string	date;

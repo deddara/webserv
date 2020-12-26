@@ -63,8 +63,7 @@ public:
 	void	responsePrepare(int &, map_type *);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
-	const struct s_response &
-			getResponseStruct() const;
+	struct s_response & getResponseStruct();
 
 };
 

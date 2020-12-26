@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/22 13:39:51 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 15:06:58 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ VirtServer			ConfParser::serverBlockProc() {
 		{
 			if (checkStringInt(val))
 				errorExit(5, val);
-			int num = static_cast<int>(std::stold(val));
+			int num = ft_atoi(val.c_str());
 			if (num < 0 || num > 65535)
 				errorExit(6, val);
 			server.setPort(num);
@@ -240,7 +240,7 @@ VirtServer			ConfParser::serverBlockProc() {
 		{
 			if (checkStringInt(val))
 				errorExit(5, val);
-			int num = static_cast<int>(std::stold(val));
+			int num = ft_atoi(val.c_str());
 			if (num < 100 || num > 599)
 				errorExit(19, val);
 			skipSpaceComm();
@@ -259,7 +259,7 @@ VirtServer			ConfParser::serverBlockProc() {
 		{
 			if (checkStringInt(val))
 				errorExit(10, val);
-			int num = static_cast<int>(std::stold(val));
+			int num = ft_atoi(val.c_str());
 			if (num < 0)
 				errorExit(11, val);
 			server.setLimitClientBody(num);
