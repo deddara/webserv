@@ -54,7 +54,7 @@ public:
 	typedef std::map<std::string, std::vector<std::string> > const
 										map_type;
 										Response();
-										~Response(){};
+										~Response();
 
 	void	setLocation(std::vector<Location *> const &);
 	void	setErrorPage(const std::map<int, std::string> *);

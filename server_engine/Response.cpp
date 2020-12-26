@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 16:11:15 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 01:28:06 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,18 @@
 						response.length = 0;
 						errHandlersFlags = 0;
 					};
+
+					Response::~Response() {
+						// FIXME segfault after hardcoded body
+						if (response.data) {
+							free(response.data);
+							response.data = nullptr;
+						}
+						if (body) {
+							free(body);
+							body = nullptr;
+						}
+					}
 
 void				Response::errorExit(int code, std::string const & word) {
 	std::string		errors[3] = {
@@ -131,12 +143,10 @@ void				Response::buildResponse() {
 	}
 
 	// DEBUG
-	// std::cout << responseHeaders << std::endl;
 	write(1, response.data, response.length);
 }
 
 void				Response::responsePrepare(int & status, map_type * data) {
-
 	_data = data;
 
 	connectionHandler(status);
@@ -144,30 +154,26 @@ void				Response::responsePrepare(int & status, map_type * data) {
 	if (errCode) {
 		errorHandler();
 		status = 3; // QUESTION where should be set and which value
-		// buildResponse(); // TODO
+		buildResponse();
 		return ;
 	} else {
 		if (checkLocation()) {
 			error404Handler();
-			// buildResponse(); // TODO
+			buildResponse();
 			return ;
 		}
 		if (checkFile()) {
 			if (errCode == 403) {
 				error403Handler();
-				// buildResponse(); // TODO
+				buildResponse();
 			} else if (errCode == 404) {
 				error404Handler();
-				// buildResponse(); // TODO
+				buildResponse();
 			}
 			return ;
 		}
-		// std::cout << it->second[0] << std::endl;
 		generateBody();
-		// DEBUG
-		// std::cout << errCode << std::endl;
-		buildResponse(); // TODO
-		return ;
+		buildResponse();
 	}
 	return ;
 }
@@ -284,6 +290,9 @@ void				Response::generateBody() {
 		errorExit(2, "");
 	}
 	ft_memcpy(body, it->second[0].c_str(), bodyLength);
+	// for (size_t i = 0; i < bodyLength; ++i) {
+	//     body[i] = it->second[0][i];
+	// }
 }
 
 void				Response::generateRedirectURI(int err) {
