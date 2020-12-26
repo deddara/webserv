@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:36:08 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 16:55:23 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 17:21:31 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -35,6 +35,7 @@ public:
 	void	setLen(const int &);
 	void	setCount(const int &);
 	int		takeNum(const char *,const int &);
+	void 	setZero();
 
 
 };

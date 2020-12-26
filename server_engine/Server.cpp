@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 17:10:22 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 18:28:54 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -145,7 +145,6 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 		else
 		{
 			int res = chunk.takeNum(read_buff + chunk.getLenSum(), bytes.getBytes() - body_pos);
-
 			if (res == -1)
 			{
 				(*it)->getResponse()->setErrcode(400);
@@ -158,6 +157,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 				{
 					(*it)->getResponse()->setErrcode(200);
 					(*it)->setStatus(1);
+					chunk.setZero();
 					return;
 				}
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
@@ -186,6 +186,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
+	std::cout << (*it)->getBuff() ;
 	(*it)->getBytes().bytesCount(n);
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
 		//parse and chech parse errror codes
@@ -207,6 +208,8 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		}
 		else
 			(*it)->setStatus(1);
+		if((*it)->getBody())
+			std::cout << (*it)->getBody();
 	}
 }
 

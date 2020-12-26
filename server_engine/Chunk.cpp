@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:50:02 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 16:55:42 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 17:21:31 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -44,4 +44,11 @@ int		Chunk::takeNum(const char * src,const int &ln){
 		len = n;
 	}
 	return (0);
+}
+
+void Chunk::setZero() {
+	count = 0;
+	len_sum = 0;
+	len = 0;
+	hex_len = 0;
 }
