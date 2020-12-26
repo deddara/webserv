@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:28:34 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 19:21:35 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -52,7 +52,7 @@ int Client::bodyAppend(char const *buff, const int &len) {
 	else
 	{
 		char *tmp = body_buff;
-		if (!(body_buff = bytes.bytesJoin(body_buff, buff, len)))
+		if (!(body_buff = bytes.bytesJoin(body_buff, buff, len, chunk.getBuffSum())))
 			return 1;
 		free(tmp);
 	}
@@ -68,7 +68,7 @@ int Client::buffAppend(char const * buff, const int &len) {
 	else
 	{
 		char *tmp = read_buff;
-		if (!(read_buff = bytes.bytesJoin(read_buff, buff, len)))
+		if (!(read_buff = bytes.bytesJoin(read_buff, buff, len,bytes.getBytes())))
 			return 1;
 		free(tmp);
 	}

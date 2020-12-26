@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 23:30:46 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 19:21:35 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -25,7 +25,7 @@ public:
 	void bytesCount(const int &);
 
 	char* bytesDup(char*, const char*,int const & len);
-	char * bytesJoin(char*, const char*,int const & len);
+	char * bytesJoin(char*, const char*,int const & len, int const & src_len);
 	char * bytesCut(char*, unsigned long const &);
 };
 

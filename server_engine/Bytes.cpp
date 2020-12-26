@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 23:30:46 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 19:21:35 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -36,13 +36,13 @@ char * Bytes::bytesDup(char *dst, const char *src, int const & len) {
 	return (dst - len);
 }
 
-char *Bytes::bytesJoin(char *dst, const char *src, int const & len) {
+char *Bytes::bytesJoin(char *dst, const char *src, int const & len, int const & src_len) {
 	char *res;
 
-	if (!(res = (char*)malloc(sizeof(char) * (bytes_count + len + 1))))
+	if (!(res = (char*)malloc(sizeof(char) * (src_len + len + 1))))
 		return NULL;
 
-	for (int i = 0; i < bytes_count; ++i)
+	for (int i = 0; i < src_len; ++i)
 	{
 		*res = *dst;
 		res++;
@@ -55,7 +55,7 @@ char *Bytes::bytesJoin(char *dst, const char *src, int const & len) {
 		src++;
 	}
 	*res = '\0';
-	return res - bytes_count - len;
+	return res - src_len - len;
 }
 
 char * Bytes::bytesCut(char *src, unsigned long const & len) {
