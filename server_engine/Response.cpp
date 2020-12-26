@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 01:47:21 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 12:41:32 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,12 @@ void				Response::clearResponseData() {
 	bodyLength = 0;
 	currLocationInd = std::string::npos;
 	errorPage = nullptr;
+	location.clear();
+	responseHeaders.clear();
+	redirectURI.clear();
+	filePath.clear();
+	fileModifiedTime.clear();
+	webservVersion.clear();
 	errHandlersFlags = 0;
 }
 
@@ -58,7 +64,10 @@ void Response::connectionHandler(int & status) {
 }
 
 void				Response::buildResponse() {
-
+	std::map<std::string, std::vector<std::string> >::const_iterator
+					it = _data->find("head");
+	responseHeaders = it->second[2] + " ";
+	// responseHeaders =
 }
 
 void				Response::responsePrepare(int & status, map_type * data) {
@@ -88,6 +97,7 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			}
 			return ;
 		}
+		// std::cout << it->second[0] << std::endl;
 		generateBody();
 		// buildResponse(); // TODO
 		return ;
@@ -132,8 +142,13 @@ void				Response::errorHandler() {
 }
 
 void				Response::setErrorPage(const std::map<int, std::string>
-																* errPg) {
-	errorPage = errPg;
+															* errPgPathMap) {
+	errorPage = errPgPathMap;
+}
+
+void				Response::setErrorPageTempl(const std::map<int,
+								std::vector<std::string> > * errPgTemplMap) {
+	errorPageTempl = errPgTemplMap;
 }
 
 void				Response::generateFilePath() {
@@ -195,11 +210,12 @@ void				Response::generateBody() {
 		}
 		return ;
 	}
-	std::map<int, std::string>::iterator it = errorPageTemplates.find(errCode);
-	if(!(body = (char*)malloc((bodyLength = it->second.length())))) {
+	std::map<int, std::vector<std::string> >::const_iterator	it;
+	it = errorPageTempl->find(errCode);
+	if(!(body = (char*)malloc((bodyLength = it->second[0].length())))) {
 		errorExit(2, "");
 	}
-	ft_memcpy(body, it->second.c_str(), bodyLength);
+	ft_memcpy(body, it->second[0].c_str(), bodyLength);
 }
 
 void				Response::generateRedirectURI(int err) {
@@ -335,6 +351,7 @@ int					Response::checkFile() {
 	if (!(stat(filePath.c_str(), & statbuf))) {
 		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
 			errCode = 200;
+			fileModifiedTime = modifiedTimeToStr(statbuf.st_mtime); // FIXME -1y
 			// DEBUG
 			std::cout << modifiedTimeToStr(statbuf.st_mtime) << std::endl;
 			std::cout << my_localtime() << std::endl;

@@ -20,6 +20,8 @@ class Response{
 private:
 	std::map<std::string, std::vector<std::string> > const *
 										_data;
+	std::map<int, std::vector<std::string> > const *
+										errorPageTempl;
 	int									errCode;
 	char *								body;
 	size_t								bodyLength;
@@ -29,6 +31,8 @@ private:
 	std::string							redirectURI;
 	std::map<int, std::string> const *	errorPage;
 	std::string							filePath;
+	std::string							fileModifiedTime;
+	std::string							webservVersion;
 	struct s_response					response;
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
@@ -52,14 +56,15 @@ public:
 										Response();
 										~Response(){};
 
-	void					setLocation(std::vector<Location *> const &);
-	void					setErrorPage(const std::map<int, std::string> *);
-	void					setErrcode(int const &num );
-	void					responsePrepare(int &, map_type *);
-	void					connectionHandler(int & status);
-	void					clearResponseData();
+	void	setLocation(std::vector<Location *> const &);
+	void	setErrorPage(const std::map<int, std::string> *);
+	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
+	void	setErrcode(int const &num );
+	void	responsePrepare(int &, map_type *);
+	void	connectionHandler(int & status);
+	void	clearResponseData();
 	const struct s_response &
-							getResponseStruct() const;
+			getResponseStruct() const;
 
 };
 

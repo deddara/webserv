@@ -17,7 +17,7 @@ int					main(int argc, char **argv)
 	std::vector<VirtServer> const &	servers = confPars.getServer();
 	size_t			serversNum = confPars.getServer().size();
 
-	ErrorPages		errPageMap(errorPageTemplates);
+	ErrorPages		errPageMap;
 
 	// for (size_t i = 0; i < serversNum; ++i) {
 	//     std::cout << std::endl
@@ -102,7 +102,10 @@ int					main(int argc, char **argv)
 	int				status;
 	Response		res;
 	res.setErrorPage(&confPars.getServer()[0].getErrorPage());
+	res.setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 	res.setLocation(confPars.getServer()[0].getLocation());
+		// std::cout << errorPageTemplates.count(400) << std::endl;
+		// std::cout << errorPageTemplates.size() << std::endl;
 	res.responsePrepare(status, &req.getData());
 	return 0;
 }

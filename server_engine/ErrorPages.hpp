@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:20 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/25 17:54:34 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/26 12:32:03 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,17 @@
 
 # include <iostream>
 # include <map>
+# include <vector>
 
-static std::map<int, std::string>				errorPageTemplates;
-
-class									ErrorPages {
-										ErrorPages();
+class								ErrorPages {
+	std::map<int, std::vector<std::string> >
+									errorPageTemplates;
 public:
-										ErrorPages(std::map<int, std::string> &);
-										~ErrorPages();
+									ErrorPages();
+									~ErrorPages();
+	std::map<int, std::vector<std::string> > const &
+									getErrorPageTemplates() const;
+	void							valClear(std::vector<std::string> &);
 };
 
 #endif
