@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 16:56:29 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 17:10:22 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -71,7 +71,7 @@ int Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		gettimeofday(&t, NULL);
-		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 30)
+		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 500)
 		{
 			closeConnection(it);
 			return (1);
@@ -154,6 +154,12 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			}
 			else if (!res)
 			{
+				if (chunk.getLen() == 0)
+				{
+					(*it)->getResponse()->setErrcode(200);
+					(*it)->setStatus(1);
+					return;
+				}
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
 				chunk.setCount(chunk.getCount() + 1);
 			}
@@ -300,7 +306,7 @@ int Server::launch() {
 		max_fd = virt_serv.back().getFd();
 		if (this->set_prepare())
 			continue;
-		t.tv_sec = 30;
+		t.tv_sec = 500;
 		t.tv_usec = 0;
 
 		if ((select_res = select(max_fd + 1, &readset, &writeset, NULL, &t)) < 0) {
