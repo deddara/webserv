@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 20:21:34 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 20:44:29 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -95,11 +95,15 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 
 
 	if ((*it)->getBytes().getBytes() == should_read_len)  //общее колво сколько должны считать
+	{
+//		ft_memcpy((void*)(*it)->getBody(), (void*)(*it)->getBuff(), content_length);
 		(*it)->setStatus(1);
+	}
 	else if ((*it)->getBytes().getBytes() > should_read_len)
 	{
 		if ((*it)->buffCut(should_read_len))
 			(*it)->getResponse()->setErrcode(500);
+//		ft_memcpy((void*)(*it)->getBody(), (void*)((*it)->getBuff() + should_read_len), content_length);
 		(*it)->setStatus(1);
 	}
 	return (0);

@@ -30,6 +30,7 @@ add_executable(webserv
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
         utils/ft_memcmp.cpp
+        utils/ft_memcpy.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)
