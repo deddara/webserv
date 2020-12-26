@@ -29,6 +29,7 @@ add_executable(webserv
         server_engine/Chunk.cpp
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
+        utils/ft_memcmp.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)

@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/25/20 22:50:02 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 19:09:40 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 20:30:01 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -29,8 +29,10 @@ int		Chunk::takeNum(const char * src,const int &ln){
 
 	if (!ft_strnstr(src, "\r\n", ln))
 		return (1);
-	std::string str_num;
+	std::string str_num = "str";
 	char *p;
+	if (*src != '\r' && *(src + 1) != '\n')
+		str_num.clear();
 	while (*src != '\r' && *(src + 1) != '\n')
 	{
 		str_num.push_back(*src);
@@ -52,4 +54,5 @@ void Chunk::setZero() {
 	len_sum = 0;
 	len = 0;
 	hex_len = 0;
+	buff_sum = 0;
 }

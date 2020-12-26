@@ -6,7 +6,7 @@
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
 /*  created: 12/24/20 20:36:43 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/26/20 19:35:34 by deddara                      +-++-++-++-++-++-++-+   */
+/*  updated: 12/26/20 20:21:34 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
@@ -138,6 +138,21 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 	while (bytes.getBytes() > body_pos + chunk.getLenSum()){
 		if (chunk.getCount() % 2)
 		{
+			if (chunk.getLen() == 0)
+			{
+				if (!ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
+				{
+					(*it)->getResponse()->setErrcode(200);
+					(*it)->setStatus(1);
+					chunk.setZero();
+				}
+				else
+				{
+					(*it)->getResponse()->setErrcode(400);
+					(*it)->setStatus(1);
+				}
+				return;
+			}
 			(*it)->bodyAppend(read_buff + chunk.getLenSum(), chunk.getLen());
 			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
@@ -154,13 +169,6 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			}
 			else if (!res)
 			{
-				if (chunk.getLen() == 0)
-				{
-					(*it)->getResponse()->setErrcode(200);
-					(*it)->setStatus(1);
-					chunk.setZero();
-					return;
-				}
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
 				chunk.setCount(chunk.getCount() + 1);
 			}
@@ -264,7 +272,6 @@ int Server::clientSessionHandler() {
 					if ((*it)->getStatus() == 0)
 						break ;
 				case rdy_parse:
-					std::cout << (*it)->getBody();
 					if ((*it)->getStatus() != 3)
 					{
 						(*it)->clearBuff();
