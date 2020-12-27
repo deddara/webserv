@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:35:34 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 18:47:00 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 00:54:17 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ class							ConfParser
 	Location *					locationBlockProc(std::string const &);
 	void						skipSpaceComm();
 	std::string					pickWord();
-	std::string					toLower(std::string);
-	std::string					toUpper(std::string);
 	void						checkCompleteness();
 	void						checkForDuplicates();
 public:

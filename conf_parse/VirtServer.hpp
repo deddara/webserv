@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 23:30:02 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 00:58:32 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ public:
 	std::set<std::string> const &		getServerFields() const;
 	struct s_errExitData const &		setErrStruct(int, std::string);
 	struct s_errExitData const &		setDataPair(std::string const &,
-											std::vector<std::string> const &);
+											std::vector<std::string> &);
 	void								setLocation(Location *);
 	void								eraseLocation();
 };

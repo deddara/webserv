@@ -6,31 +6,11 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 00:28:22 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 00:58:14 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "VirtServer.hpp"
-
-int					checkStringInt(std::string const & word) {
-	size_t			len = word.length();
-	for (size_t i = 0; i < len; ++i) {
-		if (!std::isdigit(word[i])) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int					checkSuspiciousSymbols(std::string const &word) {
-	size_t			len = word.length();
-	for (size_t i = 0; i < len; ++i) {
-		if (word[i] == '/') {
-			return 1;
-		}
-	}
-	return 0;
-}
 
 VirtServer::VirtServer() {
 	pr_serverFields.insert("host");
@@ -74,9 +54,7 @@ struct s_errExitData const &	VirtServer::setErrStruct(int code,
 }
 
 struct s_errExitData const &	VirtServer::setDataPair(std::string const & key,
-										std::vector<std::string> const & val) {
-	// std::set<std::string>::const_iterator
-	//                             it = pr_serverFields.find(key);
+										std::vector<std::string> & val) {
 	std::pair<
 		std::multimap<std::string, std::vector<std::string> >::iterator,
 		std::multimap<std::string, std::vector<std::string> >::iterator>
