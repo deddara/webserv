@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 01:09:44 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 02:19:57 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath) {
 }
 
 void				ConfParser::errorExit(int code, std::string const & word) {
-	std::string		errors[20] = {
+	std::string		errors[21] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -101,6 +101,7 @@ void				ConfParser::errorExit(int code, std::string const & word) {
 		"Error: duplicate server \"" + word + "\" found",
 		"Error: invalid error number \"" + word
 			+ "\" of \"error page\" directive",
+		"Error: malloc fails",
 	};
 	std::cout << errors[code] << std::endl;
 	for (size_t i = 0; i < pr_server.size(); ++i) {
@@ -238,50 +239,64 @@ void				ConfParser::parser() {
 		}
 		skipSpaceComm();
 	}
-	// checkCompleteness();
-	// checkForDuplicates();
+	checkCompleteness();
+	checkForDuplicates();
 }
 
 std::vector<VirtServer> &	ConfParser::getServer() {
 	return pr_server;
 }
 
-// void				ConfParser::checkCompleteness() {
-//     for (size_t i = 0; i < pr_server.size(); ++i)
-//     {
-//         if (!pr_server[i].getHost().length())
-//             errorExit(17, "host");
-//         if (!pr_server[i].getPort())
-//             errorExit(17, "listen");
-//         for (size_t j = 0; j < pr_server[i].getLocation().size(); ++j)
-//         {
-//             if (!pr_server[i].getLocation()[j]->getIndex().size())
-//                 errorExit(17, "index");
-//             if (!pr_server[i].getLocation()[j]->getAllowMethods().size())
-//                 errorExit(17, "allow_methods");
-//             if (!pr_server[i].getLocation()[j]->getRoot().length())
-//                 errorExit(17, "root");
-//         }
-//     }
-// }
+void				ConfParser::checkCompleteness() {
+	for (size_t i = 0; i < pr_server.size(); ++i)
+	{
+		if (!pr_server[i].getData().count("host")) {
+			errorExit(17, "host");
+		}
+		if (!pr_server[i].getData().count("listen")) {
+			errorExit(17, "listen");
+		}
+		for (size_t j = 0; j < pr_server[i].getLocation().size(); ++j) {
+			if (!pr_server[i].getLocation()[j]->getData().count("index")) {
+				errorExit(17, "index");
+			}
+			if (!pr_server[i].getLocation()[j]->getData().
+													count("allow_methods")) {
+				errorExit(17, "allow_methods");
+			}
+			if (!pr_server[i].getLocation()[j]->getData().count("root")) {
+				errorExit(17, "root");
+			}
+		}
+	}
+}
 
-// void				ConfParser::checkForDuplicates() {
-//     std::vector<std::string>	host;
+void				ConfParser::checkForDuplicates() {
+	std::vector<std::string>	host;
 
-//     for (size_t i = 0; i < pr_server.size(); ++i) {
-//         for (size_t j = 0; j < host.size(); j++) {
-//             if (pr_server[i].getHost() == host[j]) {
-//                 if (pr_server[i].getPort() == pr_server[j].getPort()) {
-//                     for (size_t k = 0;
-//                             k < pr_server[i].getServerName().size(); ++k)
-//                         if (std::find(pr_server[j].getServerName().begin(),
-//                                         pr_server[j].getServerName().end(),
-//                                         pr_server[i].getServerName()[k]) !=
-//                                         pr_server[j].getServerName().end())
-//                             errorExit(18, pr_server[i].getServerName()[k]);
-//                 }
-//             }
-//         }
-//         host.push_back(pr_server[i].getHost());
-//     }
-// }
+	for (size_t i = 0; i < pr_server.size(); ++i) {
+		for (size_t j = 0; j < host.size(); j++) {
+			if (pr_server[i].getData().find("host")->second[0] == host[j]) {
+				if (pr_server[i].getData().find("listen")->second[0] ==
+						pr_server[j].getData().find("listen")->second[0]) {
+					for (size_t k = 0;
+							k < pr_server[i].getData().find("server_name")->
+							second.size(); ++k) {
+						for (size_t l = 0;
+							l < pr_server[j].getData().find("server_name")->
+							second.size(); ++l) {
+							if (pr_server[i].getData().find("server_name")->
+									second[k] ==
+									pr_server[j].getData().find("server_name")->
+									second[l]) {
+								errorExit(18, pr_server[i].getData().
+										find("server_name")->second[k]);
+							}
+						}
+					}
+				}
+			}
+		}
+		host.push_back(pr_server[i].getData().find("host")->second[0]);
+	}
+}
