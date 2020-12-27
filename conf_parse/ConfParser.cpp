@@ -6,31 +6,11 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 22:04:23 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 23:35:55 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ConfParser.hpp"
-
-int					checkStringInt(std::string const &word) {
-	size_t			len = word.length();
-	for (size_t i = 0; i < len; ++i)
-	{
-		if (!std::isdigit(word[i]))
-			return 1;
-	}
-	return 0;
-}
-
-int					checkSuspiciousSymbols(std::string const &word) {
-	size_t			len = word.length();
-	for (size_t i = 0; i < len; ++i)
-	{
-		if (word[i] == '/')
-			return 1;
-	}
-	return 0;
-}
 
 int					checkBrackets(char c) {
 	if (c == '{')

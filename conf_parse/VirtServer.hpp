@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 21:00:36 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 23:30:02 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <map>
 # include <set>
 # include "Location.hpp"
+# include "includes.hpp"
 
 class									VirtServer
 {
@@ -37,6 +38,7 @@ public:
 
 	// methods used for parsing
 	std::set<std::string> const &		getServerFields() const;
+	struct s_errExitData const &		setErrStruct(int, std::string);
 	struct s_errExitData const &		setDataPair(std::string const &,
 											std::vector<std::string> const &);
 	void								setLocation(Location *);
