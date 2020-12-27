@@ -51,7 +51,6 @@ int					main(int argc, char **argv)
 			std::cout << "Autoindex\t: "
 				<< servers[i].getLocation()[j]->getAutoindex() << std::endl;
 		}
-
 	}
 	return 0;
 }

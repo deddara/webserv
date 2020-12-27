@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/22 13:39:34 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 11:00:56 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ public:
 	int const &							getPort() const;
 	int const &							getFd() const;
 	std::vector<std::string> const &	getServerName() const;
-	std::map<int, std::string> const &	getErrorPage() const;
+	std::map<int, std::string> const &	getErrorPagePath() const;
 	int const &							getLimitClientBody() const;
 	std::vector<Location *> const &		getLocation() const;
 

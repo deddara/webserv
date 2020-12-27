@@ -6,7 +6,7 @@
 /*   By: jjeremia <jjeremia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 10:45:11 by jjeremia          #+#    #+#             */
-/*   Updated: 2020/12/18 14:57:28 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/23 12:32:47 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 class Request {
 public:

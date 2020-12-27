@@ -37,9 +37,9 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 }
 
 int Server::setup(){
-	for (int i = 0; i < serversNum; ++i)
+	for (size_t i = 0; i < serversNum; ++i)
 	{
-		for (int j = 0; j < serversNum; ++j){
+		for (size_t j = 0; j < serversNum; ++j){
 			if (virt_serv[i].getHost() == virt_serv[j].getHost() && virt_serv[i].getPort() == virt_serv[j].getPort() && j != i) {
 				virt_serv[i].setFd(virt_serv[j].getFd());
 				break;
@@ -59,7 +59,7 @@ void Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		FD_SET((*it)->getFd(), &readset);
-		if ((*it)->getResponse() && strlen((*it)->getResponse()->getStr())){
+		if ((*it)->getResponse() && ((*it)->getResponse()->getResponseStruct().length)){
 			FD_SET((*it)->getFd(), &writeset);
 		}
 		if ((*it)->getFd() > max_fd)
@@ -69,7 +69,7 @@ void Server::set_prepare()
 
 void Server::postPutHandler(map_type const & data)
 {
-
+	(void)data; // DEBUG
 }
 
 void Server::recv_msg(std::vector<Client*>::iterator it){
@@ -84,11 +84,8 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 	(*it)->buffAppend(buff);
-//	(*it)->getRequest()->req_init(((*it)->getBuff()));
-//	map_type const & data = (*it)->getRequest()->getData();
-//	map_type::const_iterator data_it = data.find("head");
 
-	if ((*it)->getBuff().rfind("\r\n\r\n") != std::string::npos)
+	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", strlen(buff)))
 		(*it)->setStatus(1);
 }
 
@@ -118,7 +115,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 			(host == (*serv_it).getHost())){
 			(*it)->getResponse()->setLocation((*serv_it).getLocation());
 			return;
-		} // ||servername
+		}
 	}
 	(*it)->getResponse()->setErrcode(400);
 }
@@ -142,8 +139,7 @@ int Server::clientSessionHandler() {
 							(*it)->getResponse()->setErrcode(400);
 						else
 							this->getLocation(it, data);
-						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
-							return 1;
+						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data);
 						(*it)->clearBuff();
 						break;
 					}
@@ -159,16 +155,17 @@ int Server::clientSessionHandler() {
 			}
 		}
 		if (FD_ISSET((*it)->getFd(), &writeset)){
-			if ((send((*it)->getFd(), (*it)->getResponse()->getStr(),  strlen((*it)->getResponse()->getStr()), 0)) < 0)
+			if ((send((*it)->getFd(), (*it)->getResponse()->getResponseStruct().data, ((*it)->getResponse()->getResponseStruct().length), 0)) < 0)
 			{
 				perror("send");
 				return 1;
 			}
-			(*it)->getResponse()->clearStr();
+			(*it)->getResponse()->clearResponseData();
 			if ((*it)->getStatus() == 3) {
 				this->closeConnection(it);
 				break;
 			}
+			(*it)->setStatus(0);
 		}
 	}
 	return (0);
