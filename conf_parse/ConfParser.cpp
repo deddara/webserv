@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 15:06:58 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 20:28:55 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,128 +157,163 @@ VirtServer			ConfParser::serverBlockProc() {
 
 	VirtServer		server;
 	std::string		key;
-	std::string		val;
 	int				ret = 0;
 	int				i = 0;
 
-	skipSpaceComm();
 	while (checkBrackets(pr_data[pr_pos]) != 2)
 	{
+		skipSpaceComm();
 		if (pr_data[pr_pos] == ';')
 			errorExit(16, "");
 		ret = 0;
 		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		key = pickWord();
+		key = toLower(pickWord());
 		i = 0;
-		for (; i < 6; ++i)
-		{
-			if (toLower(key) == server.getServerFields()[i])
-			{
-				skipSpaceComm();
-				if (pr_data[pr_pos] == ';')
-					errorExit(3, key);
-				break ;
-			}
-		}
-		if (pr_data[pr_pos] == ';')
-			errorExit(16, "");
-		if (i == 6)
+		std::set<std::string>::const_iterator	it;
+		if ((it = server.getServerFields().find(key)) ==
+											server.getServerFields().end()) {
 			errorExit(4, key);
+		}
 		skipSpaceComm();
+		if (pr_data[pr_pos] == ';')
+			errorExit(3, key);
 		if (checkBrackets(pr_data[pr_pos]) == 1)
 			errorExit(9, "");
-		val = pickWord();
-		if (i == 0)
-		{
-			server.setHost(val);
-			skipSpaceComm();
-			if ((ret = checkBrackets(pr_data[pr_pos])))
-				errorExit(ret == 1 ? 9 : 8, key);
-			if (pr_data[pr_pos] != ';')
-				errorExit(3, key);
-			pr_pos++;
-		}
-		else if (i == 1)
-		{
-			if (checkStringInt(val))
-				errorExit(5, val);
-			int num = ft_atoi(val.c_str());
-			if (num < 0 || num > 65535)
-				errorExit(6, val);
-			server.setPort(num);
-			skipSpaceComm();
-			if ((ret = checkBrackets(pr_data[pr_pos])))
-				errorExit(ret == 1 ? 9 : 8, key);
-			if (pr_data[pr_pos] != ';')
-				errorExit(3, key);
-			pr_pos++;
-		}
-		else if (i == 2)
-		{
-			if (server.getServerName().size())
-				server.clearServerName();
-			if (checkBrackets(pr_data[pr_pos]) == 1)
-				errorExit(9, "");
-			if (checkSuspiciousSymbols(val))
-				errorExit(7, val);
-			server.setServerName(val);
-			skipSpaceComm();
+		if (*it == "location") {
+			server.setLocation(locationBlockProc(pickWord()));
+		} else {
+			std::vector<std::string>			valArray;
+			valArray.push_back(pickWord());
 			while (pr_data[pr_pos] != ';')
 			{
+				skipSpaceComm();
 				if ((ret = checkBrackets(pr_data[pr_pos])))
 					errorExit(ret == 1 ? 9 : 8, key);
-				val = pickWord();
-				if (checkSuspiciousSymbols(val))
-					errorExit(7, val);
-				server.setServerName(val);
+				valArray.push_back(pickWord());
 				skipSpaceComm();
 			}
+			pr_errStruct = server.setPairInData(key, valArray);
+			if (pr_errStruct.code) {
+				errorExit(pr_errStruct.code, pr_errStruct.word);
+			}
 			pr_pos++;
-		}
-		if (i == 3)
-		{
-			if (checkStringInt(val))
-				errorExit(5, val);
-			int num = ft_atoi(val.c_str());
-			if (num < 100 || num > 599)
-				errorExit(19, val);
-			skipSpaceComm();
-			if ((ret = checkBrackets(pr_data[pr_pos])))
-				errorExit(ret == 1 ? 9 : 8, key);
-			if (pr_data[pr_pos] == ';')
-				errorExit(16, "");
-			val = pickWord();
-			server.setErrorPage(num, val);
-			skipSpaceComm();
-			if (pr_data[pr_pos] != ';')
-				errorExit(3, key);
-			pr_pos++;
-		}
-		else if (i == 4)
-		{
-			if (checkStringInt(val))
-				errorExit(10, val);
-			int num = ft_atoi(val.c_str());
-			if (num < 0)
-				errorExit(11, val);
-			server.setLimitClientBody(num);
-			skipSpaceComm();
-			if ((ret = checkBrackets(pr_data[pr_pos])))
-				errorExit(ret == 1 ? 9 : 8, key);
-			if (pr_data[pr_pos] != ';')
-				errorExit(3, key);
-			pr_pos++;
-		}
-		if (i == 5)
-		{
-			server.setLocation(locationBlockProc(val));
 		}
 		skipSpaceComm();
 	}
 	pr_pos++;
 	return server;
 }
+				// if (checkSuspiciousSymbols(val))
+				//     errorExit(7, val);
+		// else if (i == 2)
+		// {
+		//     if (server.getServerName().size())
+		//         server.clearServerName();
+		//     if (checkBrackets(pr_data[pr_pos]) == 1)
+		//         errorExit(9, "");
+		//     if (checkSuspiciousSymbols(val))
+		//         errorExit(7, val);
+		//     server.setServerName(val);
+		//     skipSpaceComm();
+		//     while (pr_data[pr_pos] != ';')
+		//     {
+		//         if ((ret = checkBrackets(pr_data[pr_pos])))
+		//             errorExit(ret == 1 ? 9 : 8, key);
+		//         val = pickWord();
+		//         if (checkSuspiciousSymbols(val))
+		//             errorExit(7, val);
+		//         server.setServerName(val);
+		//         skipSpaceComm();
+		//     }
+		//     pr_pos++;
+		// }
+
+		// if (i == 0)
+		// {
+		//     server.setHost(val);
+		//     skipSpaceComm();
+		//     if ((ret = checkBrackets(pr_data[pr_pos])))
+		//         errorExit(ret == 1 ? 9 : 8, key);
+		//     if (pr_data[pr_pos] != ';')
+		//         errorExit(3, key);
+		//     pr_pos++;
+		// }
+		// else if (i == 1)
+		// {
+		//     if (checkStringInt(val))
+		//         errorExit(5, val);
+		//     int num = ft_atoi(val.c_str());
+		//     if (num < 0 || num > 65535)
+		//         errorExit(6, val);
+		//     server.setPort(num);
+		//     skipSpaceComm();
+		//     if ((ret = checkBrackets(pr_data[pr_pos])))
+		//         errorExit(ret == 1 ? 9 : 8, key);
+		//     if (pr_data[pr_pos] != ';')
+		//         errorExit(3, key);
+		//     pr_pos++;
+		// }
+		// else if (i == 2)
+		// {
+		//     if (server.getServerName().size())
+		//         server.clearServerName();
+		//     if (checkBrackets(pr_data[pr_pos]) == 1)
+		//         errorExit(9, "");
+		//     if (checkSuspiciousSymbols(val))
+		//         errorExit(7, val);
+		//     server.setServerName(val);
+		//     skipSpaceComm();
+		//     while (pr_data[pr_pos] != ';')
+		//     {
+		//         if ((ret = checkBrackets(pr_data[pr_pos])))
+		//             errorExit(ret == 1 ? 9 : 8, key);
+		//         val = pickWord();
+		//         if (checkSuspiciousSymbols(val))
+		//             errorExit(7, val);
+		//         server.setServerName(val);
+		//         skipSpaceComm();
+		//     }
+		//     pr_pos++;
+		// }
+		// if (i == 3)
+		// {
+		//     if (checkStringInt(val))
+		//         errorExit(5, val);
+		//     int num = ft_atoi(val.c_str());
+		//     if (num < 100 || num > 599)
+		//         errorExit(19, val);
+		//     skipSpaceComm();
+		//     if ((ret = checkBrackets(pr_data[pr_pos])))
+		//         errorExit(ret == 1 ? 9 : 8, key);
+		//     if (pr_data[pr_pos] == ';')
+		//         errorExit(16, "");
+		//     val = pickWord();
+		//     server.setErrorPage(num, val);
+		//     skipSpaceComm();
+		//     if (pr_data[pr_pos] != ';')
+		//         errorExit(3, key);
+		//     pr_pos++;
+		// }
+		// else if (i == 4)
+		// {
+		//     if (checkStringInt(val))
+		//         errorExit(10, val);
+		//     int num = ft_atoi(val.c_str());
+		//     if (num < 0)
+		//         errorExit(11, val);
+		//     server.setLimitClientBody(num);
+		//     skipSpaceComm();
+		//     if ((ret = checkBrackets(pr_data[pr_pos])))
+		//         errorExit(ret == 1 ? 9 : 8, key);
+		//     if (pr_data[pr_pos] != ';')
+		//         errorExit(3, key);
+		//     pr_pos++;
+		// }
+		// if (i == 5)
+		// {
+		//     server.setLocation(locationBlockProc(val));
+		// }
 
 Location *				ConfParser::locationBlockProc(std::string const & str) {
 	std::string			key;
@@ -416,8 +451,8 @@ void				ConfParser::parser() {
 		}
 		skipSpaceComm();
 	}
-	checkCompleteness();
-	checkForDuplicates();
+	// checkCompleteness();
+	// checkForDuplicates();
 }
 
 std::vector<VirtServer> &	ConfParser::getServer() {

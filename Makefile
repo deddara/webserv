@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/27 14:09:04 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/27 19:42:07 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -104,7 +104,7 @@ run: all
 	./$(NAME)
 
 test_ConfParser:
-	make	FLAGS="-Wall -Wextra $(DBGFLAGS)" \
+	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
 			all

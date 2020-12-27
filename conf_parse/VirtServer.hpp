@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 11:00:56 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 18:59:19 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,18 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <set>
 # include "Location.hpp"
+
+struct									s_errExitData {
+	int									code;
+	std::string							word;
+};
 
 class									VirtServer
 {
+	std::multimap<std::string, std::vector<std::string> >
+										pr_data;
 	std::string							pr_host;
 	int									pr_port;
 	std::vector<std::string>			pr_serverName;
@@ -28,7 +36,9 @@ class									VirtServer
 	std::vector<Location *>				pr_location;
 	int									fd;
 
-	std::vector<std::string>			pr_serverFields;
+	// std::vector<std::string>			pr_serverFields;
+	std::set<std::string>				pr_serverFields;
+	struct s_errExitData				errStruct;
 public:
 										VirtServer();
 										~VirtServer();
@@ -40,9 +50,15 @@ public:
 	std::map<int, std::string> const &	getErrorPagePath() const;
 	int const &							getLimitClientBody() const;
 	std::vector<Location *> const &		getLocation() const;
+	std::multimap<std::string, std::vector<std::string> > const &
+										getData() const;
 
 	// **** FOR PARSE ****
-	std::vector<std::string> const &	getServerFields() const;
+	// std::vector<std::string> const &	getServerFields() const;
+	std::set<std::string> const &		getServerFields() const;
+
+	struct s_errExitData const &		setPairInData(std::string const &,
+											std::vector<std::string> const &);
 
 	void								setHost(std::string const &);
 	void								setPort(int const &);

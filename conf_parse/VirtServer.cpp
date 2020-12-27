@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 11:01:17 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 19:21:22 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,19 @@
 
 
 VirtServer::VirtServer(): pr_port(0), pr_limitClientBody(-1), fd(0) {
-	pr_serverFields.push_back("host");
-	pr_serverFields.push_back("listen");
-	pr_serverFields.push_back("server_name");
-	pr_serverFields.push_back("error_page");
-	pr_serverFields.push_back("limit_client_body");
-	pr_serverFields.push_back("location");
+	// pr_serverFields.push_back("host");
+	// pr_serverFields.push_back("listen");
+	// pr_serverFields.push_back("server_name");
+	// pr_serverFields.push_back("error_page");
+	// pr_serverFields.push_back("limit_client_body");
+	// pr_serverFields.push_back("location");
+
+	pr_serverFields.insert("host");
+	pr_serverFields.insert("listen");
+	pr_serverFields.insert("server_name");
+	pr_serverFields.insert("error_page");
+	pr_serverFields.insert("limit_client_body");
+	pr_serverFields.insert("location");
 }
 
 
@@ -53,8 +60,13 @@ std::vector<Location *> const &		VirtServer::getLocation() const {
 	return pr_location;
 }
 
-std::vector<std::string> const &	VirtServer::getServerFields() const {
+std::set<std::string> const &		VirtServer::getServerFields() const {
 	return pr_serverFields;
+}
+
+std::multimap<std::string, std::vector<std::string> > const &
+									VirtServer::getData() const {
+										return pr_data;
 }
 
 void			VirtServer::setHost(std::string const & str) {
@@ -95,4 +107,13 @@ void			VirtServer::eraseLocation() {
 	for (size_t i = 0; i < pr_location.size(); ++i) {
 		delete pr_location[i];
 	}
+}
+
+struct s_errExitData const &
+				VirtServer::setPairInData(std::string const & key,
+										std::vector<std::string> const & val) {
+	pr_data.insert(std::make_pair(key, val));
+	errStruct.code = 0;
+	errStruct.word = "";
+	return errStruct;
 }
