@@ -57,7 +57,7 @@ public:
 										~Response();
 
 	void	setLocation(std::vector<Location *> const &);
-	void	setErrorPage(const std::map<int, std::string> *);
+	void	setErrorPagePath(const std::map<int, std::string> *);
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
 	void	responsePrepare(int &, map_type *);

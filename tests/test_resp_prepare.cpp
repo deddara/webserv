@@ -101,11 +101,9 @@ int					main(int argc, char **argv)
 
 	int				status;
 	Response		res;
-	res.setErrorPage(&confPars.getServer()[0].getErrorPage());
+	res.setErrorPagePath(&confPars.getServer()[0].getErrorPagePath());
 	res.setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 	res.setLocation(confPars.getServer()[0].getLocation());
-		// std::cout << errorPageTemplates.count(400) << std::endl;
-		// std::cout << errorPageTemplates.size() << std::endl;
 	res.responsePrepare(status, &req.getData());
 	return 0;
 }

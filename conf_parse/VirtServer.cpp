@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/22 13:39:34 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 11:01:17 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ std::vector<std::string> const &	VirtServer::getServerName() const {
 	return pr_serverName;
 }
 
-std::map<int, std::string> const &	VirtServer::getErrorPage() const {
+std::map<int, std::string> const &	VirtServer::getErrorPagePath() const {
 	return pr_errorPage;
 }
 

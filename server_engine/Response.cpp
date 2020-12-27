@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 01:28:06 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/27 11:00:20 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ void				Response::errorHandler() {
 	}
 }
 
-void				Response::setErrorPage(const std::map<int, std::string>
+void				Response::setErrorPagePath(const std::map<int, std::string>
 															* errPgPathMap) {
 	errorPage = errPgPathMap;
 }
