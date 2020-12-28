@@ -41,6 +41,7 @@ private:
 	void								errorExit(int, std::string const &);
 	int									checkUri();
 	int									checkLocation();
+	int									checkAllowMethods();
 	int									checkFile();
 	void								errorHandler();
 	void								error403Handler();

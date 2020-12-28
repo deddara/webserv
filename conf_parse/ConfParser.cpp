@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 15:34:38 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 19:26:35 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,6 @@ VirtServer			ConfParser::serverBlockProc() {
 			server.setLocation(location);
 		} else {
 			std::vector<std::string>			valArray;
-			valArray.push_back(pickWord());
 			while (pr_data[pr_pos] != ';')
 			{
 				skipSpaceComm();
@@ -218,7 +217,6 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 		if ((ret = checkBrackets(pr_data[pr_pos])))
 			errorExit(ret == 1 ? 9 : 8, key);
 		std::vector<std::string>			valArray;
-		valArray.push_back(pickWord());
 		while (pr_data[pr_pos] != ';')
 		{
 			skipSpaceComm();

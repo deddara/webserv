@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 16:28:54 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 19:21:58 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,11 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			buildResponse();
 			return ;
 		}
+		if (checkAllowMethods()) {
+			errorHandler();
+			buildResponse();
+			return ;
+		}
 		if (checkFile()) {
 			if (errCode == 403) {
 				error403Handler();
@@ -232,15 +237,36 @@ void				Response::setErrorPageTempl(const std::map<int,
 void				Response::generateFilePath() {
 	std::map<std::string, std::vector<std::string> >::const_iterator
 					it = _data->find("head");
-	std::string		cuttedURI =
-		it->second[1].substr(location[currLocationInd]->getPrefix().length());
+	std::string		appendixFromURI;
 
 	filePath = location[currLocationInd]->getData().find("root")->second[0];
-	if (filePath[filePath.length() - 1] != '/' && cuttedURI.length() &&
-			cuttedURI[0] != '/') {
-		filePath.append("/");
+
+	// case if the specified location is the file extension (.ext)
+	if (location[currLocationInd]->getPrefix()[0] == '.') {
+		size_t		pos = 0;
+		// get from the URI part from the start to the '?' if exist
+		while (pos < it->second[1].length() && it->second[1][pos] != '?') {
+			appendixFromURI.push_back(it->second[1][pos++]);
+		}
+		// append part of path from URI
+		filePath.append(appendixFromURI);
+		return ;
 	}
-	filePath.append(cuttedURI);
+
+	// case if the specified location is the path (/path/to/file)
+	if (location[currLocationInd]->getPrefix()[0] == '/') {
+		// get from the URI part from the index position equal length of the
+		// location prefix to the end
+		appendixFromURI = it->second[1].substr(location[currLocationInd]->
+														getPrefix().length());
+		// append '/' between root and appendix from URI if needed
+		if (filePath[filePath.length() - 1] != '/' && appendixFromURI.length()
+				&& appendixFromURI[0] != '/') {
+			filePath.append("/");
+		}
+		filePath.append(appendixFromURI);
+		return ;
+	}
 }
 
 void				Response::generateBody() {
@@ -403,27 +429,68 @@ void				Response::error403Handler() {
 	}
 }
 
+int					Response::checkAllowMethods() {
+	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
+	std::map<std::string, std::vector<std::string> >::const_iterator	itField;
+
+	// find requested method on allowed
+	itReq = _data->find("head");
+	itField = location[currLocationInd]->getData().find("allow_methods");
+	size_t i = 0;
+	for (; i < itField->second.size(); ++i) {
+		if (itReq->second[0] == itField->second[i]) {
+			return 0;
+		}
+	}
+	// requested method is not found in allowed methods for specified location
+	if (i = itField->second.size()) {
+		errCode = 405;
+	}
+	return 1;
+}
+
 int					Response::checkLocation() {
 	std::map<std::string, std::vector<std::string> >::const_iterator
 					it = _data->find("head");
 	size_t			pos = 0;
 	size_t			i = 0;
-	for (; i < location.size(); ++i) {
+	std::string		uri;
+	std::string		fileExt;
+
+	uri = it->second[1];
+
+	// check if URI contains file extension
+	if ((pos = uri.find(".", 0)) != std::string::npos) {
+		// cut out file extension from URI
+		while (pos < uri.length() && uri[pos] != '?') {
+			fileExt.push_back(uri[pos++]);
+		}
+	}
+
+	// check if file extension found in any location
+	if (fileExt.length()) {
+		for (; i < location.size(); ++i) {
+			if (location[i]->getPrefix() == fileExt) {
+				currLocationInd = i;
+				return 0;
+			}
+		}
+	}
+
+	// check if any 'path' location corresponds to the URI
+	for (i = 0; i < location.size(); ++i) {
 		pos = it->second[1].find(location[i]->getPrefix(), 0);
 		if ((!pos &&
 				location[i]->getPrefix()[location[i]->getPrefix().length() - 1]
 				== '/') || (!pos &&
 				(it->second[1][location[i]->getPrefix().length()] == '/' ||
 				it->second[1].length() == location[i]->getPrefix().length()))) {
-			break ;
+			currLocationInd = i;
+			return 0;
 		}
 	}
-	if (i == location.size()) {
-		errCode = 404;
-		return 1;
-	}
-	currLocationInd = i;
-	return 0;
+	errCode = 404;
+	return 1;
 }
 
 int					Response::checkFile() {

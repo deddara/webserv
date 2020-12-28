@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:04 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/26 23:34:02 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 17:25:43 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,19 @@ ErrorPages::ErrorPages() {
 		);
 	code404.push_back("Not Found");
 	errorPageTemplates.insert(std::make_pair(404, code404));
+
+	std::vector<std::string>		code405;
+	code405.push_back(
+		"<html>\n"													\
+		"<head><title>405 Method Not Allowed</title></head>\n"		\
+		"<body bgcolor=\"white\">\n"								\
+		"<center><h1>405 Method Not Allowed</h1></center>\n"		\
+		"<hr><center>webserv/0.1a</center>\n"						\
+		"</body>\n"													\
+		"</html>\n"
+		);
+	code405.push_back("Not Allowed");
+	errorPageTemplates.insert(std::make_pair(405, code405));
 
 	std::vector<std::string>		code500;
 	code500.push_back(
