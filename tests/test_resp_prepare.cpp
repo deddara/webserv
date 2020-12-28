@@ -100,10 +100,10 @@ int					main(int argc, char **argv)
 	// std::cout << "Request is bad: " << req.error() << std::endl;
 
 	int				status;
-	Response		res;
-	res.setErrorPagePath(&confPars.getServer()[0].getErrorPagePath());
-	res.setErrorPageTempl(&errPageMap.getErrorPageTemplates());
-	res.setLocation(confPars.getServer()[0].getLocation());
-	res.responsePrepare(status, &req.getData());
+	Response *		res = new Response;
+	res->setErrorPagePath(&confPars.getServer()[0].getErrorPagePath());
+	res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
+	res->setLocation(confPars.getServer()[0].getLocation());
+	res->responsePrepare(status, &req.getData());
 	return 0;
 }
