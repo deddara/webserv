@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/26 14:30:02 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/28 10:03:37 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -67,9 +67,9 @@ FLS_4		= $(addprefix $(DIR_4), \
 INCLUDES	+= -I $(DIR_4)
 
 DIR_TEST	= tests/
-FLS_TEST	= $(addprefix $(DIR_TEST), \
-				test_ConfParser \
-				)
+# FLS_TEST	= $(addprefix $(DIR_TEST), \
+#                 test_ConfParser \
+#                 )
 
 SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
 DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
@@ -104,9 +104,9 @@ run: all
 	./$(NAME)
 
 test_ConfParser:
-	make	FLAGS="-Wall -Wextra $(DBGFLAGS)" \
-			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1)" \
-			DIRS="$(DIR_TEST) $(DIR_1)" \
+	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
+			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
 			all
 	./$(NAME)
 

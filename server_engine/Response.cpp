@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/27 11:00:20 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 10:47:36 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ void				Response::generateFilePath() {
 	std::string		cuttedURI =
 		it->second[1].substr(location[currLocationInd]->getPrefix().length());
 
-	filePath = location[currLocationInd]->getRoot();
+	filePath = location[currLocationInd]->getData().find("root")->second[0];
 	if (filePath[filePath.length() - 1] != '/' && cuttedURI.length() &&
 			cuttedURI[0] != '/') {
 		filePath.append("/");
@@ -300,13 +300,15 @@ void				Response::generateRedirectURI(int err) {
 					it = errorPage->find(err);
 	size_t			pos = 0;
 	size_t			i = 0;
+	std::string		root;
+	std::string		prefix;
 	for (; i < location.size(); ++i) {
-		pos = it->second.find(location[i]->getRoot(), 0);
-		if ((!pos && (location[i]->getRoot()[location[i]->getRoot().length()
-				- 1] == '/')) || (!pos && location[i]->getRoot().length() ==
-				it->second.length()) || (!pos && (it->second[location[i]->
-				getRoot().length()] == '/' || it->second.length() ==
-				location[i]->getRoot().length()))) {
+		root = location[i]->getData().find("root")->second[0];
+		pos = it->second.find(root, 0);
+		if ((!pos && (root[root.length() - 1] == '/'))
+				|| (!pos && root.length() == it->second.length())
+				|| (!pos && (it->second[root.length()] == '/'
+				|| it->second.length() == root.length()))) {
 			break ;
 		}
 	}
@@ -314,20 +316,19 @@ void				Response::generateRedirectURI(int err) {
 		redirectURI = it->second;	// QUESTION what to do if no match error
 		return ;					// page path in any location?
 	}
-	if (it->second.length() > location[i]->getRoot().length()) {
-		redirectURI = it->second.substr(location[i]->getRoot().length());
-		if (redirectURI[0] == '/' && location[i]->getPrefix()[location[i]->
-				getPrefix().length() - 1] == '/') {
-			redirectURI.insert(0, location[i]->getPrefix().
-					substr(0, location[i]->getPrefix().length() - 1));
-		} else if (redirectURI[0] != '/' && location[i]->getPrefix()
-					[location[i]->getPrefix().length() - 1] != '/') {
-			redirectURI.insert(0, location[i]->getPrefix() + "/");
+	prefix = location[i]->getPrefix();
+	if (it->second.length() > root.length()) {
+		redirectURI = it->second.substr(root.length());
+		if (redirectURI[0] == '/' && prefix[prefix.length() - 1] == '/') {
+			redirectURI.insert(0, prefix.substr(0, prefix.length() - 1));
+		} else if (redirectURI[0] != '/'
+				&& prefix[prefix.length() - 1] != '/') {
+			redirectURI.insert(0, prefix + "/");
 		} else {
-			redirectURI.insert(0, location[i]->getPrefix());
+			redirectURI.insert(0, prefix);
 		}
 	} else {
-		redirectURI = location[i]->getPrefix();
+		redirectURI = prefix;
 	}
 }
 
