@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 02:19:57 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 15:34:38 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath) {
 }
 
 void				ConfParser::errorExit(int code, std::string const & word) {
-	std::string		errors[21] = {
+	std::string		errors[23] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -102,6 +102,8 @@ void				ConfParser::errorExit(int code, std::string const & word) {
 		"Error: invalid error number \"" + word
 			+ "\" of \"error page\" directive",
 		"Error: malloc fails",
+		"Error: limit client body \"" + word + "\" overflows",
+		"Error: duplicate location \"" + word + "\" found",
 	};
 	std::cout << errors[code] << std::endl;
 	for (size_t i = 0; i < pr_server.size(); ++i) {
@@ -119,6 +121,7 @@ VirtServer			ConfParser::serverBlockProc() {
 	pr_pos++;
 
 	VirtServer		server;
+	Location *		location = nullptr;
 	std::string		key;
 	int				ret = 0;
 	int				i = 0;
@@ -144,7 +147,14 @@ VirtServer			ConfParser::serverBlockProc() {
 		if ((ret = checkBrackets(pr_data[pr_pos])))
 			errorExit(ret == 1 ? 9 : 8, key);
 		if (*it == "location") {
-			server.setLocation(locationBlockProc(pickWord()));
+			location = locationBlockProc(pickWord());
+			for (size_t i = 0; i < server.getLocation().size(); ++i) {
+				if (location->getPrefix() ==
+						server.getLocation()[i]->getPrefix()) {
+					errorExit(22, location->getPrefix());
+				}
+			}
+			server.setLocation(location);
 		} else {
 			std::vector<std::string>			valArray;
 			valArray.push_back(pickWord());
@@ -186,8 +196,9 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 
 	Location *			location = new(Location);
 
+	// add '/' in start of prefix if needed and if it's not a CGI location
 	location->setPrefix(str);
-	if (location->getPrefix()[0] != '/')
+	if (location->getPrefix()[0] != '/' && location->getPrefix()[0] != '.')
 		location->setPrefix("/" + location->getPrefix());
 
 	while (checkBrackets(pr_data[pr_pos]) != 2)

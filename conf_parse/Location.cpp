@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:33:30 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 01:11:34 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 15:12:46 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ Location::Location() {
 	pr_locationsFields.insert("allow_methods");
 	pr_locationsFields.insert("root");
 	pr_locationsFields.insert("autoindex");
+	pr_locationsFields.insert("bin");
+	pr_locationsFields.insert("limit_client_body");
 }
 
 Location::~Location() {}
@@ -88,6 +90,29 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 		val[0] = toLower(val[0]);
 		if (val[0] != "on" && val[0] != "off") {
 			return (setErrStruct(14, val[0]));
+		}
+	}
+	if (key == "bin") {
+		if (pr_data.count(key)) {
+			pr_data.erase(key);
+		}
+		if (val.size() != 1) {
+			return (setErrStruct(3, key));
+		}
+	}
+	if (key == "limit_client_body") {
+		if (pr_data.count(key)) {
+			pr_data.erase(key);
+		}
+		if (val.size() != 1) {
+			return (setErrStruct(3, key));
+		}
+		if (checkStringInt(val[0])) {
+			return (setErrStruct(10, val[0]));
+		}
+		int num = ft_atoi(val[0].c_str());
+		if (num < 0) {
+			return (setErrStruct(21, val[0]));
 		}
 	}
 	pr_data.insert(std::make_pair(key, val));

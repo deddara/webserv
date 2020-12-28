@@ -27,7 +27,7 @@ int					main(int argc, char **argv)
 		std::vector<Location *> locations = itServ->getLocation();
 		for (size_t j = 0; j < locations.size(); ++j) {
 			std::cout << std::endl
-				<< "-- Location: " << locations[j]->getPrefix() << " --" << std::endl;
+				<< "-- Location: \"" << locations[j]->getPrefix() << "\" --" << std::endl;
 			std::multimap<std::string, std::vector<std::string> >::const_iterator itLocData =
 				locations[j]->getData().begin();
 			for (; itLocData != locations[j]->getData().end(); ++itLocData) {
