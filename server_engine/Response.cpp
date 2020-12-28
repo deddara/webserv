@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 10:47:36 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/28 16:28:54 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,11 @@ void				Response::buildResponse() {
 	// Last-Modified
 	if (errCode == 200) {
 		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
+	}
+
+	// Redirect location
+	if (errCode == 302) {
+		responseHeaders.append("Location: " + redirectURI + "\r\n");
 	}
 
 	// Connection
@@ -239,7 +244,11 @@ void				Response::generateFilePath() {
 }
 
 void				Response::generateBody() {
-	if (errCode == 200) {
+	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
+	std::map<int, std::vector<std::string> >::const_iterator			itErr;
+
+	itReq = _data->find("head");
+	if (errCode == 200 && itReq->second[0] == "GET") {
 		int			fd;
 		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
 			errorExit(0, "");
@@ -284,15 +293,11 @@ void				Response::generateBody() {
 		free(buf);
 		return ;
 	}
-	std::map<int, std::vector<std::string> >::const_iterator	it;
-	it = errorPageTempl->find(errCode);
-	if(!(body = (char*)malloc((bodyLength = it->second[0].length())))) {
+	itErr = errorPageTempl->find(errCode);
+	if(!(body = (char*)malloc((bodyLength = itErr->second[0].length())))) {
 		errorExit(2, "");
 	}
-	ft_memcpy(body, it->second[0].c_str(), bodyLength);
-	// for (size_t i = 0; i < bodyLength; ++i) {
-	//     body[i] = it->second[0][i];
-	// }
+	ft_memcpy(body, itErr->second[0].c_str(), bodyLength);
 }
 
 void				Response::generateRedirectURI(int err) {
