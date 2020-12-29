@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 11:14:45 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/29 11:37:38 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,14 @@ public:
 	int const							getPort() const;
 	std::vector<std::string> const &	getServerName() const;
 	int const							getLimitClientBody() const;
-	std::map<int, std::string> const &	getErrorPagePath();
+	std::map<int, std::string> const &	getErrorPagePath() const;
 
 	// methods used for parsing
 	std::set<std::string> const &		getServerFields() const;
 	struct s_errExitData const &		setErrStruct(int, std::string);
 	struct s_errExitData const &		setDataPair(std::string const &,
 											std::vector<std::string> &);
+	void								createErrPagePathMap();
 	void								setLocation(Location *);
 	void								eraseLocation();
 };

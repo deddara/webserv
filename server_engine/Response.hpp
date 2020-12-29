@@ -2,7 +2,7 @@
 # define RESPONSE_HPP
 
 # include "ErrorPages.hpp"
-# include "Location.hpp"
+# include "VirtServer.hpp"
 # include "includes.hpp"
 # include <fcntl.h>
 # include <map>
@@ -36,6 +36,7 @@ private:
 	struct s_response					response;
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
+	int									limitClientBody;
 
 	void								createErrPagesMap();
 	void								errorExit(int, std::string const &);
@@ -57,15 +58,16 @@ public:
 										Response();
 										~Response();
 
-	void	setLocation(std::vector<Location *> const &);
+	void	setServer(VirtServer const &);
 	void	setErrorPagePath(const std::map<int, std::string> *);
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
-	void	responsePrepare(int &, map_type *);
+	void	responsePrepare(int &, std::map<std::string,
+											std::vector<std::string> > const *);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
-	struct s_response & getResponseStruct();
 
+	struct s_response &					getResponseStruct();
 };
 
 #endif

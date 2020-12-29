@@ -113,7 +113,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++serv_it) {
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost())){
-			(*it)->getResponse()->setLocation((*serv_it).getLocation());
+			(*it)->getResponse()->setServer(*serv_it);
 			return;
 		}
 	}
@@ -155,7 +155,9 @@ int Server::clientSessionHandler() {
 			}
 		}
 		if (FD_ISSET((*it)->getFd(), &writeset)){
-			if ((send((*it)->getFd(), (*it)->getResponse()->getResponseStruct().data, ((*it)->getResponse()->getResponseStruct().length), 0)) < 0)
+			if ((send((*it)->getFd(),
+					(*it)->getResponse()->getResponseStruct().data,
+					(*it)->getResponse()->getResponseStruct().length, 0)) < 0)
 			{
 				perror("send");
 				return 1;

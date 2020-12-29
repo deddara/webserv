@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 19:21:58 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/29 12:19:11 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 					};
 
 					Response::~Response() {
-						// FIXME segfault after hardcoded body
 						if (response.data) {
 							free(response.data);
 							response.data = nullptr;
@@ -222,16 +221,6 @@ void				Response::errorHandler() {
 	generateBody();
 	return ;
 	}
-}
-
-void				Response::setErrorPagePath(const std::map<int, std::string>
-															* errPgPathMap) {
-	errorPage = errPgPathMap;
-}
-
-void				Response::setErrorPageTempl(const std::map<int,
-								std::vector<std::string> > * errPgTemplMap) {
-	errorPageTempl = errPgTemplMap;
 }
 
 void				Response::generateFilePath() {
@@ -515,14 +504,21 @@ int					Response::checkFile() {
 	return 1;
 }
 
-void				Response::setLocation(std::vector<Location *> const & loc) {
-	location = loc;
-}
-
 void				Response::setErrcode(int const & num) {
 	errCode = num;
 }
 
 struct s_response &	Response::getResponseStruct() {
 	return response;
+}
+
+void				Response::setServer(VirtServer const & virtServ) {
+	errorPage = & virtServ.getErrorPagePath();
+	location = virtServ.getLocation();
+	limitClientBody = virtServ.getLimitClientBody();
+}
+
+void				Response::setErrorPageTempl(const std::map<int,
+								std::vector<std::string> > * errPgTemplMap) {
+	errorPageTempl = errPgTemplMap;
 }

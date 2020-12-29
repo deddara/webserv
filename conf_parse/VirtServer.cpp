@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 15:19:40 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/29 11:37:11 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,11 @@ int const						VirtServer::getLimitClientBody() const {
 	return ft_atoi(pr_data.find("limit_client_body")->second[0].c_str());
 }
 
-std::map<int, std::string> const &	VirtServer::getErrorPagePath() {
+std::map<int, std::string> const &	VirtServer::getErrorPagePath() const {
+	return errPgPathMap;
+}
+
+void							VirtServer::createErrPagePathMap() {
 	std::pair<
 		std::multimap<std::string, std::vector<std::string> >::iterator,
 		std::multimap<std::string, std::vector<std::string> >::iterator>
@@ -170,5 +174,4 @@ std::map<int, std::string> const &	VirtServer::getErrorPagePath() {
 		errPgPathMap.insert(std::make_pair(ft_atoi(it->second[0].c_str()),
 					it->second[1]));
 	}
-	return errPgPathMap;
 }
