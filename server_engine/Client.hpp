@@ -1,9 +1,23 @@
+/* *************************************************************************************/
+/*                                                                                     */
+/*                                                             |\---/|                 */
+/*  Client.hpp                                                 | o_o |                 */
+/*                                                             ‾‾‾‾‾‾‾                 */
+/*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
+/*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
+/*  created: 12/24/20 19:19:04 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/25/20 23:30:46 by deddara                      +-++-++-++-++-++-++-+   */
+/*                                                             |)[-|)|)/-\|2/-\        */
+/*                                                                                     */
+/* **********************************************************²**************************/
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 # include "iostream"
 # include "vector"
 # include "Request.hpp"
 # include "Response.hpp"
+# include "Bytes.hpp"
+# include "Chunk.hpp"
 
 enum states{
 	rdy_recv,
@@ -15,19 +29,24 @@ enum states{
 
 class Client{
 private:
-	char		*read_buff;
+	char			*read_buff;
+	char			*body_buff;
 
 	int			_fd;
 	int			state;
 	std::string serv_host;
 	int			serv_port;
 
-	Request		*reqst;
-	Response	*resp;
+	Bytes			bytes;
+	Request			*reqst;
+	Response		*resp;
+	Chunk			chunk;
+
+	struct timeval	last_msg;
 
 public:
 
-	Client(int fd, std::string const &, int const &);
+	Client(int fd, std::string const &, int const &, ErrorPages const & errPageMap);
 	~Client();
 
 	void setFd(int fd);
@@ -35,14 +54,28 @@ public:
 	int & getStatus();
 	void setStatus(int status);
 	char const *getBuff();
+	char const *getBody();
+
 	Request * getRequest();
 	Response * getResponse();
+	Bytes	& getBytes();
+	Chunk	& getChunk();
 
 	std::string const & getServHost();
 	int const & getServPort();
 
-	void buffAppend(char *);
+	int buffAppend(char const *, const int &);
+	int bodyAppend(char const *, const int &);
+	int buffCut(unsigned long const &);
 	void clearBuff();
+
+	struct timeval & getLastMsg();
+	void		setLastMsg();
+
+	//CGI
+	char **set_env();
+	void exec_cgi();
+	void get_cgi_response();
 
 };
 

@@ -1,32 +1,32 @@
 /* *************************************************************************************/
 /*                                                                                     */
 /*                                                             |\---/|                 */
-/*  main.cpp                                                   | o_o |                 */
+/*  Bytes.hpp                                                  | o_o |                 */
 /*                                                             ‾‾‾‾‾‾‾                 */
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
-/*  created: 12/24/20 22:37:25 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 22:38:07 by deddara                      +-++-++-++-++-++-++-+   */
+/*  created: 12/25/20 23:30:46 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/26/20 19:21:35 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
-#include "Server.hpp"
-#include "includes.hpp"
-#include "ConfParser.hpp"
-#include "VirtServer.hpp"
+#ifndef BYTES_H
+# define BYTES_H
 
-int main(int argc, char **argv)
-{
+class Bytes{
+private:
+	unsigned long bytes_count;
 
-	ConfParser		confPars(argc == 2 ? argv[1] : "./webserv.conf");
-	Server			serv(confPars.getServer());
+public:
+	Bytes();
 
-	serv.setup();
+	const unsigned long & getBytes() const;
+	void setBytes(const unsigned long &);
+	void bytesCount(const int &);
 
-	//биндим айпишники
-	//поднимаем сервер
-	if (serv.launch())
-		return 1;
+	char* bytesDup(char*, const char*,int const & len);
+	char * bytesJoin(char*, const char*,int const & len, int const & src_len);
+	char * bytesCut(char*, unsigned long const &);
+};
 
-	return (0);
-}
+#endif

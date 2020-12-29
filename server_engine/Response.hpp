@@ -38,9 +38,7 @@ private:
 	char								errHandlersFlags;
 	int									limitClientBody;
 
-	void								createErrPagesMap();
 	void								errorExit(int, std::string const &);
-	int									checkUri();
 	int									checkLocation();
 	int									checkAllowMethods();
 	int									checkFile();
@@ -59,7 +57,6 @@ public:
 										~Response();
 
 	void	setServerData(VirtServer const &);
-	void	setErrorPagePath(const std::map<int, std::string> *);
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
 	void	responsePrepare(int &, std::map<std::string,

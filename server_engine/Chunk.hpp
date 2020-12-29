@@ -1,32 +1,46 @@
 /* *************************************************************************************/
 /*                                                                                     */
 /*                                                             |\---/|                 */
-/*  main.cpp                                                   | o_o |                 */
+/*  Chunk.hpp                                                  | o_o |                 */
 /*                                                             ‾‾‾‾‾‾‾                 */
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
-/*  created: 12/24/20 22:37:25 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 22:38:07 by deddara                      +-++-++-++-++-++-++-+   */
+/*  created: 12/25/20 22:36:08 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/26/20 19:09:40 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
-#include "Server.hpp"
-#include "includes.hpp"
-#include "ConfParser.hpp"
-#include "VirtServer.hpp"
+#ifndef CHUNK_HPP
+# define CHUNK_HPP
+# include <iostream>
 
-int main(int argc, char **argv)
-{
+class Chunk{
 
-	ConfParser		confPars(argc == 2 ? argv[1] : "./webserv.conf");
-	Server			serv(confPars.getServer());
+private:
+	int count;
+	int len_sum;
+	int len;
+	int hex_len;
+	int buff_sum;
 
-	serv.setup();
+public:
+	Chunk() : count(0), len_sum(0), len(0), hex_len(0), buff_sum(0) {};
+	~Chunk() {};
 
-	//биндим айпишники
-	//поднимаем сервер
-	if (serv.launch())
-		return 1;
+	const int & getCount(void);
+	const int & getLenSum(void);
+	const int & getLen(void);
+	const int & getHexLen(void);
+	const int & getBuffSum(void);
 
-	return (0);
-}
+	void	setBuffSum(const int &);
+	void	setLenSum(const int &);
+	void	setLen(const int &);
+	void	setCount(const int &);
+	int		takeNum(const char *,const int &);
+	void 	setZero();
+
+
+};
+
+#endif

@@ -47,6 +47,8 @@ INCLUDES	+= -I $(DIR_2)
 
 DIR_3		= server_engine/
 FLS_3		= $(addprefix $(DIR_3), \
+				Bytes \
+				Chunk \
 				Client \
 				ErrorPages \
 				Response \
@@ -58,7 +60,9 @@ DIR_4		= utils/
 FLS_4		= $(addprefix $(DIR_4), \
 				ft_atoi \
 				ft_itoa \
+				ft_memcmp \
 				ft_memcpy \
+				ft_strdup \
 				ft_strjoin \
 				ft_strnstr \
 				time \

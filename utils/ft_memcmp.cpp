@@ -1,32 +1,30 @@
 /* *************************************************************************************/
 /*                                                                                     */
 /*                                                             |\---/|                 */
-/*  main.cpp                                                   | o_o |                 */
+/*  ft_memcmp.cpp                                              | o_o |                 */
 /*                                                             ‾‾‾‾‾‾‾                 */
 /*  By: deddara <deddara@student-21.school.ru>                 ┌┬┐┌─┐┌┬┐┌┬┐┌─┐┬─┐┌─┐   */
 /*                                                             _││├┤  ││ ││├─┤├┬┘├─┤   */
-/*  created: 12/24/20 22:37:25 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
-/*  updated: 12/24/20 22:38:07 by deddara                      +-++-++-++-++-++-++-+   */
+/*  created: 12/26/20 20:19:45 by deddara                      ─┴┘└─┘─┴┘─┴┘┴ ┴┴└─┴ ┴   */
+/*  updated: 12/26/20 20:19:45 by deddara                      +-++-++-++-++-++-++-+   */
 /*                                                             |)[-|)|)/-\|2/-\        */
 /*                                                                                     */
 /* **********************************************************²**************************/
-#include "Server.hpp"
-#include "includes.hpp"
-#include "ConfParser.hpp"
-#include "VirtServer.hpp"
+#include <stddef.h>
 
-int main(int argc, char **argv)
+int	ft_memcmp(const void *s1, const void *s2, size_t n)
 {
+	unsigned char	*str1;
+	unsigned char	*str2;
 
-	ConfParser		confPars(argc == 2 ? argv[1] : "./webserv.conf");
-	Server			serv(confPars.getServer());
-
-	serv.setup();
-
-	//биндим айпишники
-	//поднимаем сервер
-	if (serv.launch())
-		return 1;
-
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	while (n--)
+	{
+		if (*str1 != *str2)
+			return (*str1 - *str2);
+		str1++;
+		str2++;
+	}
 	return (0);
 }

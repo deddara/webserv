@@ -17,8 +17,6 @@ int					main(int argc, char **argv)
 	std::vector<VirtServer> const &	servers = confPars.getServer();
 	size_t			serversNum = confPars.getServer().size();
 
-	ErrorPages		errPageMap;
-
 	std::string raw = "GET /site/index.html HTTP/1.1\r\n"
 	"User-Agent: curl/7.16.3 libcurl/7.16.3 OpenSSL/0.9.7l zlib/1.2.3\r\n"
 	"Host: www.example.com\r\n"
@@ -62,6 +60,7 @@ int					main(int argc, char **argv)
 
 	int				status;
 	Response *		res = new Response;
+	ErrorPages		errPageMap;
 	res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 	res->setServerData(confPars.getServer()[0]);
 	res->responsePrepare(status, &req.getData());
