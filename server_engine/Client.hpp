@@ -32,10 +32,10 @@ private:
 	char			*read_buff;
 	char			*body_buff;
 
-	int				_fd;
-	int 			state;
-	int 			serv_port;
-	std::string		serv_host;
+	int			_fd;
+	int			state;
+	std::string serv_host;
+	int			serv_port;
 
 	Bytes			bytes;
 	Request			*reqst;

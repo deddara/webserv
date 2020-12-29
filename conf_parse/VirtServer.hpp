@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/22 13:39:34 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/29 11:37:38 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,43 +16,42 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <set>
 # include "Location.hpp"
+# include "includes.hpp"
 
 class									VirtServer
 {
-	std::string							pr_host;
-	int									pr_port;
-	std::vector<std::string>			pr_serverName;
-	std::map<int, std::string>			pr_errorPage;
-	int									pr_limitClientBody;
+	std::multimap<std::string, std::vector<std::string> >
+										pr_data;
 	std::vector<Location *>				pr_location;
-	int									fd;
 
-	std::vector<std::string>			pr_serverFields;
+	std::set<std::string>				pr_serverFields;
+	struct s_errExitData				errStruct;
+	std::map<int, std::string>			errPgPathMap;
+	int									fd;
 public:
 										VirtServer();
 										~VirtServer();
 
-	std::string const &					getHost() const;
-	int const &							getPort() const;
-	int const &							getFd() const;
-	std::vector<std::string> const &	getServerName() const;
-	std::map<int, std::string> const &	getErrorPage() const;
-	int const &							getLimitClientBody() const;
+	std::multimap<std::string, std::vector<std::string> > const &
+										getData() const;
 	std::vector<Location *> const &		getLocation() const;
-
-	// **** FOR PARSE ****
-	std::vector<std::string> const &	getServerFields() const;
-
-	void								setHost(std::string const &);
-	void								setPort(int const &);
 	void								setFd(int const &);
-	void								setServerName(std::string const &);
-	void								setErrorPage(int, std::string const &);
-	void								setLimitClientBody(int const &);
-	void								setLocation(Location *);
+	int const &							getFd() const;
+	std::string const &					getHost() const;
+	int const							getPort() const;
+	std::vector<std::string> const &	getServerName() const;
+	int const							getLimitClientBody() const;
+	std::map<int, std::string> const &	getErrorPagePath() const;
 
-	void								clearServerName();
+	// methods used for parsing
+	std::set<std::string> const &		getServerFields() const;
+	struct s_errExitData const &		setErrStruct(int, std::string);
+	struct s_errExitData const &		setDataPair(std::string const &,
+											std::vector<std::string> &);
+	void								createErrPagePathMap();
+	void								setLocation(Location *);
 	void								eraseLocation();
 };
 

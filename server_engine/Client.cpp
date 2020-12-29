@@ -13,7 +13,8 @@
 #include "Client.hpp"
 #include "sys/time.h"
 
-Client::Client(int fd, std::string const & host, int const & port) : _fd(fd), state(0), serv_host(host), serv_port(port), read_buff(nullptr), body_buff(nullptr){
+Client::Client(int fd, std::string const & host, int const & port) :
+	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port) {
 	reqst = new Request();
 	resp = new Response();
 	gettimeofday(&last_msg, NULL);

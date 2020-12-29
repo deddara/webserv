@@ -49,9 +49,9 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 }
 
 int Server::setup(){
-	for (int i = 0; i < serversNum; ++i)
+	for (size_t i = 0; i < serversNum; ++i)
 	{
-		for (int j = 0; j < serversNum; ++j){
+		for (size_t j = 0; j < serversNum; ++j){
 			if (virt_serv[i].getHost() == virt_serv[j].getHost() && virt_serv[i].getPort() == virt_serv[j].getPort() && j != i) {
 				virt_serv[i].setFd(virt_serv[j].getFd());
 				break;
@@ -77,7 +77,7 @@ int Server::set_prepare()
 			return (1);
 		}
 		FD_SET((*it)->getFd(), &readset);
-		if ((*it)->getResponse() && strlen((*it)->getResponse()->getStr())){
+		if ((*it)->getResponse() && ((*it)->getResponse()->getResponseStruct().length)){
 			FD_SET((*it)->getFd(), &writeset);
 		}
 		if ((*it)->getFd() > max_fd)
@@ -257,7 +257,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++serv_it) {
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost() || !(nameCompare(host, serv_it)))){
-			(*it)->getResponse()->setLocation((*serv_it).getLocation());
+			(*it)->getResponse()->setServerData(*serv_it);
 			return;
 		}
 	}
@@ -281,8 +281,8 @@ int Server::clientSessionHandler() {
 						(*it)->clearBuff();
 						if (!(*it)->getRequest()->error())
 							this->getLocation(it, data);
-						if ((*it)->getResponse()->response_prepare((*it)->getStatus(), &data))
-							return 1;
+						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data);
+						(*it)->clearBuff();
 						break;
 					}
 				case finish:
@@ -297,12 +297,14 @@ int Server::clientSessionHandler() {
 			}
 		}
 		if (FD_ISSET((*it)->getFd(), &writeset)){
-			if ((send((*it)->getFd(), (*it)->getResponse()->getStr(),  strlen((*it)->getResponse()->getStr()), 0)) < 0)
+			if ((send((*it)->getFd(),
+					(*it)->getResponse()->getResponseStruct().data,
+					(*it)->getResponse()->getResponseStruct().length, 0)) < 0)
 			{
 				perror("send");
 				return 1;
 			}
-			(*it)->getResponse()->clearStr();
+			(*it)->getResponse()->clearResponseData();
 			if ((*it)->getStatus() == 3) {
 				this->closeConnection(it);
 				break;

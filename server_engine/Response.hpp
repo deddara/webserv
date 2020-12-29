@@ -1,44 +1,73 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
-# include "iostream"
+
+# include "ErrorPages.hpp"
+# include "VirtServer.hpp"
 # include "includes.hpp"
 # include <fcntl.h>
+# include <map>
+# include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-# include "Location.hpp"
-#include "map"
+
+struct									s_response {
+	char *								data;
+	size_t								length;
+};
 
 class Response{
 private:
-	std::string response;
-	std::string body;
-	std::string head;
-	std::string date;
-	int 		err_code;
-	std::vector<Location*> location;
-	std::map<int, std::string>			pr_errorPage;
-	std::map<std::string, std::vector<std::string> > const * _data;
+	std::map<std::string, std::vector<std::string> > const *
+										_data;
+	std::map<int, std::vector<std::string> > const *
+										errorPageTempl;
+	int									errCode;
+	char *								body;
+	size_t								bodyLength;
+	size_t								currLocationInd;
+	std::vector<Location *>				location;
+	std::string							responseHeaders;
+	std::string							redirectURI;
+	std::map<int, std::string> const *	errorPage;
+	std::string							filePath;
+	std::string							fileModifiedTime;
+	std::string							webservVersion;
+	struct s_response					response;
+	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
+	char								errHandlersFlags;
+	int									limitClientBody;
+
+	void								createErrPagesMap();
+	void								errorExit(int, std::string const &);
+	int									checkUri();
+	int									checkLocation();
+	int									checkAllowMethods();
+	int									checkFile();
+	void								errorHandler();
+	void								error403Handler();
+	void								error404Handler();
+	void								generateRedirectURI(int);
+	void								generateBody();
+	void								generateFilePath();
+	void								buildResponse();
 
 public:
-	typedef std::map<std::string, std::vector<std::string> > const map_type;
-	Response() : _data(nullptr), err_code(0) {};
-	~Response(){};
+	typedef std::map<std::string, std::vector<std::string> > const
+										map_type;
+										Response();
+										~Response();
 
-	void setLocation(std::vector<Location*> const & loc) { location = loc; }
-	void setErrcode(int const &num ) { err_code = num; }
+	void	setServerData(VirtServer const &);
+	void	setErrorPagePath(const std::map<int, std::string> *);
+	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
+	void	setErrcode(int const &num );
+	void	responsePrepare(int &, std::map<std::string,
+											std::vector<std::string> > const *);
+	void	connectionHandler(int & status);
+	void	clearResponseData();
 
-	int bad_req();
-	int ok();
-	int response_prepare(int &, map_type *);
-	void connectionHandler(int & status);
-
-	void clearStr(){
-		response.clear();
-	}
-
-	const char*  getStr() {return response.c_str(); }
-
+	struct s_response &					getResponseStruct();
 };
 
 #endif

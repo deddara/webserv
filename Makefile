@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/22 13:48:07 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/28 10:03:37 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,14 +40,17 @@ INCLUDES	+= -I $(DIR_1)
 
 DIR_2		= request_parse/
 FLS_2		= $(addprefix $(DIR_2), \
-				main_request \
 				Request \
 				)
+				# main_request
 INCLUDES	+= -I $(DIR_2)
 
 DIR_3		= server_engine/
 FLS_3		= $(addprefix $(DIR_3), \
+				Bytes \
+				Chunk \
 				Client \
+				ErrorPages \
 				Response \
 				Server \
 				)
@@ -55,15 +58,22 @@ INCLUDES	+= -I $(DIR_3)
 
 DIR_4		= utils/
 FLS_4		= $(addprefix $(DIR_4), \
+				ft_atoi \
+				ft_itoa \
+				ft_memcmp \
+				ft_memcpy \
+				ft_strdup \
+				ft_strjoin \
+				ft_strnstr \
 				time \
 				utils \
 				)
 INCLUDES	+= -I $(DIR_4)
 
-DIR_TEST	= conf_parse/tests/
-FLS_TEST	= $(addprefix $(DIR_TEST), \
-				test_ConfParser \
-				)
+DIR_TEST	= tests/
+# FLS_TEST	= $(addprefix $(DIR_TEST), \
+#                 test_ConfParser \
+#                 )
 
 SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
 DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
@@ -98,13 +108,20 @@ run: all
 	./$(NAME)
 
 test_ConfParser:
-	make	FLAGS="$(CFLAGS) $(DBGFLAGS)" \
-			SRC="$(FLS_TEST) $(FLS_1)" \
-			DIRS="$(DIR_TEST) $(DIR_1)" \
+	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
+			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
 			all
 	./$(NAME)
 
-test_valgrind: debug
+test_resp_prepare:
+	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
+			$(FLS_3) $(FLS_4)" \
+			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)" \
+			all
+
+test_valgrind: test_resp_prepare
 	valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
 
 re:	fclean all
