@@ -46,7 +46,7 @@ private:
 
 public:
 
-	Client(int fd, std::string const &, int const &);
+	Client(int fd, std::string const &, int const &, ErrorPages const & errPageMap);
 	~Client();
 
 	void setFd(int fd);

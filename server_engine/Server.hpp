@@ -47,7 +47,7 @@ public:
 	int set_prepare();
 	void recv_msg(std::vector<Client*>::iterator it);
 	void closeConnection(std::vector<Client*>::iterator it);
-	int newSession();
+	int newSession(ErrorPages const & errPageMap);
 	int clientSessionHandler();
 	int createSocket(std::string const & host, int const port, int const & i);
 	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it);

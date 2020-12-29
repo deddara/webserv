@@ -52,6 +52,7 @@ void				Response::clearResponseData() {
 	if (response.data) {
 		free(response.data);
 		response.data = nullptr;
+		response.length = 0;
 	}
 	if (body) {
 		free(body);

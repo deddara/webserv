@@ -224,7 +224,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	}
 }
 
-int Server::newSession() {
+int Server::newSession(ErrorPages const & errPageMap) {
 	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it) {
 		if (FD_ISSET((*it).getFd(), &readset)) {
 			int accept_sock;
@@ -235,7 +235,7 @@ int Server::newSession() {
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort()));
+			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), errPageMap));
 		}
 	}
 	return (0);
@@ -316,6 +316,7 @@ int Server::clientSessionHandler() {
 }
 
 int Server::launch() {
+	ErrorPages		errPageMap;
 	//главный цикл жизни сервера (Желательно потом разбить на еще доп методы, это я сделаю сам)
 	for (;;){
 		int select_res;
@@ -330,7 +331,7 @@ int Server::launch() {
 		}
 		if (select_res == 0)
 			continue;
-		if (this->newSession())
+		if (this->newSession(errPageMap))
 			return (1);
 		if (this->clientSessionHandler())
 			return (1);

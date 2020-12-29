@@ -13,10 +13,11 @@
 #include "Client.hpp"
 #include "sys/time.h"
 
-Client::Client(int fd, std::string const & host, int const & port) :
+Client::Client(int fd, std::string const & host, int const & port, ErrorPages const & errPageMap) :
 	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port) {
 	reqst = new Request();
 	resp = new Response();
+	resp->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 	gettimeofday(&last_msg, NULL);
 }
 

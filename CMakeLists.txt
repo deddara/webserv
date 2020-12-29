@@ -27,11 +27,14 @@ add_executable(webserv
         server_engine/Server.cpp
         server_engine/Server.hpp
         server_engine/Chunk.cpp
+        server_engine/ErrorPages.cpp
         utils/ft_strjoin.cpp
         utils/ft_strnstr.cpp
         utils/ft_memcmp.cpp
         utils/ft_memcpy.cpp
         utils/ft_strdup.cpp
+        utils/ft_atoi.cpp
+        utils/ft_itoa.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)

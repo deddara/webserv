@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 {
 
 	ConfParser		confPars(argc == 2 ? argv[1] : "./webserv.conf");
-	Server	serv(confPars.getServer());
+	Server			serv(confPars.getServer());
 
 	serv.setup();
 
