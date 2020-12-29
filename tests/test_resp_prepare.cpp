@@ -60,12 +60,12 @@ int					main(int argc, char **argv)
 
 	int				status;
 	ErrorPages		errPageMap;
-	for (int i = 0; i < 20; ++i) {
+	// for (int i = 0; i < 20; ++i) {
 		Response *		res = new Response;
 		res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 		res->setServerData(confPars.getServer()[0]);
 		res->responsePrepare(status, &req.getData());
 		delete res;
-	}
+	// }
 	return 0;
 }
