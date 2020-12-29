@@ -59,10 +59,13 @@ int					main(int argc, char **argv)
 	// std::cout << "Request is bad: " << req.error() << std::endl;
 
 	int				status;
-	Response *		res = new Response;
 	ErrorPages		errPageMap;
-	res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
-	res->setServerData(confPars.getServer()[0]);
-	res->responsePrepare(status, &req.getData());
+	// for (int i = 0; i < 20; ++i) {
+		Response *		res = new Response;
+		res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
+		res->setServerData(confPars.getServer()[0]);
+		res->responsePrepare(status, &req.getData());
+		delete res;
+	// }
 	return 0;
 }

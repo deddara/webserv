@@ -6,7 +6,11 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2020/12/29 16:41:20 by awerebea         ###   ########.fr       */
+=======
+/*   Updated: 2020/12/29 19:56:26 by awerebea         ###   ########.fr       */
+>>>>>>> resp_prepare
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +143,7 @@ void				Response::buildResponse() {
 	// Append body and make response struct
 	responseHeaders.append("\r\n");
 	response.length = responseHeaders.length() + bodyLength;
-	if(!(response.data = (char*)malloc(responseHeaders.length()))) {
+	if(!(response.data = (char*)malloc(response.length))) {
 		errorExit(2, "");
 	}
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
@@ -436,7 +440,11 @@ int					Response::checkAllowMethods() {
 		}
 	}
 	// requested method is not found in allowed methods for specified location
+<<<<<<< HEAD
 	if (i = itField->second.size()) {
+=======
+	if (i == itField->second.size()) {
+>>>>>>> resp_prepare
 		errCode = 405;
 	}
 	return 1;
