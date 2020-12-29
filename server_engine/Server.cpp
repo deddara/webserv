@@ -113,7 +113,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 	for (std::vector<VirtServer>::iterator serv_it = virt_serv.begin(); serv_it != virt_serv.end(); ++serv_it) {
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost())){
-			(*it)->getResponse()->setServer(*serv_it);
+			(*it)->getResponse()->setServerData(*serv_it);
 			return;
 		}
 	}

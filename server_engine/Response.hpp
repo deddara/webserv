@@ -58,7 +58,7 @@ public:
 										Response();
 										~Response();
 
-	void	setServer(VirtServer const &);
+	void	setServerData(VirtServer const &);
 	void	setErrorPagePath(const std::map<int, std::string> *);
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );

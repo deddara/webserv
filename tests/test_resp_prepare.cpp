@@ -63,7 +63,7 @@ int					main(int argc, char **argv)
 	int				status;
 	Response *		res = new Response;
 	res->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
-	res->setServer(confPars.getServer()[0]);
+	res->setServerData(confPars.getServer()[0]);
 	res->responsePrepare(status, &req.getData());
 	return 0;
 }
