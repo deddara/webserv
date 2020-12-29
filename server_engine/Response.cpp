@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/29 19:56:26 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 02:53:33 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,8 @@ void				Response::buildResponse() {
 	} else {
 		responseHeaders.append("Connection: keep-alive\r\n");
 	}
+
+//	responseHeaders.append("Content-Type: image/svg+xml\r\n");
 
 	// Append body and make response struct
 	responseHeaders.append("\r\n");
@@ -272,7 +274,7 @@ void				Response::generateBody() {
 		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
 			errorExit(0, "");
 		}
-		size_t		ret = 0;
+		int			ret = 0;
 		char *		buf = nullptr;
 		size_t		len = 512;
 		char *		tmp = nullptr;
