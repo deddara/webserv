@@ -72,6 +72,11 @@ public:
 	struct timeval & getLastMsg();
 	void		setLastMsg();
 
+	//CGI
+	char **set_env();
+	void exec_cgi();
+	void get_cgi_response();
+
 };
 
 #endif

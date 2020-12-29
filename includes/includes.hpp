@@ -22,6 +22,7 @@ char	*ft_strjoin(char *s1, char const *s2);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 int	ft_memcmp(const void *s1, const void *s2, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
+char    *ft_strdup(const char *str);
 
 
 #endif

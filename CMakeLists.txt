@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(webserv)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 98)
 
 include_directories(conf_parse)
 include_directories(includes)
@@ -31,6 +31,7 @@ add_executable(webserv
         utils/ft_strnstr.cpp
         utils/ft_memcmp.cpp
         utils/ft_memcpy.cpp
+        utils/ft_strdup.cpp
         utils/time.cpp
         utils/utils.cpp
         main.cpp)
