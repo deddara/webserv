@@ -6,11 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2020/12/29 16:41:20 by awerebea         ###   ########.fr       */
-=======
 /*   Updated: 2020/12/29 19:56:26 by awerebea         ###   ########.fr       */
->>>>>>> resp_prepare
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +272,7 @@ void				Response::generateBody() {
 		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
 			errorExit(0, "");
 		}
-		size_t		ret = 0;
+		int			ret = 0;
 		char *		buf = nullptr;
 		size_t		len = 512;
 		char *		tmp = nullptr;
@@ -440,11 +436,7 @@ int					Response::checkAllowMethods() {
 		}
 	}
 	// requested method is not found in allowed methods for specified location
-<<<<<<< HEAD
-	if (i = itField->second.size()) {
-=======
 	if (i == itField->second.size()) {
->>>>>>> resp_prepare
 		errCode = 405;
 	}
 	return 1;
