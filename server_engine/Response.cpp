@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/29 12:38:58 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/29 16:41:20 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,18 +158,20 @@ void				Response::responsePrepare(int & status, map_type * data) {
 
 	if (errCode) {
 		errorHandler();
-		status = 3; // QUESTION where should be set and which value
 		buildResponse();
+		status = 3; // QUESTION where should be set and which value
 		return ;
 	} else {
 		if (checkLocation()) {
 			error404Handler();
 			buildResponse();
+			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
 		if (checkAllowMethods()) {
 			errorHandler();
 			buildResponse();
+			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
 		if (checkFile()) {
@@ -180,6 +182,7 @@ void				Response::responsePrepare(int & status, map_type * data) {
 				error404Handler();
 				buildResponse();
 			}
+			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
 		generateBody();
