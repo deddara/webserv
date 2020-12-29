@@ -136,6 +136,8 @@ void				Response::buildResponse() {
 		responseHeaders.append("Connection: keep-alive\r\n");
 	}
 
+//	responseHeaders.append("Content-Type: image/svg+xml\r\n");
+
 	// Append body and make response struct
 	responseHeaders.append("\r\n");
 	response.length = responseHeaders.length() + bodyLength;

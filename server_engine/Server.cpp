@@ -227,15 +227,16 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 int Server::newSession(ErrorPages const & errPageMap) {
 	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it) {
 		if (FD_ISSET((*it).getFd(), &readset)) {
+			struct sockaddr_in addr;
+			bzero(&addr, sizeof(addr));
 			int accept_sock;
-			struct sockaddr_storage ss;
-			socklen_t slen = sizeof(ss);
-			if ((accept_sock = accept((*it).getFd(), (struct sockaddr *) &ss, &slen)) < 0) {
+			socklen_t slen = sizeof(addr);
+			if ((accept_sock = accept((*it).getFd(), (struct sockaddr *) &addr, &slen)) < 0) {
 				perror("accept");
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), errPageMap));
+			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), errPageMap, addr));
 		}
 	}
 	return (0);

@@ -18,6 +18,7 @@
 # include "Response.hpp"
 # include "Bytes.hpp"
 # include "Chunk.hpp"
+#include <arpa/inet.h>
 
 enum states{
 	rdy_recv,
@@ -44,9 +45,11 @@ private:
 
 	struct timeval	last_msg;
 
+	struct sockaddr_in & addr;
+
 public:
 
-	Client(int fd, std::string const &, int const &, ErrorPages const & errPageMap);
+	Client(int fd, std::string const &, int const &, ErrorPages const & errPageMap, struct sockaddr_in & client_addr);
 	~Client();
 
 	void setFd(int fd);

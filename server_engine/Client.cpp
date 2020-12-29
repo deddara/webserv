@@ -13,8 +13,8 @@
 #include "Client.hpp"
 #include "sys/time.h"
 
-Client::Client(int fd, std::string const & host, int const & port, ErrorPages const & errPageMap) :
-	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port) {
+Client::Client(int fd, std::string const & host, int const & port, ErrorPages const & errPageMap, struct sockaddr_in & client_addr) :
+	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port), addr(client_addr) {
 	reqst = new Request();
 	resp = new Response();
 	resp->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
