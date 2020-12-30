@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>home</title>
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/animate.css">
+</head>
+<body class="background">
+    <style>
+        body{
+            background-color: #f2f2f2;}
+    </style>
+    <header>
+		<h1 class="title_today">EVENTS TODAY</h1>
+        <div class="hamburger-menu">
+            <input id="menu__toggle" type="checkbox" />
+            <label class="menu__btn" for="menu__toggle">
+              <span></span>
+            </label>
+            <ul class="menu__box">
+				<li><a class="menu__item" href="home.html">EVENTS TODAY</a></li>
+              	<li><a class="menu__item" href="myevents.html">MY EVENTS</a></li>
+              	<li><a class="menu__item" href="mycalendar.html">EVENT CALENDAR</a></li>
+                <li><a class="menu__item" href="booking.html">CREATE AN EVENT</a></li>
+                <li><a class="logout__button"href="exit">Log Out<img class="exit__icon"  src="../svg/exit.svg" alt="Logout"></li> </a>
+            </ul>
+		  </div>
+        <img class="logo" src="../svg/GitHub-Mark.png" alt="logo">
+    </header>
+    <main class="main">
+        <div class="events popup-btn">
+            <h2>EVENT</h2>
+            <div class="wrapper_place">
+                <span>place</span>
+                <span>time</span>
+            </div>
+        </div>
+        <div class="popup">
+            <div class="popup_dialog">
+                <div class="subscribe_page">
+                    <div class="hidden">
+                        <input id="close__popup__subscribe" type="checkbox"> </input>
+                    </div>
+                    <div class ="close__popup">
+                        <img class="close__popup" src="../svg/cross.svg" alt="cross">
+                    </div>
+                    <div class="subscribe_event">
+                        <span>event</span>
+                    </div>
+                    <div class="subscribe_description">
+                        <span>description</span>
+                    </div>
+                    <div class="subscribe_place_time">
+                        <span>place</span>
+                        <span>time</span>
+                    </div>
+                    <div class="subscribe_count">
+                        <span>number of participant:<br>8/10</span>
+                    </div>
+                    <div class="subscribe_intralog">
+                        <span>nickname</span>
+                    </div>
+                    <div class="subscribe_button">
+                        <span>SUBSCRIBE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script>
+        var wow = new WOW;
+        wow.init();
+    </script>
+    <script>
+        $(document).ready(function () {
+          $('.popup-btn').on('click', function (event) {
+            event.preventDefault();
+            $('.popup').fadeIn('slow/400/fast', function () {});
+          });
+          $('.close__popup').on('click', function (event) {
+            event.preventDefault();
+            $('.popup').fadeOut('slow/700/fast', function () {});
+          });
+        });
+      </script>
+</body>
+</html>

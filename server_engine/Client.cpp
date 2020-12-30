@@ -114,8 +114,8 @@ void Client::clearBuff()
 char **Client::set_env() {
 	std::map<std::string, std::string>  env_map;
 
-	env_map["AUTH_TYPE"] = "";
-	env_map["GATEWAY_INTERFACE"] = "cgi/1.1";
+	env_map["AUTH_TYPE"] = "Basic";
+	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	//
 	env_map["SCRIPT_NAME"] = "get/it/from/conf/URI";
 	env_map["SERVER_NAME"] = "get/it/from/conf/parse";
@@ -123,9 +123,7 @@ char **Client::set_env() {
 	env_map["SERVER_PORT"] = std::to_string(serv_port);
 	env_map["SERVER_PROTOCOL"] = reqst->find("head")[2];
 	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
-	//
-	env_map["REMOTE_ADDR"] = "get/it/from/client/ip(request or socket)"; // from sockaddr_storage
-
+	env_map["REMOTE_ADDR"] = inet_ntoa(addr.sin_addr);
 	Request::value_type tmp = reqst->find("authorization");
 	if (!tmp.empty() && !tmp[0].empty())
 		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = tmp[0];
@@ -141,24 +139,20 @@ char **Client::set_env() {
 	else
 		env_map["QUERY_STRING"] = "";
 
-	// bytes exist always?
-	env_map["CONTENT_LENGTH"] = std::to_string(bytes.getBytes());
-
+	env_map["CONTENT_LENGTH"] = std::to_string(bytes.getBytes() - reqst->get_body_pos());
 	tmp = reqst->find("content_type");
 	if (!tmp.empty() && !tmp[0].empty())
 		env_map["CONTENT_TYPE"] = tmp[0];
 	else
 		env_map["CONTENT_TYPE"] = "";
-
 	env_map["PATH_INFO"] = reqst->find("head")[1];
 	env_map["METHOD"] = reqst->find("head")[0];
 	env_map["REQUEST_URI"] = "http://" + serv_host + ":" + std::to_string(serv_port) + reqst->find("head")[1];
-
 	char **env = (char **)malloc(sizeof(char *) * (env_map.size() + 1));
 	std::map<std::string, std::string>::iterator it = env_map.begin();
 	for (int i = 0; it != env_map.end(); ++it, ++i)
 		env[i] = ft_strdup((it->first + "=" + it->second).c_str());
-	env[env_map.size() + 1] = nullptr;
+	env[env_map.size() + 1] = NULL;
 	return env;
 }
 
@@ -172,11 +166,18 @@ void Client::exec_cgi() {
 		dup2(pipes[1], 1);
 		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
 
+		char **env = set_env();
+		int res = execve("cgi_bin/cgi_tester", 0, env);
 
-		int pp = execve("cgi_bin/cgi_tester", 0, set_env());
+		//free env if ret = -1
+		int i = 0;
+		while (env[i])
+			free(env[i++]);
+		free(env);
+
 		// send response about 'execve = -1';
-		std::cout << pp << std::endl;
-		exit(pp);
+		std::cout << res << std::endl;
+		exit(res);
 	} else {
 		wait(nullptr);
 		char line[1000];
