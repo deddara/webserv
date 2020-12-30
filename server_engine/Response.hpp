@@ -21,6 +21,7 @@ private:
 	std::map<std::string, std::vector<std::string> > const *
 										_data;
 	std::map<int, std::vector<std::string> > const *
+	VirtServer *						virtServer;
 										errorPageTempl;
 	int									errCode;
 	char *								body;
@@ -65,6 +66,7 @@ public:
 	void	clearResponseData();
 
 	struct s_response &					getResponseStruct();
+	VirtServer const &					getVirtServer() const;
 };
 
 #endif

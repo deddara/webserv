@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 02:53:33 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 16:41:39 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -519,6 +519,7 @@ struct s_response &	Response::getResponseStruct() {
 }
 
 void				Response::setServerData(VirtServer const & virtServ) {
+	virtServer = &virtServ;
 	errorPage = & virtServ.getErrorPagePath();
 	location = virtServ.getLocation();
 	limitClientBody = virtServ.getLimitClientBody();
@@ -527,4 +528,8 @@ void				Response::setServerData(VirtServer const & virtServ) {
 void				Response::setErrorPageTempl(const std::map<int,
 								std::vector<std::string> > * errPgTemplMap) {
 	errorPageTempl = errPgTemplMap;
+}
+
+VirtServer const &	Response::getVirtServer() const {
+	return * VirtServer;
 }
