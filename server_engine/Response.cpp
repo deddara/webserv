@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 17:52:40 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 22:15:51 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,7 @@ void				Response::generateFilePath() {
 		return ;
 	}
 
-	// case if the specified location is the path (/path/to/file)
+	// case if the specified location is the path (/path/to/file_or_dir)
 	if (location[currLocationInd]->getPrefix()[0] == '/') {
 		// get from the URI part from the index position equal length of the
 		// location prefix to the end
@@ -270,6 +270,15 @@ void				Response::generateBody() {
 
 	itReq = _data->find("head");
 	if (errCode == 200 && itReq->second[0] == "GET") {
+		// check if body is generated directory listing (autoindex)
+		if (dirListing.length()) {
+			if(!(body = (char*)malloc((bodyLength = dirListing.length())))) {
+				errorExit(2, "");
+			}
+			ft_memcpy(body, dirListing.c_str(), bodyLength);
+			return ;
+		// case if body in file
+		} else {
 		int			fd;
 		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
 			errorExit(0, "");
@@ -313,7 +322,9 @@ void				Response::generateBody() {
 		}
 		free(buf);
 		return ;
+		}
 	}
+	// case if body from error pages template
 	itErr = errorPageTempl->find(errCode);
 	if(!(body = (char*)malloc((bodyLength = itErr->second[0].length())))) {
 		errorExit(2, "");
@@ -339,7 +350,7 @@ void				Response::generateRedirectURI(int err) {
 		}
 	}
 	if (i == location.size()) {
-		redirectURI = it->second;	// QUESTION what to do if no match error
+		redirectURI = it->second;	// FIXME what to do if no match error
 		return ;					// page path in any location?
 	}
 	prefix = location[i]->getPrefix();
@@ -491,23 +502,119 @@ int					Response::checkLocation() {
 int					Response::checkFile() {
 	generateFilePath();
 
+	std::multimap<std::string, std::vector<std::string> >::const_iterator
+					itLocationData;
+	std::string		indexPagePath;
 	struct stat		statbuf;
-
+	// check if generated path is exist in filesystem
 	if (!(stat(filePath.c_str(), & statbuf))) {
-		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
+		// check if 'filePath' is directory
+		if (statbuf.st_mode & S_IFDIR) {
+			// check if owner or group has execute access to directory
+			if (statbuf.st_mode & S_IXUSR || statbuf.st_mode & S_IXGRP) {
+				// get vector with names of index pages from specified location
+					itLocationData =
+					location[currLocationInd]->getData().find("index");
+				// check if there is such vector
+				if (itLocationData !=
+						location[currLocationInd]->getData().end()) {
+					indexPagePath = filePath;
+					struct stat		statbufIndexPage;
+					// append '/' to the directory path if needed
+					if (indexPagePath[indexPagePath.length() - 1] != '/') {
+						indexPagePath.append("/");
+					}
+					size_t i = 0;
+					for (; i < itLocationData->second.size(); ++i) {
+						// append filename from vector to directory path
+						indexPagePath.append(itLocationData->second[i]);
+						// check files from vector existance
+						if (!(stat(indexPagePath.c_str(), &statbufIndexPage))) {
+							// check if owner or group has read access to file
+							if (statbufIndexPage.st_mode & S_IRUSR ||
+									statbufIndexPage.st_mode & S_IRGRP) {
+								errCode = 200;
+								fileModifiedTime =
+									timeToStr(statbufIndexPage.st_mtime);
+								filePath = indexPagePath;
+								return 0;
+							} else {
+								// no read access to existed file
+								errCode = 403;
+								return 1;
+							}
+						}
+					}
+					// file of index pages vector not found QUESTION
+					// errCode = 404;
+					// return ;
+				}
+				// check autoindex status if index pages are not set in location
+				// case if autoindex off (return 404)
+				if ((itLocationData = location[currLocationInd]->getData().
+						find("autoindex")) != location[currLocationInd]->
+						getData().end() || itLocationData->second[0] == "off") {
+					errCode = 404;
+					return 1;
+				} else {
+					// case if autoindex on
+					errCode = 200;
+					generateDirListing(); // TODO
+					return 0;
+				}
+			}
+			errCode = 404;
+			return 1;
+		}
+		// case if filePath is not directory
+		// check if owner or group has read access to file
+		else if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
 			errCode = 200;
-			fileModifiedTime = timeToStr(statbuf.st_mtime); // FIXME -1y
-			// DEBUG
-			// std::cout << timeToStr(statbuf.st_mtime) << std::endl;
-			// std::cout << my_localtime() << std::endl;
+			fileModifiedTime = timeToStr(statbuf.st_mtime); // FIXME +/- 1 year
 			return 0;
+		// file is not readble
 		} else {
 			errCode = 403;
 			return 1;
 		}
 	}
+	// file is not found
 	errCode = 404;
 	return 1;
+}
+
+void				Response::generateDirListing() {
+	DIR *			dir;
+	struct dirent	*s;
+	struct stat		statbuf;
+
+	dirListing.append("<html>\n<head><title>Index of ");
+	dirListing.append(filePath);
+	dirListing.append("</title></head>\n<body>\n<h1>Index of ");
+	dirListing.append(filePath);
+	dirListing.append("</h1><hr><pre>\n");
+
+	dir = opendir(filePath.c_str());
+
+	while((s = readdir(dir))) {
+		std::string	date;
+		std::string	directoryItem = filePath;
+		directoryItem.append(s->d_name);
+		if (stat(directoryItem.c_str(), &statbuf) < 0) {
+			perror("stat");
+		}
+		date = timeToStr(statbuf.st_mtime);
+		dirListing.append("<a href=\"");
+		dirListing.append(s->d_name);
+		dirListing.append("\">");
+		dirListing.append(s->d_name);
+		dirListing.append("</a>    ");
+		dirListing.append(std::to_string(statbuf.st_size));
+		dirListing.append("    ");
+		dirListing.append(date);
+		dirListing.append("\n");
+	}
+	dirListing.append("</pre><hr></body>\n</html>");
 }
 
 void				Response::setErrcode(int const & num) {
@@ -518,11 +625,11 @@ struct s_response &	Response::getResponseStruct() {
 	return response;
 }
 
-void				Response::setServerData(VirtServer const & virtServ) {
-	virtServer = &virtServ;
-	errorPage = & virtServ.getErrorPagePath();
-	location = virtServ.getLocation();
-	limitClientBody = virtServ.getLimitClientBody();
+void				Response::setServerData(VirtServer const & obj) {
+	virtServ = & obj;
+	errorPage = & obj.getErrorPagePath();
+	location = obj.getLocation();
+	limitClientBody = obj.getLimitClientBody();
 }
 
 void				Response::setErrorPageTempl(const std::map<int,
@@ -531,5 +638,5 @@ void				Response::setErrorPageTempl(const std::map<int,
 }
 
 VirtServer const &	Response::getVirtServer() const {
-	return * virtServer;
+	return * virtServ;
 }

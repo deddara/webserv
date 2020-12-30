@@ -4,6 +4,7 @@
 # include "ErrorPages.hpp"
 # include "VirtServer.hpp"
 # include "includes.hpp"
+# include <dirent.h>
 # include <fcntl.h>
 # include <map>
 # include <sys/stat.h>
@@ -20,13 +21,14 @@ class Response{
 private:
 	std::map<std::string, std::vector<std::string> > const *
 										_data;
-	std::map<int, std::vector<std::string> > const * errorPageTempl;
-	const VirtServer *						virtServer;
+	std::map<int, std::vector<std::string> > const *
+										errorPageTempl;
 
 	int									errCode;
 	char *								body;
 	size_t								bodyLength;
 	size_t								currLocationInd;
+	const VirtServer *					virtServ;
 	std::vector<Location *>				location;
 	std::string							responseHeaders;
 	std::string							redirectURI;
@@ -34,6 +36,7 @@ private:
 	std::string							filePath;
 	std::string							fileModifiedTime;
 	std::string							webservVersion;
+	std::string							dirListing;
 	struct s_response					response;
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
@@ -50,6 +53,7 @@ private:
 	void								generateBody();
 	void								generateFilePath();
 	void								buildResponse();
+	void								generateDirListing();
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const

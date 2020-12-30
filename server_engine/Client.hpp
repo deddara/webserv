@@ -18,7 +18,8 @@
 # include "Response.hpp"
 # include "Bytes.hpp"
 # include "Chunk.hpp"
-#include <arpa/inet.h>
+# include <arpa/inet.h>
+# include <sys/wait.h>
 
 enum states{
 	rdy_recv,
