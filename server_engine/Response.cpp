@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 16:47:42 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 17:52:40 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -531,5 +531,5 @@ void				Response::setErrorPageTempl(const std::map<int,
 }
 
 VirtServer const &	Response::getVirtServer() const {
-	return * VirtServer;
+	return * virtServer;
 }
