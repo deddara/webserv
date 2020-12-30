@@ -6,11 +6,13 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/28 10:03:37 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/30 16:53:09 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= webserv
+CONFIG		= webserv.conf
+
 INCLUDES	= -I includes/
 CXX			= clang++
 
@@ -81,15 +83,28 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-all:		$(NAME)
+REQUIRED_BINS	= python
 
-$(NAME):	$(OBJ)
-	$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
-	@echo '------------- All done! --------------'
+all:		requerments $(NAME)
+
+	# | sed 's!PHP_CGI!$(shell which php-cgi)!g' \
+
+requerments:
+	$(foreach bin,$(REQUIRED_BINS),\
+		$(if $(shell command -v $(bin) 2> /dev/null),$(info Found '$(bin)'),$(error Please install '$(bin)')))
+	@cat webserv.conf.template | sed 's=PWD=$(PWD)=g' \
+	| sed 's!PYTHON!$(shell which python)!g' > webserv.conf
+	@printf '\033[1;36mDefault config file $(CONFIG) created.\033[0m\n'
+
+$(NAME):	dirs $(OBJ)
+	@$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
+	@printf '\033[1m------------- All done! --------------\033[0m\n'
+
+dirs:
+	@mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
 
 $(OBJ):		$(OBJDIR)%.o: $(SRCDIR)%.cpp
-	mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
-	$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
+	@$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
 
 include $(wildcard $(addprefix $(OBJDIR), $(DFLS)))
 
@@ -100,6 +115,7 @@ clean:
 
 fclean:	clean
 	rm -f	$(NAME)
+	rm -f	$(CONFIG)
 
 debug:
 	make FLAGS="$(CFLAGS) $(DBGFLAGS)" all
@@ -108,10 +124,10 @@ run: all
 	./$(NAME)
 
 test_ConfParser:
-	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
-			all
+			all --no-print-directory
 	./$(NAME)
 
 test_resp_prepare:
@@ -119,7 +135,7 @@ test_resp_prepare:
 			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
 			$(FLS_3) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)" \
-			all
+			all --no-print-directory
 
 test_valgrind: test_resp_prepare
 	valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)

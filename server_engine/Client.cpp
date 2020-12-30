@@ -191,5 +191,3 @@ void Client::exec_cgi() {
 void Client::get_cgi_response() {
 
 }
-
-

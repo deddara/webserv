@@ -26,4 +26,5 @@ objs/
 objs/*
 vgcore.*
 webserv
+webserv.conf
 tester
