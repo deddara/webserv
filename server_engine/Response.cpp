@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 22:15:51 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 22:54:17 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -552,7 +552,7 @@ int					Response::checkFile() {
 				// check autoindex status if index pages are not set in location
 				// case if autoindex off (return 404)
 				if ((itLocationData = location[currLocationInd]->getData().
-						find("autoindex")) != location[currLocationInd]->
+						find("autoindex")) == location[currLocationInd]->
 						getData().end() || itLocationData->second[0] == "off") {
 					errCode = 404;
 					return 1;

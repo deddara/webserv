@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/29 11:38:58 by awerebea         ###   ########.fr       */
+/*   Updated: 2020/12/30 22:44:57 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,9 +267,9 @@ void				ConfParser::checkCompleteness() {
 			errorExit(17, "listen");
 		}
 		for (size_t j = 0; j < pr_server[i].getLocation().size(); ++j) {
-			if (!pr_server[i].getLocation()[j]->getData().count("index")) {
-				errorExit(17, "index");
-			}
+			// if (!pr_server[i].getLocation()[j]->getData().count("index")) {
+			//     errorExit(17, "index");
+			// }
 			if (!pr_server[i].getLocation()[j]->getData().
 													count("allow_methods")) {
 				errorExit(17, "allow_methods");
