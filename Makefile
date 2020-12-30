@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/30 13:14:53 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/30 16:33:09 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -83,15 +83,22 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-all:		$(CONFIG) $(NAME)
+REQUIRED_BINS	= python
 
-$(CONFIG):
-	$(shell ./setup.sh $(CONFIG))
-	@printf '\e[1;36mDefault config file '$(CONFIG)' created.\e[0m\n'
+all:		requerments $(NAME)
+
+	# | sed 's!PHP_CGI!$(shell which php-cgi)!g' \
+
+requerments:
+	$(foreach bin,$(REQUIRED_BINS),\
+		$(if $(shell command -v $(bin) 2> /dev/null),$(info Found '$(bin)'),$(error Please install '$(bin)')))
+	@cat webserv.conf.template | sed 's=PWD=$(PWD)=g' \
+	| sed 's!PYTHON!$(shell which python)!g' > webserv.conf
+	@printf '\033[1;36mDefault config file $(CONFIG) created.\033[0m\n'
 
 $(NAME):	dirs $(OBJ)
 	@$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
-	@echo '------------- All done! --------------'
+	@printf '\033[1m------------- All done! --------------\033[0m\n'
 
 dirs:
 	@mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
@@ -116,14 +123,14 @@ debug:
 run: all
 	./$(NAME)
 
-test_ConfParser: $(CONFIG)
+test_ConfParser:
 	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
 			all --no-print-directory
 	./$(NAME)
 
-test_resp_prepare: $(CONFIG)
+test_resp_prepare:
 	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
 			$(FLS_3) $(FLS_4)" \
