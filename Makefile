@@ -6,11 +6,13 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/28 10:03:37 by awerebea         ###   ########.fr        #
+#    Updated: 2020/12/30 13:14:53 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= webserv
+CONFIG		= webserv.conf
+
 INCLUDES	= -I includes/
 CXX			= clang++
 
@@ -81,15 +83,21 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-all:		$(NAME)
+all:		$(CONFIG) $(NAME)
 
-$(NAME):	$(OBJ)
-	$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
+$(CONFIG):
+	$(shell ./setup.sh $(CONFIG))
+	@printf '\e[1;36mDefault config file '$(CONFIG)' created.\e[0m\n'
+
+$(NAME):	dirs $(OBJ)
+	@$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
 	@echo '------------- All done! --------------'
 
+dirs:
+	@mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
+
 $(OBJ):		$(OBJDIR)%.o: $(SRCDIR)%.cpp
-	mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
-	$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
+	@$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
 
 include $(wildcard $(addprefix $(OBJDIR), $(DFLS)))
 
@@ -100,6 +108,7 @@ clean:
 
 fclean:	clean
 	rm -f	$(NAME)
+	rm -f	$(CONFIG)
 
 debug:
 	make FLAGS="$(CFLAGS) $(DBGFLAGS)" all
@@ -107,19 +116,19 @@ debug:
 run: all
 	./$(NAME)
 
-test_ConfParser:
-	make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+test_ConfParser: $(CONFIG)
+	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_ConfParser) $(FLS_1) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_4)" \
-			all
+			all --no-print-directory
 	./$(NAME)
 
-test_resp_prepare:
+test_resp_prepare: $(CONFIG)
 	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
 			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
 			$(FLS_3) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)" \
-			all
+			all --no-print-directory
 
 test_valgrind: test_resp_prepare
 	valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)

@@ -1,0 +1,67 @@
+# sample webserver configuration file
+# virtual server configuration section:
+server {
+  # ip address of virtual server
+  host              127.0.0.1;
+  # number of port to listen
+  listen            3032;
+  # server name(s) (separated by space)
+  server_name       localhost     www.localhost;
+  # path to the page that is returned when an error occurs
+  # while processing the request
+  error_page  403   PWD/site/403.html;
+  error_page  404   PWD/site/404.html;
+  error_page  500   PWD/site/500.html;
+  # limit (in bytes) the size of the POST request body
+  limit_client_body 1024;
+  # location configuration section
+  location / {
+    # name(s) of the index page, which is returned when the catalog is requested
+    # (separated by space)
+    index           index.html    index.php;
+    # allowed request methots list (separated by space)
+    allow_methods   GET           HEAD     ;
+    # path of root directory for current location
+    root $PWD/site/;
+    # generate directory list page if index page not found in path,
+    # 'on' or 'off' values is allowed
+    autoindex       on; #use default off
+  }
+
+  location /adf {
+    # name(s) of the index page, which is returned when the catalog is requested
+    # (separated by space)
+    index           index.html    index.php;
+    # allowed request methots list (separated by space)
+    allow_methods   GET           HEAD     ;
+    # path of root directory for current location
+    root            PWD/site;
+    # generate directory list page if index page not found in path,
+    # 'on' or 'off' values is allowed
+    autoindex       on; #use default off
+  }
+  # found '.php' in request
+  location .php {
+    index             index.php   index.html;
+    allow_methods     GET;
+    # all scripts are located here
+    root              PWD/cgi_bin;
+    # path to interpreter binary
+    bin               PHP_CGI;
+  }
+  location .cgi {
+    index             index.html;
+    allow_methods     GET         POST;
+    root              PWD/cgi_bin;
+    bin               PHP_CGI;
+    # if method POST: max len body, or default len body (if not specified)
+    limit_client_body 100;
+  }
+  location .py {
+    index             index.html;
+    allow_methods     GET         POST;
+    root              PWD/cgi_bin;
+    bin               PYTHON;
+    limit_client_body 1000;
+  }
+}
