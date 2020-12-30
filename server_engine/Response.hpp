@@ -20,9 +20,9 @@ class Response{
 private:
 	std::map<std::string, std::vector<std::string> > const *
 										_data;
-	std::map<int, std::vector<std::string> > const *
-	VirtServer *						virtServer;
-										errorPageTempl;
+	std::map<int, std::vector<std::string> > const * errorPageTempl;
+	const VirtServer *						virtServer;
+
 	int									errCode;
 	char *								body;
 	size_t								bodyLength;

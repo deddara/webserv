@@ -531,5 +531,5 @@ void				Response::setErrorPageTempl(const std::map<int,
 }
 
 VirtServer const &	Response::getVirtServer() const {
-	return * VirtServer;
+	return * virtServer;
 }
