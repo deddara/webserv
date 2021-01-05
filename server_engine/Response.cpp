@@ -42,7 +42,6 @@ void				Response::errorExit(int code, std::string const & word) {
 		"Error: read fails",
 		"Error: malloc fails",
 	};
-	std::cout << errors[code] << std::endl;
 	exit(1);
 }
 
@@ -597,18 +596,26 @@ void				Response::generateDirListing() {
 	dir = opendir(filePath.c_str());
 
 	while((s = readdir(dir))) {
+		if (!ft_memcmp(s->d_name, ".", 2))
+			continue;
 		std::string	date;
 		std::string	directoryItem = filePath;
 		directoryItem.append(s->d_name);
 		if (stat(directoryItem.c_str(), &statbuf) < 0) {
 			perror("stat");
+			continue;
 		}
 		date = timeToStr(statbuf.st_mtime);
 		dirListing.append("<a href=\"");
 		dirListing.append(s->d_name);
 		dirListing.append("\">");
 		dirListing.append(s->d_name);
-		dirListing.append("</a>    ");
+		dirListing.append("</a>");
+		int i = 70;
+		i -= strlen(s->d_name);
+		while (i-- > 0){
+			dirListing.append(" ");
+		}
 		dirListing.append(std::to_string(statbuf.st_size));
 		dirListing.append("    ");
 		dirListing.append(date);
