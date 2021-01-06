@@ -119,7 +119,7 @@ int Server::error_headers(Request const &req) {
 			if (method == methods[i])
 				is_allowed_method = true;
 		if (!is_allowed_method)
-			return 405;
+			return 501;
 	}
 	map_type const & map_data = req.getData();
 	map_type::const_iterator cont_it = map_data.find("content-length");

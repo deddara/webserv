@@ -57,7 +57,7 @@ char **Cgi::set_env() {
 
 void Cgi::exec_cgi() {
 	int pipes[2];
-	int status;
+	int status = 0;
 	pid_t pid;
 	pipe(pipes);
 	pid = fork();
@@ -65,7 +65,7 @@ void Cgi::exec_cgi() {
 		char **argv;
 		argv = (char**)malloc(sizeof(char*) * 3);
 		argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi");
-		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/lala.php");
+		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/php-info.php");
 		argv[2] = 0;
 
 		dup2(pipes[0], 0);
@@ -83,10 +83,10 @@ void Cgi::exec_cgi() {
 
 		// send response about 'execve = -1';
 		std::cout << "***" << res << "***" << std::endl;
-		exit(res);
+		exit(1);
 	} else {
-		waitpid(pid, &status, 0);
-		if (status == -1)
+		waitpid(pid, &status, WNOHANG);
+		if (status == 1)
 			return;
 		int n;
 		while (1) {
@@ -110,8 +110,8 @@ void Cgi::exec_cgi() {
 			bytes.bytesCount(n);
 			if (n < 1024)
 				break; //file readed
+
 		}
-		std::cout << resp_buff;
 		close(pipes[0]);
 		close(pipes[1]);
 	}
@@ -133,7 +133,7 @@ int Cgi::cgiBuffAppend(const char *buff, int len){
 	return (0);
 }
 
-char * Cgi::getBody(){ return resp_buff; }
+char const * Cgi::getBody() const { return resp_buff; }
 
 void Cgi::get_cgi_response() {
 

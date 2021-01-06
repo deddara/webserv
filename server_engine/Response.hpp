@@ -58,6 +58,7 @@ private:
 	void								generateFilePath();
 	void								buildResponse();
 	void								generateDirListing();
+	void								cgi_response_parser(Cgi const & cgi);
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const

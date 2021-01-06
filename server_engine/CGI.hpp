@@ -24,7 +24,8 @@ public:
 	void get_cgi_response();
 
 	int cgiBuffAppend(const char *buff, int len);
-	char *getBody();
+	char const *getBody() const;
+	Bytes const & getBytes() const { return bytes; }
 
 };
 

@@ -75,6 +75,76 @@ void Response::connectionHandler(int & status) {
 		status = 3;
 }
 
+void Response::cgi_response_parser(Cgi const &cgi){
+	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
+	std::map<int, std::vector<std::string> >::const_iterator			itErr;
+	char const	*	cgi_buff = cgi.getBody();
+	std::string		cgi_buff_str = std::string(cgi_buff);
+	char		*	numStr = nullptr;
+	std::string 	cgi_headers;
+	size_t			pos = 0;
+
+	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
+
+	itReq = _data->find("head");
+	// HTTP/1.X
+	responseHeaders = itReq->second[2] + " ";
+	pos = cgi_headers.find("Status");
+	if (pos != std::string::npos){
+		pos += 8;
+		while (cgi_headers[pos] != '\r')
+		{
+			responseHeaders.push_back(cgi_headers[pos]);
+			pos++;
+		}
+		pos += 2;
+		responseHeaders.append("\r\n");
+	}
+	// errCode
+	else {
+		pos = 0;
+		if (!(numStr = ft_itoa(errCode))) {
+			errorExit(2, "");
+		}
+		responseHeaders.append(numStr);
+		free(numStr);
+		numStr = nullptr;
+
+		// Message
+		itErr = errorPageTempl->find(errCode);
+		responseHeaders.append(" " + itErr->second[1] + "\r\n");
+	}
+	while (cgi_headers[pos]){
+		responseHeaders.push_back(cgi_headers[pos]);
+		pos++;
+	}
+	// Server
+	webservVersion = "webserv0.1";
+	responseHeaders.append("Server: " + webservVersion + "\r\n");
+
+	// Date
+	responseHeaders.append("Date: " + my_localtime() + "\r\n");
+
+	pos = cgi_buff_str.find("\r\n\r\n") + 4;
+	int content_len = cgi.getBytes().getBytes() - pos;
+	responseHeaders.append("Content-Length: ");
+	responseHeaders.append(std::to_string(content_len));
+	responseHeaders.append("\r\n");
+	responseHeaders.append("Connection: close\r\n\r\n");
+	bodyLength = content_len;
+
+
+	response.length = responseHeaders.size() + bodyLength;
+	if(!(response.data = (char*)malloc(response.length))) {
+		errorExit(2, "");
+	}
+	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
+	if (bodyLength) {
+		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos, bodyLength);
+	}
+};
+
+
 void				Response::buildResponse() {
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
@@ -98,6 +168,7 @@ void				Response::buildResponse() {
 	responseHeaders.append(" " + itErr->second[1] + "\r\n");
 
 	// Server
+	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
@@ -190,6 +261,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		{
 			Cgi		cgi(_cgi_data, filePath);
 			cgi.exec_cgi();
+			cgi_response_parser(cgi);
 			return;
 		}
 		generateBody();
