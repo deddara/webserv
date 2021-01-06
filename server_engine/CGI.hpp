@@ -5,21 +5,25 @@
 # include <vector>
 #include "cgi_data.hpp"
 #include "unistd.h"
+#include "Bytes.hpp"
+
 
 class Cgi{
 private:
-	char 				* body;
+	char 				* resp_buff;
 	const cgi_data 		& _cgi_data;
 	std::string const 	&file_path;
+	Bytes				bytes;
 	// CGI
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
-	Cgi(cgi_data const & data, std::string const &path) : _cgi_data(data), file_path(path) {};
+	Cgi(cgi_data const & data, std::string const &path) : resp_buff(NULL),_cgi_data(data), file_path(path) {};
 	~Cgi();
 	char **set_env();
 	void exec_cgi();
 	void get_cgi_response();
 
+	int cgiBuffAppend(const char *buff, int len);
 	char *getBody();
 
 };

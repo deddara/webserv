@@ -199,7 +199,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 }
 
 void				Response::errorHandler() {
-	if (!errorPage->count(errCode)) {
+	if (!errorPage->count(errCode)) { //!errorPage
 		generateBody(); // TODO check if all possible templates are implemented
 		return ;
 	}

@@ -41,6 +41,7 @@ char **Cgi::set_env() {
 	else
 		env_map["CONTENT_TYPE"] = map_it->second[0];
 
+	//for PHP
 	env_map["REDIRECT_STATUS"] = "1";
 	map_it = _cgi_data.data->find("head");
 	env_map["PATH_INFO"] = map_it->second[1];
@@ -50,12 +51,13 @@ char **Cgi::set_env() {
 	std::map<std::string, std::string>::iterator it = env_map.begin();
 	for (int i = 0; it != env_map.end(); ++it, ++i)
 		env[i] = ft_strdup((it->first + "=" + it->second).c_str());
-	env[env_map.size() + 1] = NULL;
+	env[env_map.size()] = NULL;
 	return env;
 }
 
 void Cgi::exec_cgi() {
 	int pipes[2];
+	int status;
 	pid_t pid;
 	pipe(pipes);
 	pid = fork();
@@ -83,17 +85,55 @@ void Cgi::exec_cgi() {
 		std::cout << "***" << res << "***" << std::endl;
 		exit(res);
 	} else {
-		wait(nullptr);
-		char line[1000];
-		bzero(line, 1000);
-		read(pipes[0], line, 1000);
-		body = ft_strdup(line);
+		waitpid(pid, &status, 0);
+		if (status == -1)
+			return;
+		int n;
+		while (1) {
+			char line[1024];
+			bzero(line, 1024);
+
+			fd_set readset;
+			FD_ZERO(&readset);
+			FD_SET(pipes[0], &readset);
+
+			if (select(pipes[0] + 1, &readset, 0, 0, 0) < 0)
+			{
+				perror("select");
+				return; //handle error
+			}
+			n = read(pipes[0], line, 1024);
+			if((cgiBuffAppend(line, n)))
+			{
+				return; //handle error
+			}
+			bytes.bytesCount(n);
+			if (n < 1024)
+				break; //file readed
+		}
+		std::cout << resp_buff;
 		close(pipes[0]);
 		close(pipes[1]);
 	}
 }
 
-char * Cgi::getBody(){ return body; }
+int Cgi::cgiBuffAppend(const char *buff, int len){
+	if (!resp_buff)
+	{
+		if (!(resp_buff = bytes.bytesDup(resp_buff, buff, len)))
+			return 1;
+	}
+	else
+	{
+		char *tmp = resp_buff;
+		if (!(resp_buff = bytes.bytesJoin(resp_buff, buff, len,bytes.getBytes())))
+			return 1;
+		free(tmp);
+	}
+	return (0);
+}
+
+char * Cgi::getBody(){ return resp_buff; }
 
 void Cgi::get_cgi_response() {
 
