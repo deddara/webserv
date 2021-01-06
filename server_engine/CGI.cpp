@@ -1,10 +1,12 @@
 #include "CGI.hpp"
+#include "stdlib.h"
 // CGI
 
 Cgi::~Cgi() {}
 
 char **Cgi::set_env() {
 	std::map<std::string, std::string>  env_map;
+	map_type::const_iterator map_it;
 
 	env_map["AUTH_TYPE"] = "Basic";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
@@ -12,35 +14,38 @@ char **Cgi::set_env() {
 	env_map["SCRIPT_NAME"] = "get/it/from/conf/URI";
 	env_map["SERVER_NAME"] = "get/it/from/conf/parse";
 
-	env_map["SERVER_PORT"] = std::to_string(serv_port);
-	env_map["SERVER_PROTOCOL"] = _data->find("head")[2];
+	env_map["SERVER_PORT"] = std::to_string(_cgi_data.serv_port);
+	map_it = _cgi_data.data->find("head");
+	env_map["SERVER_PROTOCOL"] = map_it->second[2];
 	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
-	env_map["REMOTE_ADDR"] = inet_ntoa(addr.sin_addr);
-	Request::value_type tmp = _data->find("authorization");
-	if (!tmp.empty() && !tmp[0].empty())
-		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = tmp[0];
-	else
+	env_map["REMOTE_ADDR"] = inet_ntoa(_cgi_data.addr->sin_addr);
+	map_it = _cgi_data.data->find("authorization");
+	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
 		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
+	else
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[0];
 
 	//
-	env_map["PATH_TRANSLATED"] = "physic/path/to/script";
+	env_map["PATH_TRANSLATED"] = file_path;
 
-	tmp = _data->find("head");
-	if (tmp[1].find('?') != std::string::npos)
-		env_map["QUERY_STRING"] = tmp[1].substr(tmp[1].find('?') + 1);
+	map_it = _cgi_data.data->find("head");
+	if (map_it->second[1].find('?') != std::string::npos)
+		env_map["QUERY_STRING"] = map_it->second[1].substr(map_it->second[1].find('?') + 1);
 	else
 		env_map["QUERY_STRING"] = "";
 
-	env_map["CONTENT_LENGTH"] = std::to_string(bytes.getBytes() - _data->get_body_pos());
-	tmp = _data->find("content_type");
-	if (!tmp.empty() && !tmp[0].empty())
-		env_map["CONTENT_TYPE"] = tmp[0];
-	else
+	env_map["CONTENT_LENGTH"] = std::to_string(_cgi_data.body_len);
+	map_it = _cgi_data.data->find("content_type");
+	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
 		env_map["CONTENT_TYPE"] = "";
+	else
+		env_map["CONTENT_TYPE"] = map_it->second[0];
 
-	env_map["PATH_INFO"] = (*_data->find("head")).second[1];
-	env_map["METHOD"] = _data->find("head")[0];
-	env_map["REQUEST_URI"] = "http://" + serv_host + ":" + std::to_string(serv_port) + _data->find("head")[1];
+	env_map["REDIRECT_STATUS"] = "1";
+	map_it = _cgi_data.data->find("head");
+	env_map["PATH_INFO"] = map_it->second[1];
+	env_map["METHOD"] = map_it->second[0];
+	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
 	char **env = (char **)malloc(sizeof(char *) * (env_map.size() + 1));
 	std::map<std::string, std::string>::iterator it = env_map.begin();
 	for (int i = 0; it != env_map.end(); ++it, ++i)
@@ -55,12 +60,18 @@ void Cgi::exec_cgi() {
 	pipe(pipes);
 	pid = fork();
 	if (pid == 0) {
+		char **argv;
+		argv = (char**)malloc(sizeof(char*) * 3);
+		argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi");
+		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/lala.php");
+		argv[2] = 0;
+
 		dup2(pipes[0], 0);
 		dup2(pipes[1], 1);
-		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
+//		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
 
 		char **env = set_env();
-		int res = execve("cgi_bin/cgi_tester", 0, env);
+		int res = execve(argv[0], argv, env);
 
 		//free env if ret = -1
 		int i = 0;
@@ -69,7 +80,7 @@ void Cgi::exec_cgi() {
 		free(env);
 
 		// send response about 'execve = -1';
-		std::cout << res << std::endl;
+		std::cout << "***" << res << "***" << std::endl;
 		exit(res);
 	} else {
 		wait(nullptr);

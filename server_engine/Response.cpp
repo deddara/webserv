@@ -188,7 +188,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		}
 		if (fileExt == ".php")
 		{
-			Cgi		cgi(_cgi_data);
+			Cgi		cgi(_cgi_data, filePath);
 			cgi.exec_cgi();
 			return;
 		}

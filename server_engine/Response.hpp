@@ -11,9 +11,8 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-# include "Client.hpp"
 # include "CGI.hpp"
-
+# include "cgi_data.hpp"
 
 struct									s_response {
 	char *								data;

@@ -20,21 +20,13 @@
 # include "Chunk.hpp"
 # include <arpa/inet.h>
 # include <sys/wait.h>
+# include "cgi_data.hpp"
 
 enum states{
 	rdy_recv,
 	rdy_parse,
 	rdy_respone,
 	finish
-};
-
-struct cgi_data{
-
-	std::map<std::string, std::vector<std::string>>	const *data;
-	int												body_len;
-	struct sockaddr_in &							addr;
-	std::string										serv_host;
-	int												serv_port;
 };
 
 class Client{
