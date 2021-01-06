@@ -20,6 +20,8 @@ public:
 	void exec_cgi();
 	void get_cgi_response();
 
+	char *getBody();
+
 };
 
 #endif

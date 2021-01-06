@@ -85,12 +85,15 @@ void Cgi::exec_cgi() {
 	} else {
 		wait(nullptr);
 		char line[1000];
+		bzero(line, 1000);
 		read(pipes[0], line, 1000);
+		body = ft_strdup(line);
 		close(pipes[0]);
 		close(pipes[1]);
-		std::cout << line << std::endl;
 	}
 }
+
+char * Cgi::getBody(){ return body; }
 
 void Cgi::get_cgi_response() {
 
