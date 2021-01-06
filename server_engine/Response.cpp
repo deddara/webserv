@@ -152,7 +152,7 @@ void				Response::buildResponse() {
 	write(1, response.data, response.length);
 }
 
-void				Response::responsePrepare(int & status, map_type * data) {
+void				Response::responsePrepare(int & status, map_type * data, const cgi_data & _cgi_data) {
 	_data = data;
 
 	connectionHandler(status);
@@ -185,6 +185,12 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			}
 			status = 3; // QUESTION where should be set and which value
 			return ;
+		}
+		if (fileExt == ".php")
+		{
+			Cgi		cgi(_cgi_data);
+			cgi.exec_cgi();
+			return;
 		}
 		generateBody();
 		buildResponse();
@@ -460,7 +466,6 @@ int					Response::checkLocation() {
 	size_t			pos = 0;
 	size_t			i = 0;
 	std::string		uri;
-	std::string		fileExt;
 
 	uri = it->second[1];
 

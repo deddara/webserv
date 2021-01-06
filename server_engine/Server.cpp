@@ -279,11 +279,11 @@ int Server::clientSessionHandler() {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
-						std::cout << (*it)->getBuff();
+						(*it)->setCgiData();
 						(*it)->clearBuff();
 						if (!(*it)->getRequest()->error())
 							this->getLocation(it, data);
-						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data);
+						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->clearBuff();
 						break;
 					}

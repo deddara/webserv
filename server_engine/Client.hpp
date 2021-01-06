@@ -28,6 +28,14 @@ enum states{
 	finish
 };
 
+struct cgi_data{
+
+	std::map<std::string, std::vector<std::string>>	const *data;
+	int												body_len;
+	struct sockaddr_in &							addr;
+	std::string										serv_host;
+	int												serv_port;
+};
 
 class Client{
 private:
@@ -43,6 +51,7 @@ private:
 	Request			*reqst;
 	Response		*resp;
 	Chunk			chunk;
+	cgi_data		_cgi_data;
 
 	struct timeval	last_msg;
 
@@ -64,6 +73,7 @@ public:
 	Response * getResponse();
 	Bytes	& getBytes();
 	Chunk	& getChunk();
+	cgi_data const & getCgiData() const;
 
 	std::string const & getServHost();
 	int const & getServPort();
@@ -72,14 +82,10 @@ public:
 	int bodyAppend(char const *, const int &);
 	int buffCut(unsigned long const &);
 	void clearBuff();
+	void setCgiData();
 
 	struct timeval & getLastMsg();
 	void		setLastMsg();
-
-	//CGI
-	char **set_env();
-	void exec_cgi();
-	void get_cgi_response();
 
 };
 
