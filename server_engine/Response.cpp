@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 22:54:17 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/07 21:09:59 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,8 +237,14 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		status = 3; // QUESTION where should be set and which value
 		return ;
 	} else {
-		if (checkLocation()) {
-			error404Handler();
+		int			ret = 0;
+		if ((ret = checkLocation())) {
+			if (ret == 1) {
+				error404Handler();
+			}
+			else if (ret == 2) {
+				generateBody();
+			}
 			buildResponse();
 			status = 3; // QUESTION where should be set and which value
 			return ;
@@ -250,7 +256,9 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 			return ;
 		}
 		if (checkFile()) {
-			if (errCode == 403) {
+			if (errCode == 302) {
+				buildResponse();
+			} else if (errCode == 403) {
 				error403Handler();
 				buildResponse();
 			} else if (errCode == 404) {
@@ -275,7 +283,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 }
 
 void				Response::errorHandler() {
-	if (!errorPage || !errorPage->count(errCode)) { //!errorPage
+	if (!errorPage || !errorPage || !errorPage->count(errCode)) {
 		generateBody(); // TODO check if all possible templates are implemented
 		return ;
 	}
@@ -286,7 +294,7 @@ void				Response::errorHandler() {
 
 	if (!(stat(it->second.c_str(), & statbuf))) {
 		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
-			generateRedirectURI(errCode);
+			redirectURI = it->second.substr(it->second.rfind("/"));
 			errCode = 302;
 			return ;
 		} else {
@@ -413,43 +421,6 @@ void				Response::generateBody() {
 	ft_memcpy(body, itErr->second[0].c_str(), bodyLength);
 }
 
-void				Response::generateRedirectURI(int err) {
-	std::map<int, std::string>::const_iterator
-					it = errorPage->find(err);
-	size_t			pos = 0;
-	size_t			i = 0;
-	std::string		root;
-	std::string		prefix;
-	for (; i < location.size(); ++i) {
-		root = location[i]->getData().find("root")->second[0];
-		pos = it->second.find(root, 0);
-		if ((!pos && (root[root.length() - 1] == '/'))
-				|| (!pos && root.length() == it->second.length())
-				|| (!pos && (it->second[root.length()] == '/'
-				|| it->second.length() == root.length()))) {
-			break ;
-		}
-	}
-	if (i == location.size()) {
-		redirectURI = it->second;	// FIXME what to do if no match error
-		return ;					// page path in any location?
-	}
-	prefix = location[i]->getPrefix();
-	if (it->second.length() > root.length()) {
-		redirectURI = it->second.substr(root.length());
-		if (redirectURI[0] == '/' && prefix[prefix.length() - 1] == '/') {
-			redirectURI.insert(0, prefix.substr(0, prefix.length() - 1));
-		} else if (redirectURI[0] != '/'
-				&& prefix[prefix.length() - 1] != '/') {
-			redirectURI.insert(0, prefix + "/");
-		} else {
-			redirectURI.insert(0, prefix);
-		}
-	} else {
-		redirectURI = prefix;
-	}
-}
-
 void				Response::error404Handler() {
 	errHandlersFlags = (errHandlersFlags | 2); // set 0bXXXXXX1X
 	if (!errorPage->count(404)) {
@@ -464,7 +435,7 @@ void				Response::error404Handler() {
 
 	if (!(stat(it->second.c_str(), & statbuf))) {
 		if (statbuf.st_mode & S_IRUSR || statbuf.st_mode & S_IRGRP) {
-			generateRedirectURI(404);
+			redirectURI = it->second.substr(it->second.rfind("/"));
 			errCode = 302;
 			return ;
 		} else {
@@ -497,7 +468,7 @@ void				Response::error403Handler() {
 
 	if (!(stat(it->second.c_str(), & statbuf))) {
 		if (statbuf.st_mode & S_IRUSR) {
-			generateRedirectURI(403);
+			redirectURI = it->second.substr(it->second.rfind("/"));
 			errCode = 302;
 			return ;
 		} else {
@@ -553,13 +524,20 @@ int					Response::checkLocation() {
 		}
 	}
 
-	// check if file extension found in any location
-	if (fileExt.length()) {
-		for (; i < location.size(); ++i) {
-			if (location[i]->getPrefix() == fileExt) {
-				currLocationInd = i;
-				return 0;
+	// check if URI is redirection to error page
+	std::map<int, std::string>::const_iterator
+					itErrPg;
+	if (errorPage) {
+		itErrPg = errorPage->begin();
+		for (; itErrPg != errorPage->end(); ++itErrPg) {
+			if (itErrPg->second.substr(itErrPg->second.rfind("/")) == uri) {
+				break ;
 			}
+		}
+		if (itErrPg != errorPage->end()) {
+			filePath = itErrPg->second;
+			errCode = 200;
+			return 2;
 		}
 	}
 
@@ -590,11 +568,18 @@ int					Response::checkFile() {
 	if (!(stat(filePath.c_str(), & statbuf))) {
 		// check if 'filePath' is directory
 		if (statbuf.st_mode & S_IFDIR) {
+			// if path to dir not ended by '/' init redirect
+			if (filePath[filePath.length() - 1] != '/') {
+				redirectURI = filePath.substr(location[currLocationInd]->
+						getData().find("root")->second[0].length()) + "/";
+				errCode = 302;
+				return 1;
+			}
 			// check if owner or group has execute access to directory
 			if (statbuf.st_mode & S_IXUSR || statbuf.st_mode & S_IXGRP) {
 				// get vector with names of index pages from specified location
-					itLocationData =
-					location[currLocationInd]->getData().find("index");
+					itLocationData = location[currLocationInd]->getData().
+																find("index");
 				// check if there is such vector
 				if (itLocationData !=
 						location[currLocationInd]->getData().end()) {
@@ -669,9 +654,11 @@ void				Response::generateDirListing() {
 	struct stat		statbuf;
 
 	dirListing.append("<html>\n<head><title>Index of ");
-	dirListing.append(filePath);
+	dirListing.append(filePath.substr(location[currLocationInd]->
+			getData().find("root")->second[0].length()));
 	dirListing.append("</title></head>\n<body>\n<h1>Index of ");
-	dirListing.append(filePath);
+	dirListing.append(filePath.substr(location[currLocationInd]->
+			getData().find("root")->second[0].length()));
 	dirListing.append("</h1><hr><pre>\n");
 
 	dir = opendir(filePath.c_str());
@@ -683,7 +670,6 @@ void				Response::generateDirListing() {
 		std::string	directoryItem = filePath;
 		directoryItem.append(s->d_name);
 		if (stat(directoryItem.c_str(), &statbuf) < 0) {
-			perror("stat");
 			continue;
 		}
 		date = timeToStr(statbuf.st_mtime);

@@ -54,7 +54,6 @@ private:
 	void								errorHandler();
 	void								error403Handler();
 	void								error404Handler();
-	void								generateRedirectURI(int);
 	void								generateBody();
 	void								generateFilePath();
 	void								buildResponse();
