@@ -14,6 +14,7 @@
 
 					Response::Response() {
 						_data = nullptr;
+						cgi = NULL;
 						errCode = 0;
 						body = nullptr;
 						bodyLength = 0;
@@ -34,6 +35,8 @@
 							free(body);
 							body = nullptr;
 						}
+						if (cgi)
+							delete cgi;
 					}
 
 void				Response::errorExit(int code, std::string const & word) {
@@ -78,7 +81,7 @@ void Response::connectionHandler(int & status) {
 void Response::cgi_response_parser(Cgi const &cgi){
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
-	char const	*	cgi_buff = cgi.getBody();
+	char const	*	cgi_buff = cgi.getResponse();
 	std::string		cgi_buff_str = std::string(cgi_buff);
 	char		*	numStr = nullptr;
 	std::string 	cgi_headers;
@@ -259,9 +262,9 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		}
 		if (fileExt == ".php" || fileExt == ".cgi")
 		{
-			Cgi		cgi(_cgi_data, filePath);
-			cgi.exec_cgi();
-			cgi_response_parser(cgi);
+			cgi = new Cgi(_cgi_data, filePath);
+			cgi->handler();
+			cgi_response_parser(*cgi);
 			return;
 		}
 		generateBody();

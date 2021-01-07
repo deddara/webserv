@@ -3,9 +3,52 @@
 #include "errno.h"
 // CGI
 
-Cgi::~Cgi() {}
+Cgi::Cgi(const cgi_data &data, const std::string &path)  : resp_buff(NULL),_cgi_data(data), file_path(path), _argv(NULL), _env(NULL) {
+	return;
+}
 
-char **Cgi::set_env() {
+Cgi::~Cgi() {
+	if (resp_buff)
+		free (resp_buff);
+	if (_env)
+	{
+		int i = 0;
+		while (_env[i])
+		{
+			free(_env[i]);
+			i++;
+		}
+		free(_env);
+	}
+	if (_argv)
+	{
+		int i = 0;
+		while (_argv[i])
+		{
+			free(_argv[i]);
+			i++;
+		}
+		free(_argv);
+	}
+}
+
+int Cgi::buffAppend(const char *buff, int len){
+	if (!resp_buff)
+	{
+		if (!(resp_buff = bytes.bytesDup(resp_buff, buff, len)))
+			return 1;
+	}
+	else
+	{
+		char *tmp = resp_buff;
+		if (!(resp_buff = bytes.bytesJoin(resp_buff, buff, len,bytes.getBytes())))
+			return 1;
+		free(tmp);
+	}
+	return (0);
+}
+
+char **Cgi::setEnv() {
 	std::map<std::string, std::string>  env_map;
 	map_type::const_iterator map_it;
 
@@ -48,7 +91,9 @@ char **Cgi::set_env() {
 	env_map["PATH_INFO"] = map_it->second[1];
 	env_map["METHOD"] = map_it->second[0];
 	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
-	char **env = (char **)malloc(sizeof(char *) * (env_map.size() + 1));
+	char **env;
+	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
+		return (NULL);
 	std::map<std::string, std::string>::iterator it = env_map.begin();
 	for (int i = 0; it != env_map.end(); ++it, ++i)
 		env[i] = ft_strdup((it->first + "=" + it->second).c_str());
@@ -56,100 +101,87 @@ char **Cgi::set_env() {
 	return env;
 }
 
-void Cgi::exec_cgi() {
-	int pipes[2];
-	int err_pipe[2];
-	int status = 0;
-	pid_t pid;
-	pipe(pipes);
-	pipe(err_pipe);
-	pid = fork();
+int Cgi::execute() {
+	if(pipe(pipes) < 0 || pipe(err_pipe) < 0)
+		return (1);
+	if((pid = fork()) < 0)
+		return (1);
 	if (pid == 0) {
-		char **argv;
-		argv = (char**)malloc(sizeof(char*) * 3);
-		argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi");
-		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/hello.cgi");
-		argv[2] = 0;
-
 		dup2(pipes[0], 0);
 		dup2(pipes[1], 1);
 //		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
-
-		char **env = set_env();
-		int res = 0;
-		if((res = execve(argv[0], argv, env)) < 0){
+		if (execve(_argv[0], _argv, _env) < 0) {
 			close(pipes[0]);
 			close(pipes[1]);
 			dup2(err_pipe[0], 0);
 			dup2(err_pipe[1], 1);
 			write(1, "1", 1);
-			int i = 0;
-			while (env[i])
-				free(env[i++]);
-			free(env);
-			exit(2);
+			exit(1);
 		}
-
-	} else {
-
-		int n = 0;
-		while (1) {
-			char line[1024];
-			bzero(line, 1024);
-			waitpid(pid, &status, WNOHANG);
-			if (WEXITSTATUS(status) != 0) {
-				break;
-			}
-
-			fd_set readset;
-			FD_ZERO(&readset);
-			FD_SET(pipes[0], &readset);
-			FD_SET(err_pipe[0], &readset);
-			if (select(err_pipe[0] + 1, &readset, 0, 0, 0) < 0)
-			{
-				perror("select");
-				return; //handle error
-			}
-			if (FD_ISSET(err_pipe[0], &readset)){
-				std::cout << "ERR" << std::endl;
-				break;
-			}
-			n = read(pipes[0], line, 1024);
-			if((cgiBuffAppend(line, n)))
-			{
-				return; //handle error
-			}
-			bytes.bytesCount(n);
-			if (n < 1024) {
-				break; //file readed
-			}
-
-		}
-		close(pipes[0]);
-		close(pipes[1]);
-		close(err_pipe[0]);
-		close(err_pipe[1]);
-	}
-}
-
-int Cgi::cgiBuffAppend(const char *buff, int len){
-	if (!resp_buff)
-	{
-		if (!(resp_buff = bytes.bytesDup(resp_buff, buff, len)))
-			return 1;
-	}
-	else
-	{
-		char *tmp = resp_buff;
-		if (!(resp_buff = bytes.bytesJoin(resp_buff, buff, len,bytes.getBytes())))
-			return 1;
-		free(tmp);
 	}
 	return (0);
 }
 
-char const * Cgi::getBody() const { return resp_buff; }
+int Cgi::read_response(){
+	int n = 0;
 
-void Cgi::get_cgi_response() {
+	while (1) {
+		char line[1024];
+		bzero(line, 1024);
+		fd_set readset;
 
+		waitpid(pid, &status, WNOHANG);
+		if (WEXITSTATUS(status) != 0) {
+			return (502);
+		}
+
+		FD_ZERO(&readset);
+		FD_SET(pipes[0], &readset);
+		FD_SET(err_pipe[0], &readset);
+
+		if (select(err_pipe[0] + 1, &readset, 0, 0, 0) < 0)
+			return (500); //handle error
+		if (FD_ISSET(err_pipe[0], &readset)){
+			return (502);
+		}
+		n = read(pipes[0], line, 1024);
+		if((buffAppend(line, n)))
+		{
+			return (500); //handle error
+		}
+		bytes.bytesCount(n);
+		if (n < 1024) {
+			return (0); //file readed
+		}
+	}
 }
+
+int Cgi::handler(){
+	if(!(_argv = (char **) malloc(sizeof(char *) * 3)))
+		return (500);
+	if(!(_argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi")))
+		return (500);
+	if(!(_argv[1] = ft_strdup(file_path.c_str())))
+		return (500);
+	_argv[2] = 0;
+
+	if (!(_env = setEnv()))
+		return (500);
+
+	if (execute())
+		return (500);
+
+	int execute_result = read_response();
+
+	close(pipes[0]);
+	close(pipes[1]);
+	close(err_pipe[0]);
+	close(err_pipe[1]);
+	return (execute_result);
+}
+
+
+
+char const * Cgi::getResponse() const { return resp_buff; }
+
+const Bytes & Cgi::getBytes() const { return bytes; }

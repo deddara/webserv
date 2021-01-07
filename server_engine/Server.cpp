@@ -224,7 +224,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	}
 }
 
-int Server::newSession(ErrorPages const & errPageMap) {
+int Server::newSession() {
 	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it) {
 		if (FD_ISSET((*it).getFd(), &readset)) {
 			struct sockaddr_in addr;
@@ -236,7 +236,7 @@ int Server::newSession(ErrorPages const & errPageMap) {
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
-			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), errPageMap, addr));
+			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), addr));
 		}
 	}
 	return (0);
@@ -336,7 +336,7 @@ int Server::launch() {
 		}
 		if (select_res == 0)
 			continue;
-		if (this->newSession(errPageMap))
+		if (this->newSession())
 			return (1);
 		if (this->clientSessionHandler(errPageMap))
 			return (1);
