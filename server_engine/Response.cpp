@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 22:54:17 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/07 19:44:47 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,76 @@ void Response::connectionHandler(int & status) {
 		status = 3;
 }
 
+void Response::cgi_response_parser(Cgi const &cgi){
+	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
+	std::map<int, std::vector<std::string> >::const_iterator			itErr;
+	char const	*	cgi_buff = cgi.getBody();
+	std::string		cgi_buff_str = std::string(cgi_buff);
+	char		*	numStr = nullptr;
+	std::string 	cgi_headers;
+	size_t			pos = 0;
+
+	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
+
+	itReq = _data->find("head");
+	// HTTP/1.X
+	responseHeaders = itReq->second[2] + " ";
+	pos = cgi_headers.find("Status");
+	if (pos != std::string::npos){
+		pos += 8;
+		while (cgi_headers[pos] != '\r')
+		{
+			responseHeaders.push_back(cgi_headers[pos]);
+			pos++;
+		}
+		pos += 2;
+		responseHeaders.append("\r\n");
+	}
+	// errCode
+	else {
+		pos = 0;
+		if (!(numStr = ft_itoa(errCode))) {
+			errorExit(2, "");
+		}
+		responseHeaders.append(numStr);
+		free(numStr);
+		numStr = nullptr;
+
+		// Message
+		itErr = errorPageTempl->find(errCode);
+		responseHeaders.append(" " + itErr->second[1] + "\r\n");
+	}
+	while (cgi_headers[pos]){
+		responseHeaders.push_back(cgi_headers[pos]);
+		pos++;
+	}
+	// Server
+	webservVersion = "webserv0.1";
+	responseHeaders.append("Server: " + webservVersion + "\r\n");
+
+	// Date
+	responseHeaders.append("Date: " + my_localtime() + "\r\n");
+
+	pos = cgi_buff_str.find("\r\n\r\n") + 4;
+	int content_len = cgi.getBytes().getBytes() - pos;
+	responseHeaders.append("Content-Length: ");
+	responseHeaders.append(std::to_string(content_len));
+	responseHeaders.append("\r\n");
+	responseHeaders.append("Connection: close\r\n\r\n");
+	bodyLength = content_len;
+
+
+	response.length = responseHeaders.size() + bodyLength;
+	if(!(response.data = (char*)malloc(response.length))) {
+		errorExit(2, "");
+	}
+	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
+	if (bodyLength) {
+		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos, bodyLength);
+	}
+};
+
+
 void				Response::buildResponse() {
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
@@ -98,6 +168,7 @@ void				Response::buildResponse() {
 	responseHeaders.append(" " + itErr->second[1] + "\r\n");
 
 	// Server
+	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
@@ -152,7 +223,7 @@ void				Response::buildResponse() {
 	write(1, response.data, response.length);
 }
 
-void				Response::responsePrepare(int & status, map_type * data) {
+void				Response::responsePrepare(int & status, map_type * data, const cgi_data & _cgi_data) {
 	_data = data;
 
 	connectionHandler(status);
@@ -176,7 +247,9 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			return ;
 		}
 		if (checkFile()) {
-			if (errCode == 403) {
+			if (errCode == 302) {
+				buildResponse();
+			} else if (errCode == 403) {
 				error403Handler();
 				buildResponse();
 			} else if (errCode == 404) {
@@ -186,6 +259,13 @@ void				Response::responsePrepare(int & status, map_type * data) {
 			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
+		if (fileExt == ".php" || fileExt == ".cgi")
+		{
+			Cgi		cgi(_cgi_data, filePath);
+			cgi.exec_cgi();
+			cgi_response_parser(cgi);
+			return;
+		}
 		generateBody();
 		buildResponse();
 	}
@@ -193,7 +273,7 @@ void				Response::responsePrepare(int & status, map_type * data) {
 }
 
 void				Response::errorHandler() {
-	if (!errorPage->count(errCode)) {
+	if (!errorPage || !errorPage || !errorPage->count(errCode)) {
 		generateBody(); // TODO check if all possible templates are implemented
 		return ;
 	}
@@ -460,7 +540,6 @@ int					Response::checkLocation() {
 	size_t			pos = 0;
 	size_t			i = 0;
 	std::string		uri;
-	std::string		fileExt;
 
 	uri = it->second[1];
 
@@ -509,6 +588,13 @@ int					Response::checkFile() {
 	if (!(stat(filePath.c_str(), & statbuf))) {
 		// check if 'filePath' is directory
 		if (statbuf.st_mode & S_IFDIR) {
+			// if path to dir not ended by '/' init redirect
+			if (filePath[filePath.length() - 1] != '/') {
+				redirectURI = filePath.substr(location[currLocationInd]->
+						getData().find("root")->second[0].length()) + "/";
+				errCode = 302;
+				return 1;
+			}
 			// check if owner or group has execute access to directory
 			if (statbuf.st_mode & S_IXUSR || statbuf.st_mode & S_IXGRP) {
 				// get vector with names of index pages from specified location
@@ -588,9 +674,11 @@ void				Response::generateDirListing() {
 	struct stat		statbuf;
 
 	dirListing.append("<html>\n<head><title>Index of ");
-	dirListing.append(filePath);
+	dirListing.append(filePath.substr(location[currLocationInd]->
+			getData().find("root")->second[0].length()));
 	dirListing.append("</title></head>\n<body>\n<h1>Index of ");
-	dirListing.append(filePath);
+	dirListing.append(filePath.substr(location[currLocationInd]->
+			getData().find("root")->second[0].length()));
 	dirListing.append("</h1><hr><pre>\n");
 
 	dir = opendir(filePath.c_str());
@@ -602,7 +690,6 @@ void				Response::generateDirListing() {
 		std::string	directoryItem = filePath;
 		directoryItem.append(s->d_name);
 		if (stat(directoryItem.c_str(), &statbuf) < 0) {
-			perror("stat");
 			continue;
 		}
 		date = timeToStr(statbuf.st_mtime);

@@ -48,7 +48,7 @@ public:
 	void recv_msg(std::vector<Client*>::iterator it);
 	void closeConnection(std::vector<Client*>::iterator it);
 	int newSession(ErrorPages const & errPageMap);
-	int clientSessionHandler();
+	int clientSessionHandler(ErrorPages const & errPageMap);
 	int createSocket(std::string const & host, int const port, int const & i);
 	int postPutHandler(map_type const & data, std::vector<Client*>::iterator it);
 	void getLocation(std::vector<Client*>::iterator it, map_type const &);

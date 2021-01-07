@@ -11,6 +11,8 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
+# include "CGI.hpp"
+# include "cgi_data.hpp"
 
 struct									s_response {
 	char *								data;
@@ -37,7 +39,9 @@ private:
 	std::string							fileModifiedTime;
 	std::string							webservVersion;
 	std::string							dirListing;
+	std::string							fileExt;
 	struct s_response					response;
+
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
 	int									limitClientBody;
@@ -54,6 +58,7 @@ private:
 	void								generateFilePath();
 	void								buildResponse();
 	void								generateDirListing();
+	void								cgi_response_parser(Cgi const & cgi);
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const
@@ -65,7 +70,7 @@ public:
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
 	void	responsePrepare(int &, std::map<std::string,
-											std::vector<std::string> > const *);
+											std::vector<std::string> > const *,  const cgi_data &);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
 

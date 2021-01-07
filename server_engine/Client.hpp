@@ -20,6 +20,7 @@
 # include "Chunk.hpp"
 # include <arpa/inet.h>
 # include <sys/wait.h>
+# include "cgi_data.hpp"
 
 enum states{
 	rdy_recv,
@@ -27,7 +28,6 @@ enum states{
 	rdy_respone,
 	finish
 };
-
 
 class Client{
 private:
@@ -43,6 +43,7 @@ private:
 	Request			*reqst;
 	Response		*resp;
 	Chunk			chunk;
+	cgi_data		_cgi_data;
 
 	struct timeval	last_msg;
 
@@ -64,6 +65,7 @@ public:
 	Response * getResponse();
 	Bytes	& getBytes();
 	Chunk	& getChunk();
+	cgi_data const & getCgiData() const;
 
 	std::string const & getServHost();
 	int const & getServPort();
@@ -72,14 +74,10 @@ public:
 	int bodyAppend(char const *, const int &);
 	int buffCut(unsigned long const &);
 	void clearBuff();
+	void setCgiData();
 
 	struct timeval & getLastMsg();
 	void		setLastMsg();
-
-	//CGI
-	char **set_env();
-	void exec_cgi();
-	void get_cgi_response();
 
 };
 
