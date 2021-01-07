@@ -263,9 +263,10 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		if (fileExt == ".php" || fileExt == ".cgi")
 		{
 			cgi = new Cgi(_cgi_data, filePath);
-			cgi->handler();
-			cgi_response_parser(*cgi);
-			return;
+			if(!cgi->handler()) {
+				cgi_response_parser(*cgi);
+				return;
+			}
 		}
 		generateBody();
 		buildResponse();
