@@ -13,7 +13,7 @@
 #include "Client.hpp"
 #include "sys/time.h"
 
-Client::Client(int fd, std::string const & host, int const & port, ErrorPages const & errPageMap, struct sockaddr_in & client_addr) :
+Client::Client(int fd, std::string const & host, int const & port, struct sockaddr_in & client_addr) :
 	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port), addr(client_addr) {
 	reqst = new Request();
 	resp = new Response();
@@ -115,6 +115,10 @@ void Client::setCgiData() {
 	_cgi_data.body_len = bytes.getBytes() - reqst->get_body_pos();
 	_cgi_data.serv_host = serv_host;
 	_cgi_data.serv_port = serv_port;
+}
+
+void Client::setResponse(Response *response) {
+	resp = response;
 }
 
 cgi_data const & Client::getCgiData() const { return _cgi_data; }

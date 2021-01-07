@@ -15,18 +15,29 @@ private:
 	const cgi_data 		& _cgi_data;
 	std::string const 	&file_path;
 	Bytes				bytes;
-	// CGI
+
+	int pipes[2];
+	int err_pipe[2];
+	int status = 0;
+	pid_t pid;
+	char **_argv;
+	char **_env;
+
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
-	Cgi(cgi_data const & data, std::string const &path) : resp_buff(NULL),_cgi_data(data), file_path(path) {};
+	Cgi(cgi_data const & data, std::string const &path);
 	~Cgi();
-	char **set_env();
-	void exec_cgi();
-	void get_cgi_response();
 
-	int cgiBuffAppend(const char *buff, int len);
-	char const *getBody() const;
-	Bytes const & getBytes() const { return bytes; }
+
+	char const 	*	getResponse() const;
+	Bytes const &	getBytes() const;
+
+	char			**setEnv();
+	int 			execute();
+	int				handler();
+	int				buffAppend(const char *buff, int len);
+	int				read_response();
+
 
 };
 

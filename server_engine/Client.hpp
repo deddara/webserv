@@ -51,7 +51,7 @@ private:
 
 public:
 
-	Client(int fd, std::string const &, int const &, ErrorPages const & errPageMap, struct sockaddr_in & client_addr);
+	Client(int fd, std::string const &, int const &, struct sockaddr_in & client_addr);
 	~Client();
 
 	void setFd(int fd);
@@ -75,9 +75,10 @@ public:
 	int buffCut(unsigned long const &);
 	void clearBuff();
 	void setCgiData();
+	void setResponse(Response *);
 
 	struct timeval & getLastMsg();
-	void		setLastMsg();
+	void			setLastMsg();
 
 };
 
