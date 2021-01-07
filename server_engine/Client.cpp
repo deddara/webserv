@@ -117,4 +117,8 @@ void Client::setCgiData() {
 	_cgi_data.serv_port = serv_port;
 }
 
+void Client::setResponse(Response *response) {
+	resp = response;
+}
+
 cgi_data const & Client::getCgiData() const { return _cgi_data; }

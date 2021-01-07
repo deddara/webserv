@@ -75,9 +75,10 @@ public:
 	int buffCut(unsigned long const &);
 	void clearBuff();
 	void setCgiData();
+	void setResponse(Response *);
 
 	struct timeval & getLastMsg();
-	void		setLastMsg();
+	void			setLastMsg();
 
 };
 
