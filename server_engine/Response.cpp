@@ -257,7 +257,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
-		if (fileExt == ".php")
+		if (fileExt == ".php" || fileExt == ".cgi")
 		{
 			Cgi		cgi(_cgi_data, filePath);
 			cgi.exec_cgi();
@@ -271,7 +271,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 }
 
 void				Response::errorHandler() {
-	if (!errorPage->count(errCode)) { //!errorPage
+	if (!errorPage || !errorPage->count(errCode)) { //!errorPage
 		generateBody(); // TODO check if all possible templates are implemented
 		return ;
 	}

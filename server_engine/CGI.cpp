@@ -68,7 +68,7 @@ void Cgi::exec_cgi() {
 		char **argv;
 		argv = (char**)malloc(sizeof(char*) * 3);
 		argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi");
-		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/php-info.php");
+		argv[1] = ft_strdup("/Users/deddara/school21/webserv/site/cgi-bin/hello.cgi");
 		argv[2] = 0;
 
 		dup2(pipes[0], 0);

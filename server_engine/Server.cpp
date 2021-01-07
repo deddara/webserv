@@ -265,7 +265,7 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 	(*it)->getResponse()->setErrcode(400);
 }
 
-int Server::clientSessionHandler() {
+int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it) {
 		if (FD_ISSET((*it)->getFd(), &readset))
 		{
@@ -281,8 +281,9 @@ int Server::clientSessionHandler() {
 					{
 						(*it)->setCgiData();
 						(*it)->clearBuff();
-						if (!(*it)->getRequest()->error())
+						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
+						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->clearBuff();
 						break;
@@ -306,6 +307,8 @@ int Server::clientSessionHandler() {
 				perror("send");
 				return 1;
 			}
+//			delete (*it)->getResponse();
+
 			(*it)->getResponse()->clearResponseData();
 			if ((*it)->getStatus() == 3) {
 				this->closeConnection(it);
@@ -335,7 +338,7 @@ int Server::launch() {
 			continue;
 		if (this->newSession(errPageMap))
 			return (1);
-		if (this->clientSessionHandler())
+		if (this->clientSessionHandler(errPageMap))
 			return (1);
 	}
 }
