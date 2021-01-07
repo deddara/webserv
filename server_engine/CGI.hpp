@@ -6,7 +6,8 @@
 #include "cgi_data.hpp"
 #include "unistd.h"
 #include "Bytes.hpp"
-
+#include <sys/types.h>
+#include <sys/wait.h>
 
 class Cgi{
 private:
