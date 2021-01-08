@@ -1,9 +1,8 @@
 #include "CGI.hpp"
 #include "stdlib.h"
-#include "errno.h"
 // CGI
 
-Cgi::Cgi(const cgi_data &data, const std::string &path)  : resp_buff(NULL),_cgi_data(data), file_path(path), _argv(NULL), _env(NULL) {
+Cgi::Cgi(const cgi_data &data, const std::string &path, const char *bdy)  : resp_buff(NULL),_cgi_data(data), file_path(path), _argv(NULL), _env(NULL), body(bdy) {
 	return;
 }
 

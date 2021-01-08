@@ -17,6 +17,7 @@
 						cgi = NULL;
 						errCode = 0;
 						body = nullptr;
+						reqBody = nullptr;
 						bodyLength = 0;
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
@@ -270,7 +271,7 @@ void				Response::responsePrepare(int & status, map_type * data, const cgi_data 
 		}
 		if (fileExt == ".php" || fileExt == ".cgi")
 		{
-			cgi = new Cgi(_cgi_data, filePath);
+			cgi = new Cgi(_cgi_data, filePath, reqBody);
 			if(!cgi->handler()) {
 				cgi_response_parser(*cgi);
 				return;
@@ -713,4 +714,9 @@ void				Response::setErrorPageTempl(const std::map<int,
 
 VirtServer const &	Response::getVirtServer() const {
 	return * virtServ;
+}
+
+void Response::setReqBody(const char *str) {
+	if (str)
+		reqBody = str;
 }

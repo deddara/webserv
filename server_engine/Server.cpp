@@ -144,6 +144,7 @@ int Server::error_headers(Request const &req) {
 
 void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 
+	char *body;
 	Chunk & chunk = (*it)->getChunk();
 	Bytes & bytes = (*it)->getBytes();
 	const int & body_pos = (*it)->getRequest()->get_body_pos();
@@ -158,6 +159,12 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 				if (!ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
 				{
 					(*it)->getResponse()->setErrcode(200);
+					if (!(body = (char*)malloc(sizeof(char) * chunk.getLenSum())))
+						(*it)->getResponse()->setErrcode(500);
+					else {
+						ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), chunk.getLenSum());
+						(*it)->setBody(body);
+					}
 					(*it)->setStatus(1);
 					chunk.setZero();
 				}
@@ -294,6 +301,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 						(*it)->clearBuff();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
+						(*it)->getResponse()->setReqBody((*it)->getBody());
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->clearBuff();

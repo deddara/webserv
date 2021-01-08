@@ -15,6 +15,7 @@ private:
 	const cgi_data 		& _cgi_data;
 	std::string const 	&file_path;
 	Bytes				bytes;
+	const char			*body;
 
 	int pipes[2];
 	int err_pipe[2];
@@ -25,7 +26,7 @@ private:
 
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
-	Cgi(cgi_data const & data, std::string const &path);
+	Cgi(cgi_data const & data, std::string const &path, const char *);
 	~Cgi();
 
 

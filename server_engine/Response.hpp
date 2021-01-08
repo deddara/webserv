@@ -28,6 +28,7 @@ private:
 
 	int									errCode;
 	char *								body;
+	const char *						reqBody;
 	size_t								bodyLength;
 	size_t								currLocationInd;
 	const VirtServer *					virtServ;
@@ -69,6 +70,7 @@ public:
 	void	setServerData(VirtServer const &);
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
+	void	setReqBody(const char *);
 	void	responsePrepare(int &, std::map<std::string,
 											std::vector<std::string> > const *,  const cgi_data &);
 	void	connectionHandler(int & status);
