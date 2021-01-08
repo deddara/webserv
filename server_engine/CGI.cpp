@@ -89,6 +89,7 @@ char **Cgi::setEnv() {
 	map_it = _cgi_data.data->find("head");
 	env_map["PATH_INFO"] = map_it->second[1];
 	env_map["METHOD"] = map_it->second[0];
+	method = map_it->second[0];
 	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
 	char **env;
 	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
@@ -100,6 +101,22 @@ char **Cgi::setEnv() {
 	return env;
 }
 
+int Cgi::sendPostBody(){
+
+	while (1) {
+		fd_set writeset;
+		FD_ZERO(&writeset);
+		FD_SET(pipes[1], &writeset);
+		if (select(pipes[1] + 1, 0, &writeset, 0, 0) < 0)
+			return (1);
+		int res = write (pipes[1], body, _cgi_data.body_len);
+		if (res == _cgi_data.body_len)
+			break;
+		break;
+	}
+	return (0);
+};
+
 int Cgi::execute() {
 	if(pipe(pipes) < 0 || pipe(err_pipe) < 0)
 		return (1);
@@ -108,6 +125,9 @@ int Cgi::execute() {
 	if (pid == 0) {
 		dup2(pipes[0], 0);
 		dup2(pipes[1], 1);
+		if (method == "POST"){
+
+		}
 //		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
 		if (execve(_argv[0], _argv, _env) < 0) {
 			close(pipes[0]);

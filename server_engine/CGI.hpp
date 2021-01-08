@@ -16,6 +16,7 @@ private:
 	std::string const 	&file_path;
 	Bytes				bytes;
 	const char			*body;
+	std::string 		method;
 
 	int pipes[2];
 	int err_pipe[2];
@@ -38,6 +39,7 @@ public:
 	int				handler();
 	int				buffAppend(const char *buff, int len);
 	int				read_response();
+	int 			sendPostBody();
 
 
 };

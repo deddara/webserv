@@ -102,6 +102,7 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 		else {
 			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
 			(*it)->setBody(body);
+			(*it)->setBodyLen(content_length);
 		}
 		(*it)->setStatus(1);
 	}
@@ -114,6 +115,7 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 		else {
 			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
 			(*it)->setBody(body);
+			(*it)->setBodyLen(content_length);
 		}
 		(*it)->setStatus(1);
 	}
@@ -164,6 +166,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 					else {
 						ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), chunk.getLenSum());
 						(*it)->setBody(body);
+						(*it)->setBodyLen(chunk.getLenSum());
 					}
 					(*it)->setStatus(1);
 					chunk.setZero();

@@ -36,6 +36,7 @@ private:
 
 	int			_fd;
 	int			state;
+	int 		body_len;
 	std::string serv_host;
 	int			serv_port;
 
@@ -70,6 +71,7 @@ public:
 
 	std::string const & getServHost();
 	int const & getServPort();
+	int const & getBodyLen() const;
 
 	int buffAppend(char const *, const int &);
 	int bodyAppend(char const *, const int &);
@@ -77,6 +79,7 @@ public:
 	void clearBuff();
 	void setCgiData();
 	void setResponse(Response *);
+	void setBodyLen(int const &);
 
 	struct timeval & getLastMsg();
 	void			setLastMsg();
