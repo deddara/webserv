@@ -90,6 +90,8 @@ const char * Client::getBody() {
 	return body_buff;
 }
 
+void Client::setBody(char *str) { body_buff = str; }
+
 struct timeval &Client::getLastMsg(){
 	return last_msg;
 }

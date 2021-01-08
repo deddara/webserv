@@ -58,8 +58,9 @@ public:
 	int getFd();
 	int & getStatus();
 	void setStatus(int status);
-	char const *getBuff();
-	char const *getBody();
+	char const	*getBuff();
+	char const	*getBody();
+	void 		setBody(char *);
 
 	Request * getRequest();
 	Response * getResponse();

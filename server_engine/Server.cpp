@@ -89,6 +89,7 @@ int Server::set_prepare()
 int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it)
 {
 	map_type::const_iterator map_it;
+	char *body;
 	map_it = data.find("content-length");
 	unsigned long content_length = atoi(map_it->second[0].c_str());
 	unsigned long should_read_len = content_length + (*it)->getRequest()->get_body_pos();
@@ -96,14 +97,24 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 
 	if ((*it)->getBytes().getBytes() == should_read_len)  //общее колво сколько должны считать
 	{
-//		ft_memcpy((void*)(*it)->getBody(), (void*)(*it)->getBuff(), content_length);
+		if (!(body = (char*)malloc(sizeof(char) * content_length)))
+			(*it)->getResponse()->setErrcode(500);
+		else {
+			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
+			(*it)->setBody(body);
+		}
 		(*it)->setStatus(1);
 	}
 	else if ((*it)->getBytes().getBytes() > should_read_len)
 	{
 		if ((*it)->buffCut(should_read_len))
 			(*it)->getResponse()->setErrcode(500);
-//		ft_memcpy((void*)(*it)->getBody(), (void*)((*it)->getBuff() + should_read_len), content_length);
+		if (!(body = (char*)malloc(sizeof(char) * content_length)))
+			(*it)->getResponse()->setErrcode(500);
+		else {
+			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
+			(*it)->setBody(body);
+		}
 		(*it)->setStatus(1);
 	}
 	return (0);
