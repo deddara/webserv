@@ -51,17 +51,18 @@ char **Cgi::setEnv() {
 	std::map<std::string, std::string>  env_map;
 	map_type::const_iterator map_it;
 
-	env_map["AUTH_TYPE"] = "Basic";
+	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
+	env_map["SERVER_NAME"] = "localhost";
+
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	//
-	env_map["SCRIPT_NAME"] = "get/it/from/conf/URI";
-	env_map["SERVER_NAME"] = "get/it/from/conf/parse";
+	env_map["SCRIPT_NAME"] = file_path;
 
 	env_map["SERVER_PORT"] = std::to_string(_cgi_data.serv_port);
 	map_it = _cgi_data.data->find("head");
 	env_map["SERVER_PROTOCOL"] = map_it->second[2];
-	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
 	env_map["REMOTE_ADDR"] = inet_ntoa(_cgi_data.addr->sin_addr);
+	env_map["REMOTE_HOST"] = "localhost";
 	map_it = _cgi_data.data->find("authorization");
 	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
 		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
@@ -76,21 +77,25 @@ char **Cgi::setEnv() {
 		env_map["QUERY_STRING"] = map_it->second[1].substr(map_it->second[1].find('?') + 1);
 	else
 		env_map["QUERY_STRING"] = "";
+	env_map["REQUEST_METHOD"] = map_it->second[0];
 
-	env_map["CONTENT_LENGTH"] = std::to_string(_cgi_data.body_len);
-	map_it = _cgi_data.data->find("content_type");
-	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
-		env_map["CONTENT_TYPE"] = "";
-	else
-		env_map["CONTENT_TYPE"] = map_it->second[0];
+//	map_it = _cgi_data.data->find("content_type");
+//	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
+//		env_map["CONTENT_TYPE"] = "";
+//	else
+//		env_map["CONTENT_TYPE"] = map_it->second[0];
+//	env_map["AUTH_TYPE"] = "Basic";
 
 	//for PHP
-	env_map["REDIRECT_STATUS"] = "1";
+	env_map["REDIRECT_STATUS"] = "200";
 	map_it = _cgi_data.data->find("head");
 	env_map["PATH_INFO"] = map_it->second[1];
-	env_map["METHOD"] = map_it->second[0];
 	method = map_it->second[0];
+	env_map["HTTP_ACCEPT"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
 	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
+	env_map["CONTENT_TYPE"] = "application/x-www-form-urlencoded";
+	env_map["CONTENT_LENGTH"] = std::to_string(_cgi_data.body_len);
+
 	char **env;
 	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
 		return (NULL);
@@ -103,35 +108,40 @@ char **Cgi::setEnv() {
 
 int Cgi::sendPostBody(){
 
-	while (1) {
-		fd_set writeset;
-		FD_ZERO(&writeset);
-		FD_SET(pipes[1], &writeset);
-		if (select(pipes[1] + 1, 0, &writeset, 0, 0) < 0)
-			return (1);
-		int res = write (pipes[1], body, _cgi_data.body_len);
-		if (res == _cgi_data.body_len)
-			break;
-		break;
-	}
+//	while (1) {
+//		fd_set writeset;
+//		FD_ZERO(&writeset);
+//		FD_SET(pipes[1], &writeset);
+//		if (select(pipes[1] + 1, 0, &writeset, 0, 0) < 0)
+//			return (1);
+//		int res = write (pipes[1], body, _cgi_data.body_len);
+//		if (res == _cgi_data.body_len)
+//			break;
+//		break;
+//	}
 	return (0);
 };
 
 int Cgi::execute() {
-	if(pipe(pipes) < 0 || pipe(err_pipe) < 0)
+	readPipe[0] = readPipe[1] = writePipe[0] = writePipe[1] = err_pipe[0] = err_pipe[1] = -1;
+	if(pipe(readPipe) < 0 || pipe(writePipe) || pipe(err_pipe) < 0)
 		return (1);
+	if (dup2(writePipe[1], 1) < 0 || dup2(readPipe[0], 0) < 0)
+		return (1);
+	close(readPipe[0]);
+	close(writePipe[1]);
+
 	if((pid = fork()) < 0)
 		return (1);
 	if (pid == 0) {
-		dup2(pipes[0], 0);
-		dup2(pipes[1], 1);
-		if (method == "POST"){
 
-		}
-//		write(pipes[1], "first_name=Lebrus&last_name=Shupay", 34); // Body если метод пост
+//		write (pipes[1], body, _cgi_data.body_len);
+
+//		if (method == "POST"){
+//			if (sendPostBody())
+//				exit(1);
+//		}
 		if (execve(_argv[0], _argv, _env) < 0) {
-			close(pipes[0]);
-			close(pipes[1]);
 			dup2(err_pipe[0], 0);
 			dup2(err_pipe[1], 1);
 			write(1, "1", 1);
@@ -143,7 +153,7 @@ int Cgi::execute() {
 
 int Cgi::read_response(){
 	int n = 0;
-
+	int max_fd = 0;
 	while (1) {
 		char line[1024];
 		bzero(line, 1024);
@@ -155,15 +165,20 @@ int Cgi::read_response(){
 		}
 
 		FD_ZERO(&readset);
-		FD_SET(pipes[0], &readset);
 		FD_SET(err_pipe[0], &readset);
-
-		if (select(err_pipe[0] + 1, &readset, 0, 0, 0) < 0)
+		FD_SET(writePipe[0], &readset);
+		if (writePipe[0] > err_pipe[0])
+			max_fd = writePipe[0];
+		else
+			max_fd = err_pipe[0];
+		if (select(writePipe[0] + 1, &readset, 0, 0, 0) < 0) {
+			perror("select");
 			return (500); //handle error
+		}
 		if (FD_ISSET(err_pipe[0], &readset)){
 			return (502);
 		}
-		n = read(pipes[0], line, 1024);
+		n = read(writePipe[0], line, 1024);
 		if((buffAppend(line, n)))
 		{
 			return (500); //handle error
@@ -176,6 +191,10 @@ int Cgi::read_response(){
 }
 
 int Cgi::handler(){
+	int oldWrite, oldRead;
+	oldWrite = dup(1);
+	oldRead = dup(0);
+
 	if(!(_argv = (char **) malloc(sizeof(char *) * 3)))
 		return (500);
 	if(!(_argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi")))
@@ -190,12 +209,22 @@ int Cgi::handler(){
 	if (execute())
 		return (500);
 
+	dup2(oldRead, 0);
+	dup2(oldWrite, 1);
+	close(oldWrite);
+	close(oldRead);
+	oldWrite = -1;
+	oldRead = -1;
+
+	write(readPipe[1], body, _cgi_data.body_len);
 	int execute_result = read_response();
 
-	close(pipes[0]);
-	close(pipes[1]);
 	close(err_pipe[0]);
 	close(err_pipe[1]);
+	close(writePipe[0]);
+	close(writePipe[1]);
+	close(readPipe[1]);
+	close(readPipe[0]);
 	return (execute_result);
 }
 
