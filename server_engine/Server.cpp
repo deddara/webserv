@@ -89,6 +89,7 @@ int Server::set_prepare()
 int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator it)
 {
 	map_type::const_iterator map_it;
+	char *body;
 	map_it = data.find("content-length");
 	unsigned long content_length = atoi(map_it->second[0].c_str());
 	unsigned long should_read_len = content_length + (*it)->getRequest()->get_body_pos();
@@ -96,14 +97,26 @@ int Server::postPutHandler(map_type const & data, std::vector<Client*>::iterator
 
 	if ((*it)->getBytes().getBytes() == should_read_len)  //общее колво сколько должны считать
 	{
-//		ft_memcpy((void*)(*it)->getBody(), (void*)(*it)->getBuff(), content_length);
+		if (!(body = (char*)malloc(sizeof(char) * content_length)))
+			(*it)->getResponse()->setErrcode(500);
+		else {
+			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
+			(*it)->setBody(body);
+			(*it)->setBodyLen(content_length);
+		}
 		(*it)->setStatus(1);
 	}
 	else if ((*it)->getBytes().getBytes() > should_read_len)
 	{
 		if ((*it)->buffCut(should_read_len))
 			(*it)->getResponse()->setErrcode(500);
-//		ft_memcpy((void*)(*it)->getBody(), (void*)((*it)->getBuff() + should_read_len), content_length);
+		if (!(body = (char*)malloc(sizeof(char) * content_length)))
+			(*it)->getResponse()->setErrcode(500);
+		else {
+			ft_memcpy(body, (*it)->getBuff() + (*it)->getRequest()->get_body_pos(), content_length);
+			(*it)->setBody(body);
+			(*it)->setBodyLen(content_length);
+		}
 		(*it)->setStatus(1);
 	}
 	return (0);
@@ -147,7 +160,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			{
 				if (!ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
 				{
-					(*it)->getResponse()->setErrcode(200);
+					(*it)->setBodyLen(chunk.getBuffSum());
 					(*it)->setStatus(1);
 					chunk.setZero();
 				}
@@ -158,7 +171,12 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 				}
 				return;
 			}
-			(*it)->bodyAppend(read_buff + chunk.getLenSum(), chunk.getLen());
+			if((*it)->bodyAppend(read_buff + chunk.getLenSum(), chunk.getLen()))
+			{
+				(*it)->getResponse()->setErrcode(500);
+				(*it)->setStatus(1);
+				return;
+			}
 			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
 			chunk.setLenSum(chunk.getLenSum() + chunk.getLen() + 2);
@@ -284,10 +302,11 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
+						std::cout <<(*it)->getBuff() << std::endl;
 						(*it)->setCgiData();
-						(*it)->clearBuff();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
+						(*it)->getResponse()->setReqBody((*it)->getBody());
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->clearBuff();

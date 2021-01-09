@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 14:56:06 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 14:56:37 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 						cgi = NULL;
 						errCode = 0;
 						body = nullptr;
+						reqBody = nullptr;
 						bodyLength = 0;
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
@@ -258,7 +259,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 			}
 			if (fileExt == ".php" || fileExt == ".cgi")
 			{
-				cgi = new Cgi(_cgi_data, filePath);
+				cgi = new Cgi(_cgi_data, filePath, reqBody);
 				if(!cgi->handler()) {
 					cgi_response_parser(*cgi);
 					return;
@@ -727,4 +728,9 @@ void				Response::setErrorPageTempl(const std::map<int,
 
 VirtServer const &	Response::getVirtServer() const {
 	return * virtServ;
+}
+
+void Response::setReqBody(const char *str) {
+	if (str)
+		reqBody = str;
 }

@@ -15,6 +15,7 @@
 
 Client::Client(int fd, std::string const & host, int const & port, struct sockaddr_in & client_addr) :
 	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port), addr(client_addr) {
+	body_len = 0;
 	reqst = new Request();
 	resp = new Response();
 	gettimeofday(&last_msg, NULL);
@@ -90,6 +91,8 @@ const char * Client::getBody() {
 	return body_buff;
 }
 
+void Client::setBody(char *str) { body_buff = str; }
+
 struct timeval &Client::getLastMsg(){
 	return last_msg;
 }
@@ -122,3 +125,7 @@ void Client::setResponse(Response *response) {
 }
 
 cgi_data const & Client::getCgiData() const { return _cgi_data; }
+
+
+void Client::setBodyLen(const int &num) { body_len = num; }
+const int & Client::getBodyLen() const { return body_len; }
