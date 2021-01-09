@@ -115,7 +115,7 @@ void Client::clearBuff()
 void Client::setCgiData() {
 	_cgi_data.data = &reqst->getData();
 	_cgi_data.addr = &addr;
-	_cgi_data.body_len = bytes.getBytes() - reqst->get_body_pos();
+	_cgi_data.body_len = body_len;
 	_cgi_data.serv_host = serv_host;
 	_cgi_data.serv_port = serv_port;
 }

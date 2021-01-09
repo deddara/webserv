@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 19:43:36 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 20:18:44 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,7 @@ void				Response::buildResponse() {
 	responseHeaders.append(" " + itErr->second[1] + "\r\n");
 
 	// Server
+	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
