@@ -13,6 +13,7 @@
 # include <unistd.h>
 # include "CGI.hpp"
 # include "cgi_data.hpp"
+# include <stdexcept>
 
 struct									s_response {
 	char *								data;
@@ -47,7 +48,6 @@ private:
 	char								errHandlersFlags;
 	int									limitClientBody;
 
-	void								errorExit(int, std::string const &);
 	int									checkLocation();
 	int									checkAllowMethods();
 	int									checkFile();
@@ -70,7 +70,7 @@ public:
 	void	setErrorPageTempl(const std::map<int, std::vector<std::string> > *);
 	void	setErrcode(int const &num );
 	void	responsePrepare(int &, std::map<std::string,
-											std::vector<std::string> > const *,  const cgi_data &);
+						std::vector<std::string> > const *, const cgi_data &);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
 

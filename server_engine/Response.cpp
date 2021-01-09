@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/07 21:06:32 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 14:56:06 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,7 @@
 							delete cgi;
 					}
 
-void				Response::errorExit(int code, std::string const & word) {
-	std::string		errors[3] = {
-		"Error: file open fails",
-		"Error: read fails",
-		"Error: malloc fails",
-	};
-	exit(1);
-}
-
 void				Response::clearResponseData() {
-	_data = nullptr;
-	errCode = 0;
 	if (response.data) {
 		free(response.data);
 		response.data = nullptr;
@@ -59,17 +48,12 @@ void				Response::clearResponseData() {
 	if (body) {
 		free(body);
 		body = nullptr;
+		bodyLength = 0;
 	}
-	bodyLength = 0;
-	currLocationInd = std::string::npos;
-	errorPage = nullptr;
-	location.clear();
 	responseHeaders.clear();
 	redirectURI.clear();
 	filePath.clear();
 	fileModifiedTime.clear();
-	webservVersion.clear();
-	errHandlersFlags = 0;
 }
 
 void Response::connectionHandler(int & status) {
@@ -81,10 +65,10 @@ void Response::connectionHandler(int & status) {
 void Response::cgi_response_parser(Cgi const &cgi){
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
-	char const	*	cgi_buff = cgi.getResponse();
+	char const *	cgi_buff = cgi.getResponse();
 	std::string		cgi_buff_str = std::string(cgi_buff);
-	char		*	numStr = nullptr;
-	std::string 	cgi_headers;
+	char *			numStr = nullptr;
+	std::string		cgi_headers;
 	size_t			pos = 0;
 
 	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
@@ -107,7 +91,7 @@ void Response::cgi_response_parser(Cgi const &cgi){
 	else {
 		pos = 0;
 		if (!(numStr = ft_itoa(errCode))) {
-			errorExit(2, "");
+			throw std::runtime_error("Error: malloc fails");
 		}
 		responseHeaders.append(numStr);
 		free(numStr);
@@ -122,7 +106,6 @@ void Response::cgi_response_parser(Cgi const &cgi){
 		pos++;
 	}
 	// Server
-	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
@@ -139,11 +122,12 @@ void Response::cgi_response_parser(Cgi const &cgi){
 
 	response.length = responseHeaders.size() + bodyLength;
 	if(!(response.data = (char*)malloc(response.length))) {
-		errorExit(2, "");
+		throw std::runtime_error("Error: malloc fails");
 	}
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
 	if (bodyLength) {
-		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos, bodyLength);
+		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
+				bodyLength);
 	}
 };
 
@@ -153,14 +137,17 @@ void				Response::buildResponse() {
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
 	char *	numStr = nullptr;
 
-	itReq = _data->find("head");
-
 	// HTTP/1.X
-	responseHeaders = itReq->second[2] + " ";
+	if (errCode == 400) {
+		responseHeaders = "HTTP/1.1 ";
+	} else {
+		itReq = _data->find("head");
+		responseHeaders = itReq->second[2] + " ";
+	}
 
 	// errCode
 	if(!(numStr = ft_itoa(errCode))) {
-		errorExit(2, "");
+		throw std::runtime_error("Error: malloc fails");
 	}
 	responseHeaders.append(numStr);
 	free(numStr);
@@ -171,7 +158,6 @@ void				Response::buildResponse() {
 	responseHeaders.append(" " + itErr->second[1] + "\r\n");
 
 	// Server
-	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
@@ -180,7 +166,7 @@ void				Response::buildResponse() {
 	// Content-Length
 	if (bodyLength) {
 		if(!(numStr = ft_itoa(bodyLength))) {
-			errorExit(2, "");
+			throw std::runtime_error("Error: malloc fails");
 		}
 		responseHeaders.append("Content-Length: ");
 		responseHeaders.append(numStr);
@@ -215,7 +201,7 @@ void				Response::buildResponse() {
 	responseHeaders.append("\r\n");
 	response.length = responseHeaders.length() + bodyLength;
 	if(!(response.data = (char*)malloc(response.length))) {
-		errorExit(2, "");
+		throw std::runtime_error("Error: malloc fails");
 	}
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
 	if (bodyLength) {
@@ -232,55 +218,75 @@ void				Response::responsePrepare(int & status, map_type * data,
 
 	connectionHandler(status);
 
-	if (errCode) {
-		errorHandler();
-		buildResponse();
-		status = 3; // QUESTION where should be set and which value
-		return ;
-	} else {
-		int			ret = 0;
-		if ((ret = checkLocation())) {
-			if (ret == 1) {
-				error404Handler();
-			}
-			else if (ret == 2) {
-				generateBody();
-			}
+	try {
+		if (errCode) {
+			errorHandler();
 			buildResponse();
 			status = 3; // QUESTION where should be set and which value
 			return ;
+		} else {
+			int			ret = 0;
+			if ((ret = checkLocation())) {
+				if (ret == 1) {
+					error404Handler();
+				}
+				else if (ret == 2) {
+					generateBody();
+				}
+				buildResponse();
+				status = 3; // QUESTION where should be set and which value
+				return ;
+			}
+			if (checkAllowMethods()) {
+				errorHandler();
+				buildResponse();
+				status = 3; // QUESTION where should be set and which value
+				return ;
+			}
+			if (checkFile()) {
+				if (errCode == 302) {
+					buildResponse();
+				} else if (errCode == 403) {
+					error403Handler();
+					buildResponse();
+				} else if (errCode == 404) {
+					error404Handler();
+					buildResponse();
+				}
+				status = 3; // QUESTION where should be set and which value
+				return ;
+			}
+			if (fileExt == ".php" || fileExt == ".cgi")
+			{
+				cgi = new Cgi(_cgi_data, filePath);
+				if(!cgi->handler()) {
+					cgi_response_parser(*cgi);
+					return;
+				}
+			}
+			generateBody();
+			buildResponse();
 		}
-		if (checkAllowMethods()) {
+		return ;
+	}
+	catch (std::exception & e) {
+		std::cout << e.what() << std::endl
+			<< "Generation \"error 500\" response" << std::endl;
+		try {
+			clearResponseData();
+			errCode = 500;
 			errorHandler();
 			buildResponse();
 			status = 3; // QUESTION where should be set and which value
 			return ;
 		}
-		if (checkFile()) {
-			if (errCode == 302) {
-				buildResponse();
-			} else if (errCode == 403) {
-				error403Handler();
-				buildResponse();
-			} else if (errCode == 404) {
-				error404Handler();
-				buildResponse();
-			}
-			status = 3; // QUESTION where should be set and which value
+		catch (std::exception & e) {
+			std::cout << e.what() << std::endl
+				<< "Close connection silently" << std::endl;
+			status = 3;
 			return ;
 		}
-		if (fileExt == ".php" || fileExt == ".cgi")
-		{
-			cgi = new Cgi(_cgi_data, filePath);
-			if(!cgi->handler()) {
-				cgi_response_parser(*cgi);
-				return;
-			}
-		}
-		generateBody();
-		buildResponse();
 	}
-	return ;
 }
 
 void				Response::errorHandler() {
@@ -363,7 +369,7 @@ void				Response::generateBody() {
 		// check if body is generated directory listing (autoindex)
 		if (dirListing.length()) {
 			if(!(body = (char*)malloc((bodyLength = dirListing.length())))) {
-				errorExit(2, "");
+				throw std::runtime_error("Error: malloc fails");
 			}
 			ft_memcpy(body, dirListing.c_str(), bodyLength);
 			return ;
@@ -371,7 +377,7 @@ void				Response::generateBody() {
 		} else {
 		int			fd;
 		if ((fd = open(filePath.c_str(), O_RDONLY)) < 0) {
-			errorExit(0, "");
+			throw std::runtime_error("Error: file open fails");
 		}
 		int			ret = 0;
 		char *		buf = nullptr;
@@ -380,14 +386,14 @@ void				Response::generateBody() {
 		size_t		oldBodyLength = 0;
 
 		if(!(buf = (char*)malloc(len))) {
-			errorExit(2, "");
+			throw std::runtime_error("Error: malloc fails");
 		}
 		while ((ret = read(fd, buf, len)) > 0) {
 			if (body) {
 				tmp = body;
 				oldBodyLength = bodyLength;
 				if(!(body = (char*)malloc((bodyLength += ret)))) {
-					errorExit(2, "");
+					throw std::runtime_error("Error: malloc fails");
 				}
 				ft_memcpy(body, tmp, oldBodyLength);
 				ft_memcpy(body + oldBodyLength, buf, ret);
@@ -395,20 +401,20 @@ void				Response::generateBody() {
 				tmp = nullptr;
 			} else {
 				if (!(body = (char*)malloc((bodyLength = ret)))) {
-					errorExit(2, "");
+					throw std::runtime_error("Error: malloc fails");
 				}
 				ft_memcpy(body, buf, ret);
 			}
-			if (ret == len) {
+			if (ret == static_cast<int>(len)) {
 				free(buf);
 				buf = nullptr;
 				if(!(buf = (char*)malloc((len *= 2)))) {
-					errorExit(2, "");
+					throw std::runtime_error("Error: malloc fails");
 				}
 			}
 		}
 		if (ret < 0) {
-			errorExit(1, "");
+			throw std::runtime_error("Error: read fails");
 		}
 		free(buf);
 		return ;
@@ -417,7 +423,7 @@ void				Response::generateBody() {
 	// case if body from error pages template
 	itErr = errorPageTempl->find(errCode);
 	if(!(body = (char*)malloc((bodyLength = itErr->second[0].length())))) {
-		errorExit(2, "");
+		throw std::runtime_error("Error: malloc fails");
 	}
 	ft_memcpy(body, itErr->second[0].c_str(), bodyLength);
 }
@@ -664,11 +670,15 @@ void				Response::generateDirListing() {
 
 	dir = opendir(filePath.c_str());
 
+	int				nameWidth = 70;
+	int				sizeWidth = 16;
+	char *			numStr = nullptr;
+	std::string	date;
+	std::string	directoryItem;
 	while((s = readdir(dir))) {
 		if (!ft_memcmp(s->d_name, ".", 2))
 			continue;
-		std::string	date;
-		std::string	directoryItem = filePath;
+		directoryItem = filePath;
 		directoryItem.append(s->d_name);
 		if (stat(directoryItem.c_str(), &statbuf) < 0) {
 			continue;
@@ -679,13 +689,16 @@ void				Response::generateDirListing() {
 		dirListing.append("\">");
 		dirListing.append(s->d_name);
 		dirListing.append("</a>");
-		int i = 70;
-		i -= strlen(s->d_name);
-		while (i-- > 0){
-			dirListing.append(" ");
+		std::string	spacesName (nameWidth - ft_strlen(s->d_name), ' ');
+		dirListing.append(spacesName);
+		if (!(numStr = ft_itoa(statbuf.st_size))) {
+			throw std::runtime_error("Error: malloc fails");
 		}
-		dirListing.append(std::to_string(statbuf.st_size));
-		dirListing.append("    ");
+		dirListing.append(numStr);
+		std::string	spacesSize (sizeWidth - ft_strlen(numStr), ' ');
+		dirListing.append(spacesSize);
+		free(numStr);
+		numStr = nullptr;
 		dirListing.append(date);
 		dirListing.append("\n");
 	}

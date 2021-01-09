@@ -115,7 +115,7 @@ int Server::error_headers(Request const &req) {
 	bool is_allowed_method = false;
 	if (req.is_valid_value("head")) {
 		method = req.find("head").front();
-		for (int i = 0; i <= methods->size(); ++i)
+		for (size_t i = 0; i <= methods->size(); ++i)
 			if (method == methods[i])
 				is_allowed_method = true;
 		if (!is_allowed_method)
@@ -139,7 +139,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 	const char * read_buff = (*it)->getBuff();
 	read_buff += body_pos;
 
-	while (bytes.getBytes() > body_pos + chunk.getLenSum()){
+	while (bytes.getBytes() >
+			static_cast<unsigned long>(body_pos + chunk.getLenSum())){
 		if (chunk.getCount() % 2)
 		{
 			if (chunk.getLen() == 0)
@@ -190,7 +191,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 
 	(*it)->setLastMsg();
 
+#ifdef LINUX
+	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
+#else
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
+#endif
 	{
 		(*it)->setStatus(3);
 		return;

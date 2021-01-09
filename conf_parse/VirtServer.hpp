@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:31:24 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/29 11:37:38 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/08 21:53:15 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ public:
 	void								setFd(int const &);
 	int const &							getFd() const;
 	std::string const &					getHost() const;
-	int const							getPort() const;
+	int									getPort() const;
 	std::vector<std::string> const &	getServerName() const;
-	int const							getLimitClientBody() const;
+	int									getLimitClientBody() const;
 	std::map<int, std::string> const &	getErrorPagePath() const;
 
 	// methods used for parsing

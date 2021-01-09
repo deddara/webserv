@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/30 22:44:57 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/08 21:51:17 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,6 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 	std::string			key;
 	std::string			val;
 	int					ret = 0;
-	int					i = 0;
 	std::set<std::string>::const_iterator	it;
 
 	if ((ret = checkBrackets(pr_data[pr_pos])))
@@ -196,13 +195,13 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 
 	Location *			location = new(Location);
 
-	// add '/' in start of prefix if needed and if it's not a CGI location
+	// add '/' in start of prefix if needed
 	location->setPrefix(str);
-	if (location->getPrefix()[0] != '/' && location->getPrefix()[0] != '.')
+	if (location->getPrefix()[0] != '/') {
 		location->setPrefix("/" + location->getPrefix());
+	}
 
-	while (checkBrackets(pr_data[pr_pos]) != 2)
-	{
+	while (checkBrackets(pr_data[pr_pos]) != 2) {
 		ret = 0;
 		skipSpaceComm();
 		if (checkBrackets(pr_data[pr_pos]) == 1)
