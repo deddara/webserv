@@ -1,4 +1,4 @@
-#!/Users/deddara/.brew/bin/python3
+#!/usr/bin/python
 
 import cgi, cgitb
 cgitb.enable()

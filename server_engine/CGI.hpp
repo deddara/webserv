@@ -14,6 +14,7 @@ private:
 	char				* resp_buff;
 	const cgi_data		& _cgi_data;
 	std::string const	&file_path;
+	std::string const	&bin_path;
 	Bytes				bytes;
 	const char			*body;
 	std::string			method;
@@ -28,7 +29,7 @@ private:
 
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
-	Cgi(cgi_data const & data, std::string const &path, const char *);
+	Cgi(cgi_data const &, std::string const &, std::string const &, const char *);
 	~Cgi();
 
 

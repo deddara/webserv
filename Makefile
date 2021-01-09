@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2021/01/09 11:27:36 by awerebea         ###   ########.fr        #
+#    Updated: 2021/01/09 18:27:40 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -86,7 +86,7 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-REQUIRED_BINS	= python
+REQUIRED_BINS	= python php-cgi
 
 all:		requerments $(NAME)
 

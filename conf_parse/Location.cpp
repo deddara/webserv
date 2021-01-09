@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:33:30 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 15:12:46 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 18:43:51 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ Location::Location() {
 	pr_locationsFields.insert("allow_methods");
 	pr_locationsFields.insert("root");
 	pr_locationsFields.insert("autoindex");
-	pr_locationsFields.insert("bin");
+	pr_locationsFields.insert("cgi_ext");
+	pr_locationsFields.insert("cgi_bin");
 	pr_locationsFields.insert("limit_client_body");
 }
 
@@ -92,12 +93,19 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 			return (setErrStruct(14, val[0]));
 		}
 	}
-	if (key == "bin") {
+	if (key == "cgi_ext") {
 		if (pr_data.count(key)) {
 			pr_data.erase(key);
 		}
-		if (val.size() != 1) {
-			return (setErrStruct(3, key));
+		for (size_t i = 0; i < val.size(); ++i) {
+			if (checkSuspiciousSymbols(val[i]) || val[i][0] != '.') {
+				return (setErrStruct(23, val[i]));
+			}
+		}
+	}
+	if (key == "cgi_bin") {
+		if (pr_data.count(key)) {
+			pr_data.erase(key);
 		}
 	}
 	if (key == "limit_client_body") {
@@ -116,5 +124,23 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 		}
 	}
 	pr_data.insert(std::make_pair(key, val));
+	return setErrStruct(0, "");
+}
+
+struct s_errExitData const &	Location::checkCgiSettings() {
+	if (pr_data.count("cgi_ext") != pr_data.count("cgi_bin")) {
+		return (setErrStruct(24, pr_prefix));
+	}
+	if (pr_data.count("cgi_ext")) {
+		std::multimap<std::string, std::vector<std::string> >::const_iterator
+								itExt = pr_data.find("cgi_ext");
+
+		std::multimap<std::string, std::vector<std::string> >::const_iterator
+								itBin = pr_data.find("cgi_bin");
+
+		if (itExt->second.size() != itBin->second.size()) {
+			return (setErrStruct(24, pr_prefix));
+		}
+	}
 	return setErrStruct(0, "");
 }

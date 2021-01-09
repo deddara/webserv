@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 14:56:37 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 19:43:36 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ void				Response::buildResponse() {
 	}
 
 	// DEBUG
-	write(1, response.data, response.length);
+	// write(1, response.data, response.length);
 }
 
 void				Response::responsePrepare(int & status, map_type * data,
@@ -257,12 +257,28 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3; // QUESTION where should be set and which value
 				return ;
 			}
-			if (fileExt == ".php" || fileExt == ".cgi")
-			{
-				cgi = new Cgi(_cgi_data, filePath, reqBody);
-				if(!cgi->handler()) {
-					cgi_response_parser(*cgi);
-					return;
+			// check if CGI settings is present in current location
+			if (location[currLocationInd]->getData().count("cgi_ext")) {
+				std::multimap<std::string, std::vector<std::string> >
+					::const_iterator	itExt;
+				size_t					i = 0;
+
+				itExt = location[currLocationInd]->getData().find("cgi_ext");
+				// try to find fileExt in vector of supported cgi-extensions
+				for (; i < itExt->second.size(); ++i) {
+					if (itExt->second[i] == fileExt) {
+						break ;
+					}
+				}
+				// check if fileExt found in supported by config
+				if (i < itExt->second.size()) {
+					cgi = new Cgi(_cgi_data, filePath,
+							location[currLocationInd]->getData().
+							find("cgi_bin")->second[i], reqBody);
+					if(!cgi->handler()) {
+						cgi_response_parser(*cgi);
+						return;
+					}
 				}
 			}
 			generateBody();

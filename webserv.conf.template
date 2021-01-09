@@ -26,6 +26,8 @@ server {
     # generate directory list page if index page not found in path,
     # 'on' or 'off' values is allowed
     autoindex       on; #use default off
-    bin   PYTHON;
+    cgi_ext   .py .cgi;
+    cgi_bin   PYTHON
+              PHP_CGI;
   }
 }

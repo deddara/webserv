@@ -2,7 +2,7 @@
 #include "stdlib.h"
 // CGI
 
-Cgi::Cgi(const cgi_data &data, const std::string &path, const char *bdy) : resp_buff(NULL),_cgi_data(data), file_path(path), body(bdy), _argv(NULL), _env(NULL) {
+Cgi::Cgi(const cgi_data &data, const std::string &path, std::string const & binPath, const char *bdy) : resp_buff(NULL),_cgi_data(data), file_path(path), bin_path(binPath), body(bdy), _argv(NULL), _env(NULL) {
 	return;
 }
 
@@ -197,7 +197,7 @@ int Cgi::handler(){
 
 	if(!(_argv = (char **) malloc(sizeof(char *) * 3)))
 		return (500);
-	if(!(_argv[0] = ft_strdup("/Users/deddara/.brew/bin/php-cgi")))
+	if(!(_argv[0] = ft_strdup(bin_path.c_str())))
 		return (500);
 	if(!(_argv[1] = ft_strdup(file_path.c_str())))
 		return (500);
