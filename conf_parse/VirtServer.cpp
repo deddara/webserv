@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:36:59 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/29 11:37:11 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/08 21:53:52 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ std::string const &				VirtServer::getHost() const {
 	return pr_data.find("host")->second[0];
 }
 
-int const						VirtServer::getPort() const {
+int								VirtServer::getPort() const {
 	return ft_atoi(pr_data.find("listen")->second[0].c_str());
 }
 
@@ -152,7 +152,7 @@ std::vector<std::string> const &	VirtServer::getServerName() const {
 	return pr_data.find("server_name")->second;
 }
 
-int const						VirtServer::getLimitClientBody() const {
+int								VirtServer::getLimitClientBody() const {
 	return ft_atoi(pr_data.find("limit_client_body")->second[0].c_str());
 }
 

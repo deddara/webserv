@@ -17,19 +17,20 @@
 # include <stdint.h>
 # include <sys/stat.h>
 
-std::string			my_localtime();
-std::string			timeToStr(time_t);
-uint16_t			ft_htons(uint16_t);
-void				*ft_memcpy(void *, const void *, size_t);
-char				*ft_strjoin(char *, char const *);
-char				*ft_strnstr(const char *, const char *, size_t);
 char				*ft_itoa(int);
 char				*ft_strdup(const char *str);
-int					ft_memcmp(const void *s1, const void *s2, size_t n);
-int					ft_atoi(const char *);
+char				*ft_strjoin(char *, char const *);
+char				*ft_strnstr(const char *, const char *, size_t);
 int					checkStringInt(std::string const &);
 int					checkSuspiciousSymbols(std::string const &);
+int					ft_atoi(const char *);
+int					ft_memcmp(const void *s1, const void *s2, size_t n);
+size_t				ft_strlen(const char *);
+std::string			my_localtime();
+std::string			timeToStr(time_t);
 std::string			toLower(std::string str);
 std::string			toUpper(std::string str);
+uint16_t			ft_htons(uint16_t);
+void				*ft_memcpy(void *, const void *, size_t);
 
 #endif

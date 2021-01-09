@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2020/12/30 17:52:21 by awerebea         ###   ########.fr        #
+#    Updated: 2021/01/09 18:27:40 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,11 +17,16 @@ INCLUDES	= -I includes/
 CXX			= clang++
 
 CFLAGS		= -Wall -Wextra -Werror
-# CFLAGS		= -Wall -Wextra
+# CFLAGS		= -w -Wall -Wextra
 OFLAGS		= -O2
 DBGFLAGS	= -g
 
 override FLAGS ?= $(CFLAGS)
+
+OS			= $(shell uname)
+ifeq ($(OS), Linux)
+	DEF_OS	= -D LINUX
+endif
 
 #------------------------------------ compiling --------------------------------
 SRCDIR		=
@@ -38,25 +43,25 @@ FLS_1		= $(addprefix $(DIR_1), \
 				Location \
 				VirtServer \
 				)
-INCLUDES	+= -I $(DIR_1)
+INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_1))
 
 DIR_2		= request_parse/
 FLS_2		= $(addprefix $(DIR_2), \
 				Request \
 				)
-				# main_request
-INCLUDES	+= -I $(DIR_2)
+INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_2))
 
 DIR_3		= server_engine/
 FLS_3		= $(addprefix $(DIR_3), \
 				Bytes \
+				CGI \
 				Chunk \
 				Client \
 				ErrorPages \
 				Response \
 				Server \
 				)
-INCLUDES	+= -I $(DIR_3)
+INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_3))
 
 DIR_4		= utils/
 FLS_4		= $(addprefix $(DIR_4), \
@@ -65,17 +70,15 @@ FLS_4		= $(addprefix $(DIR_4), \
 				ft_memcmp \
 				ft_memcpy \
 				ft_strdup \
+				ft_strlen \
 				ft_strjoin \
 				ft_strnstr \
 				time \
 				utils \
 				)
-INCLUDES	+= -I $(DIR_4)
+INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_4))
 
 DIR_TEST	= tests/
-# FLS_TEST	= $(addprefix $(DIR_TEST), \
-#                 test_ConfParser \
-#                 )
 
 SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
 DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
@@ -83,28 +86,35 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-REQUIRED_BINS	= python
+REQUIRED_BINS	= python php-cgi
 
 all:		requerments $(NAME)
 
-	# | sed 's!PHP_CGI!$(shell which php-cgi)!g' \
-
 requerments:
-	$(foreach bin,$(REQUIRED_BINS),\
-		$(if $(shell command -v $(bin) 2> /dev/null),$(info Found '$(bin)'),$(error Please install '$(bin)')))
-	@cat webserv.conf.template | sed 's=PWD=$(PWD)=g' \
-	| sed 's!PYTHON!$(shell which python)!g' > webserv.conf
+ifeq (,$(wildcard ./$(CONFIG)))
+	$(foreach bin,$(REQUIRED_BINS), \
+		$(if $(shell command -v $(bin) 2> /dev/null), $(info Found '$(bin)'), \
+		$(error Please install '$(bin)')))
+	$(shell cat webserv.conf.template | sed 's=PWD=$(PWD)=g' > $(CONFIG))
+	$(if $(filter python, $(REQUIRED_BINS)), \
+		$(shell cat $(CONFIG) | \
+		sed 's!PYTHON!$(shell which python)!g' > $(CONFIG).tmp && \
+		mv $(CONFIG).tmp $(CONFIG)),)
+	$(if $(filter php-cgi, $(REQUIRED_BINS)), \
+		$(shell cat $(CONFIG) | \
+		sed 's!PHP_CGI!$(shell which php-cgi)!g' > $(CONFIG).tmp && \
+		mv $(CONFIG).tmp $(CONFIG)),)
 	@printf '\033[1;36mDefault config file $(CONFIG) created.\033[0m\n'
+endif
 
-$(NAME):	dirs $(OBJ)
-	@$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
+$(NAME):	$(OBJ)
+	@printf '\033[1m------------- Linking... -------------\033[0m\n'
+	$(CXX)		$(FLAGS) $(OBJ) $(INCLUDES) -o $(NAME)
 	@printf '\033[1m------------- All done! --------------\033[0m\n'
 
-dirs:
-	@mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
-
 $(OBJ):		$(OBJDIR)%.o: $(SRCDIR)%.cpp
-	@$(CXX)		$(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
+	@mkdir -p	$(OBJDIR) $(addprefix $(OBJDIR), $(DIRS))
+	$(CXX)		$(DEF_OS) $(FLAGS) $(INCLUDES) -c $< -o $@ -MMD
 
 include $(wildcard $(addprefix $(OBJDIR), $(DFLS)))
 
@@ -115,7 +125,6 @@ clean:
 
 fclean:	clean
 	rm -f	$(NAME)
-	rm -f	$(CONFIG)
 
 debug:
 	make FLAGS="$(CFLAGS) $(DBGFLAGS)" all

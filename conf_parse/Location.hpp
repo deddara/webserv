@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 10:33:01 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 00:56:55 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/09 17:38:07 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ public:
 	struct s_errExitData const &		setErrStruct(int, std::string);
 	struct s_errExitData const &		setDataPair(std::string const &,
 											std::vector<std::string> &);
+	struct s_errExitData const &		checkCgiSettings();
 };
 
 #endif
