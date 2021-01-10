@@ -179,7 +179,11 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			}
 			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
-			chunk.setLenSum(chunk.getLenSum() + chunk.getLen() + 2);
+			chunk.setLenSum(chunk.getLenSum() + chunk.getLen());
+			while (ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
+				chunk.setLenSum(chunk.getLenSum() + 1);
+			chunk.setLenSum(chunk.getLenSum() + 2);
+
 		}
 		else
 		{
