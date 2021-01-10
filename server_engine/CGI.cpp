@@ -50,27 +50,35 @@ int Cgi::buffAppend(const char *buff, int len){
 char **Cgi::setEnv() {
 	std::map<std::string, std::string>  env_map;
 	map_type::const_iterator map_it;
+	char *num;
 
 	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
-	env_map["SERVER_NAME"] = "localhost";
-
+	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-	//
 	env_map["SCRIPT_NAME"] = file_path;
-
-	env_map["SERVER_PORT"] = std::to_string(_cgi_data.serv_port);
-	map_it = _cgi_data.data->find("head");
-	env_map["SERVER_PROTOCOL"] = map_it->second[2];
-	env_map["REMOTE_ADDR"] = inet_ntoa(_cgi_data.addr->sin_addr);
-	env_map["REMOTE_HOST"] = "localhost";
-	map_it = _cgi_data.data->find("authorization");
-	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
-		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
-	else
-		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[0];
-
-	//
 	env_map["PATH_TRANSLATED"] = file_path;
+	env_map["REMOTE_ADDR"] = inet_ntoa(_cgi_data.addr->sin_addr);
+
+
+	num = ft_itoa(_cgi_data.serv_port);
+	env_map["SERVER_PORT"] = num;
+	free(num);
+
+	num = ft_itoa(_cgi_data.body_len);
+	env_map["CONTENT_LENGTH"] = num;
+	free(num);
+
+	map_it = _cgi_data.data->find("host");
+	env_map["SERVER_NAME"] = map_it->second[0];
+
+
+	map_it = _cgi_data.data->find("authorization");
+	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty()) {
+		env_map["AUTH_TYPE"] = map_it->second[0];
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[1];
+	}
+	else
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
 
 	map_it = _cgi_data.data->find("head");
 	if (map_it->second[1].find('?') != std::string::npos)
@@ -78,23 +86,24 @@ char **Cgi::setEnv() {
 	else
 		env_map["QUERY_STRING"] = "";
 	env_map["REQUEST_METHOD"] = map_it->second[0];
-
-//	map_it = _cgi_data.data->find("content_type");
-//	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
-//		env_map["CONTENT_TYPE"] = "";
-//	else
-//		env_map["CONTENT_TYPE"] = map_it->second[0];
-//	env_map["AUTH_TYPE"] = "Basic";
+	env_map["PATH_INFO"] = map_it->second[1];
+	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
+	method = map_it->second[0];
 
 	//for PHP
-	env_map["REDIRECT_STATUS"] = "200";
-	map_it = _cgi_data.data->find("head");
-	env_map["PATH_INFO"] = map_it->second[1];
-	method = map_it->second[0];
-	env_map["HTTP_ACCEPT"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
-	env_map["CONTENT_TYPE"] = "application/x-www-form-urlencoded";
-	env_map["CONTENT_LENGTH"] = std::to_string(_cgi_data.body_len);
+	if (map_it->second[1].find(".php") != std::string::npos)
+		env_map["REDIRECT_STATUS"] = "200";
+
+	map_it = _cgi_data.data->find("content-type");
+	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
+		env_map["CONTENT_TYPE"] = "";
+	else
+		env_map["CONTENT_TYPE"] = map_it->second[0];
+
+	map_it = _cgi_data.data->find("accept");
+	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
+		env_map["HTTP_ACCEPT"] = map_it->second[0];
+
 
 	char **env;
 	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
