@@ -214,6 +214,30 @@ void				Response::buildResponse() {
 	// write(1, response.data, response.length);
 }
 
+int Response::checkLimitClientBody(const cgi_data & _cgi_data)
+{
+	std::multimap<std::string, std::vector<std::string> > tmp_data = location[currLocationInd]->getData();
+	std::multimap<std::string, std::vector<std::string> >::const_iterator it = tmp_data.find("limit_client_body");
+	if (it != tmp_data.end())
+	{
+		if (location[currLocationInd]->getLimitClientBody() < _cgi_data.body_len)
+		{
+			errCode = 413;
+			return (1);
+		}
+	}
+	it = virtServ->getData().find("limit_client_body");
+	if (it != virtServ->getData().end())
+	{
+		if (virtServ->getLimitClientBody() < _cgi_data.body_len)
+		{
+			errCode = 413;
+			return (1);
+		}
+	}
+	return (0);
+}
+
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;

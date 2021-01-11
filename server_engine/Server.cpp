@@ -287,11 +287,6 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 			(host == (*serv_it).getHost() || !(nameCompare(host, serv_it)))){
 			(*it)->getResponse()->setServerData(*serv_it);
 			std::multimap<std::string, std::vector<std::string> > serv_data;
-			std::multimap<std::string, std::vector<std::string> >::iterator serv_data_it = serv_data.find("limit_client_body");
-			if (serv_data_it != serv_data.end()){
-				if ((*serv_it).getLimitClientBody() < (*it)->getBodyLen())
-					(*it)->getResponse()->setErrcode(413);
-			}
 			return;
 		}
 	}

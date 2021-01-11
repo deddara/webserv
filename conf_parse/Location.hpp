@@ -45,6 +45,8 @@ public:
 	struct s_errExitData const &		setDataPair(std::string const &,
 											std::vector<std::string> &);
 	struct s_errExitData const &		checkCgiSettings();
-};
+	int									getLimitClientBody() const;
+
+	};
 
 #endif
