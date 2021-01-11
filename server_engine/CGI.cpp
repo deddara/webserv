@@ -139,6 +139,7 @@ int Cgi::execute() {
 int Cgi::read_response(){
 	int n = 0;
 	int max_fd = 0;
+	int body_len = _cgi_data.body_len;
 	while (1) {
 		char line[1024];
 		bzero(line, 1024);
@@ -152,7 +153,7 @@ int Cgi::read_response(){
 		FD_ZERO(&readset); FD_ZERO(&writeset);
 		FD_SET(err_pipe[0], &readset);
 		FD_SET(writePipe[0], &readset);
-		if (body)
+		if (body_len > 0)
 			FD_SET(readPipe[1], &writeset);
 
 		if (writePipe[0] > err_pipe[0] && writePipe[0] > readPipe[1])
@@ -166,10 +167,15 @@ int Cgi::read_response(){
 			perror("select");
 			return (500); //handle error
 		}
+
 		if (FD_ISSET(readPipe[1], &writeset)){
-			write(readPipe[1], body, _cgi_data.body_len);
+			write (1, "2", 1);
+			int n = write(readPipe[1], body, _cgi_data.body_len);
+			body_len -= n;
 			continue;
 		}
+		write (1, "e", 1);
+
 		if (FD_ISSET(err_pipe[0], &readset)){
 			return (502);
 		}
@@ -222,6 +228,7 @@ int Cgi::handler(){
 	close(writePipe[1]);
 	close(readPipe[1]);
 	close(readPipe[0]);
+
 	return (execute_result);
 }
 
