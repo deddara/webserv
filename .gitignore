@@ -18,6 +18,7 @@
 .vimprj/*
 .vscode
 cmake-build-debug/
+CMakeLists.txt
 cmake-build-debug/*
 compile_commands.json
 obj/
