@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2021/01/09 18:27:40 by awerebea         ###   ########.fr        #
+#    Updated: 2021/01/11 11:47:26 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -86,7 +86,9 @@ DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
 
-REQUIRED_BINS	= python php-cgi
+PYTHON_BIN		= python3
+CGI_BIN			= php-cgi
+REQUIRED_BINS	= $(PYTHON_BIN) $(CGI_BIN)
 
 all:		requerments $(NAME)
 
@@ -96,13 +98,13 @@ ifeq (,$(wildcard ./$(CONFIG)))
 		$(if $(shell command -v $(bin) 2> /dev/null), $(info Found '$(bin)'), \
 		$(error Please install '$(bin)')))
 	$(shell cat webserv.conf.template | sed 's=PWD=$(PWD)=g' > $(CONFIG))
-	$(if $(filter python, $(REQUIRED_BINS)), \
+	$(if $(filter $(PYTHON_BIN), $(REQUIRED_BINS)), \
 		$(shell cat $(CONFIG) | \
-		sed 's!PYTHON!$(shell which python)!g' > $(CONFIG).tmp && \
+		sed 's!PYTHON!$(shell which $(PYTHON_BIN))!g' > $(CONFIG).tmp && \
 		mv $(CONFIG).tmp $(CONFIG)),)
-	$(if $(filter php-cgi, $(REQUIRED_BINS)), \
+	$(if $(filter $(CGI_BIN), $(REQUIRED_BINS)), \
 		$(shell cat $(CONFIG) | \
-		sed 's!PHP_CGI!$(shell which php-cgi)!g' > $(CONFIG).tmp && \
+		sed 's!PHP_CGI!$(shell which $(CGI_BIN))!g' > $(CONFIG).tmp && \
 		mv $(CONFIG).tmp $(CONFIG)),)
 	@printf '\033[1;36mDefault config file $(CONFIG) created.\033[0m\n'
 endif

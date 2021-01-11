@@ -26,8 +26,13 @@ server {
     # generate directory list page if index page not found in path,
     # 'on' or 'off' values is allowed
     autoindex       on; #use default off
-    cgi_ext   .py .cgi;
+  # limit (in bytes) the size of the POST request body
+    limit_client_body 1024;
+  # a set of file extensions to be treated as scripts
+    cgi_ext   .py .php .cgi;
+  # set of executable paths for script interpreters
     cgi_bin   PYTHON
+              PHP_CGI
               PHP_CGI;
   }
 }

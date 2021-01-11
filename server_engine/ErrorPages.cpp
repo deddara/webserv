@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:04 by awerebea          #+#    #+#             */
-/*   Updated: 2020/12/28 17:25:43 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/11 11:33:13 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,19 @@ ErrorPages::ErrorPages() {
 	code405.push_back("Not Allowed");
 	errorPageTemplates.insert(std::make_pair(405, code405));
 
+	std::vector<std::string>		code413;
+	code413.push_back(
+		"<html>\n"													\
+		"<head><title>413 Payload Too Large</title></head>\n"	\
+		"<body bgcolor=\"white\">\n"								\
+		"<center><h1>413 Payload Too Large</h1></center>\n"		\
+		"<hr><center>webserv/0.1a</center>\n"						\
+		"</body>\n"													\
+		"</html>\n"
+		);
+	code413.push_back("Payload Too Large");
+	errorPageTemplates.insert(std::make_pair(413, code413));
+
 	std::vector<std::string>		code500;
 	code500.push_back(
 		"<html>\n"													\
@@ -92,6 +105,19 @@ ErrorPages::ErrorPages() {
 		);
 	code500.push_back("Internal Server Error");
 	errorPageTemplates.insert(std::make_pair(500, code500));
+
+	std::vector<std::string>		code502;
+	code502.push_back(
+		"<html>\n"													\
+		"<head><title>502 Bad Gateway</title></head>\n"	\
+		"<body bgcolor=\"white\">\n"								\
+		"<center><h1>502 Bad Gateway</h1></center>\n"		\
+		"<hr><center>webserv/0.1a</center>\n"						\
+		"</body>\n"													\
+		"</html>\n"
+		);
+	code502.push_back("Bad Gateway");
+	errorPageTemplates.insert(std::make_pair(502, code502));
 }
 
 ErrorPages::~ErrorPages() {}
