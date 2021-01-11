@@ -60,8 +60,9 @@ private:
 	void								generateFilePath();
 	void								buildResponse();
 	void								generateDirListing();
-	void								cgi_response_parser(Cgi const & cgi);
-	int									checkLimitClientBody(const cgi_data & _cgi_data);
+	void								cgi_response_parser(Cgi const &);
+	int									checkLimitClientBody(const cgi_data &);
+	int									checkExtForCgiHandling();
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const
