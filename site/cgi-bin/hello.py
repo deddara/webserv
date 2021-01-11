@@ -1,5 +1,3 @@
-#!/Users/deddara/.brew/bin/python3
-
 import cgi, cgitb
 cgitb.enable()
 

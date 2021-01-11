@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:04 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/11 11:33:13 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/11 13:59:19 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,19 @@ ErrorPages::ErrorPages() {
 		);
 	code405.push_back("Not Allowed");
 	errorPageTemplates.insert(std::make_pair(405, code405));
+
+	std::vector<std::string>		code411;
+	code411.push_back(
+		"<html>\n"													\
+		"<head><title>411 Length Required</title></head>\n"	\
+		"<body bgcolor=\"white\">\n"								\
+		"<center><h1>411 Length Required</h1></center>\n"		\
+		"<hr><center>webserv/0.1a</center>\n"						\
+		"</body>\n"													\
+		"</html>\n"
+		);
+	code411.push_back("Length Required");
+	errorPageTemplates.insert(std::make_pair(411, code411));
 
 	std::vector<std::string>		code413;
 	code413.push_back(
