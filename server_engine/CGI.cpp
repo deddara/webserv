@@ -142,7 +142,6 @@ int Cgi::execute() {
 	if((pid = fork()) < 0)
 		return (1);
 	if (pid == 0) {
-
 		if (execve(_argv[0], _argv, _env) < 0) {
 			dup2(err_pipe[0], 0);
 			dup2(err_pipe[1], 1);
@@ -159,23 +158,33 @@ int Cgi::read_response(){
 	while (1) {
 		char line[1024];
 		bzero(line, 1024);
-		fd_set readset;
+		fd_set readset, writeset;
 
 		waitpid(pid, &status, WNOHANG);
 		if (WEXITSTATUS(status) != 0) {
 			return (502);
 		}
 
-		FD_ZERO(&readset);
+		FD_ZERO(&readset); FD_ZERO(&writeset);
 		FD_SET(err_pipe[0], &readset);
 		FD_SET(writePipe[0], &readset);
-		if (writePipe[0] > err_pipe[0])
+		if (body)
+			FD_SET(readPipe[1], &writeset);
+
+		if (writePipe[0] > err_pipe[0] && writePipe[0] > readPipe[1])
 			max_fd = writePipe[0];
-		else
+		else if (err_pipe[0] > writePipe[0] && err_pipe[0] > readPipe[1])
 			max_fd = err_pipe[0];
-		if (select(max_fd + 1, &readset, 0, 0, 0) < 0) {
+		else
+			max_fd = readPipe[1];
+
+		if (select(max_fd + 1, &readset, &writeset, 0, 0) < 0) {
 			perror("select");
 			return (500); //handle error
+		}
+		if (FD_ISSET(readPipe[1], &writeset)){
+			write(readPipe[1], body, _cgi_data.body_len);
+			continue;
 		}
 		if (FD_ISSET(err_pipe[0], &readset)){
 			return (502);
@@ -219,8 +228,8 @@ int Cgi::handler(){
 	close(oldRead);
 	oldWrite = -1;
 	oldRead = -1;
+//	write(readPipe[1], body, _cgi_data.body_len);
 
-	write(readPipe[1], body, _cgi_data.body_len);
 	int execute_result = read_response();
 
 	close(err_pipe[0]);
