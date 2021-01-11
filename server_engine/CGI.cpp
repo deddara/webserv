@@ -2,7 +2,7 @@
 #include "stdlib.h"
 // CGI
 
-Cgi::Cgi(const cgi_data &data, const std::string &path, const char *bdy)  : resp_buff(NULL),_cgi_data(data), file_path(path), _argv(NULL), _env(NULL), body(bdy) {
+Cgi::Cgi(const cgi_data &data, const std::string &path, const char *bdy)  : resp_buff(NULL),_cgi_data(data), file_path(path), _argv(NULL), _env(NULL), body(bdy), status(0) {
 	return;
 }
 

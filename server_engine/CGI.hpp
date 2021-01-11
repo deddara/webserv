@@ -21,10 +21,11 @@ private:
 	int readPipe[2];
 	int writePipe[2];
 	int err_pipe[2];
-	int status = 0;
 	pid_t pid;
 	char **_argv;
 	char **_env;
+	int status;
+
 
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;

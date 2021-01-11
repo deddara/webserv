@@ -6,7 +6,7 @@
 
 struct cgi_data{
 
-	std::map<std::string, std::vector<std::string>>	const *data;
+	std::map<std::string, std::vector<std::string> >	const *data;
 	int												body_len;
 	struct sockaddr_in *							addr;
 	std::string										serv_host;
