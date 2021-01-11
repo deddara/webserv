@@ -61,6 +61,7 @@ private:
 	void								buildResponse();
 	void								generateDirListing();
 	void								cgi_response_parser(Cgi const & cgi);
+	int									checkLimitClientBody(const cgi_data & _cgi_data);
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const

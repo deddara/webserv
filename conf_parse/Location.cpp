@@ -144,3 +144,7 @@ struct s_errExitData const &	Location::checkCgiSettings() {
 	}
 	return setErrStruct(0, "");
 }
+
+int								Location::getLimitClientBody() const {
+	return ft_atoi(pr_data.find("limit_client_body")->second[0].c_str());
+}

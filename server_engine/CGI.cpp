@@ -114,22 +114,6 @@ char **Cgi::setEnv() {
 	return env;
 }
 
-int Cgi::sendPostBody(){
-
-//	while (1) {
-//		fd_set writeset;
-//		FD_ZERO(&writeset);
-//		FD_SET(pipes[1], &writeset);
-//		if (select(pipes[1] + 1, 0, &writeset, 0, 0) < 0)
-//			return (1);
-//		int res = write (pipes[1], body, _cgi_data.body_len);
-//		if (res == _cgi_data.body_len)
-//			break;
-//		break;
-//	}
-	return (0);
-};
-
 int Cgi::execute() {
 	readPipe[0] = readPipe[1] = writePipe[0] = writePipe[1] = err_pipe[0] = err_pipe[1] = -1;
 	if(pipe(readPipe) < 0 || pipe(writePipe) || pipe(err_pipe) < 0)
