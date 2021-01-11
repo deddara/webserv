@@ -137,7 +137,7 @@ int Server::error_headers(Request const &req) {
 	map_type const & map_data = req.getData();
 	map_type::const_iterator cont_it = map_data.find("content-length");
 	map_type::const_iterator chunk_it = map_data.find("transfer-encoding");
-	if ((method == "POST") {
+	if ((method == "POST")) {
 		if (cont_it == map_data.end() && chunk_it == map_data.end())
 			return 411;
 	}

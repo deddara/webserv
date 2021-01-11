@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 20:00:30 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/11 16:15:01 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,6 @@ void				Response::buildResponse() {
 	responseHeaders.append(" " + itErr->second[1] + "\r\n");
 
 	// Server
-	webservVersion = "webserv0.1";
 	responseHeaders.append("Server: " + webservVersion + "\r\n");
 
 	// Date
@@ -259,15 +258,32 @@ void				Response::responsePrepare(int & status, map_type * data,
 			return ;
 		} else {
 			int			ret = 0;
+			// check if location is handled by config
 			if ((ret = checkLocation())) {
 				if (ret == 1) {
 					error404Handler();
 				}
+				// case when uri is match error page filename (location hadn't
+				// been set)
 				else if (ret == 2) {
-					generateBody();
+					std::string	reqMethod = _data->find("head")->second[0];
+					// only GET and HEAD allowed for error pages
+					if (reqMethod != "GET" && reqMethod != "HEAD") {
+						errCode = 405;
+						errorHandler();
+					} else {
+						// check if requested file exist and readble
+						if (checkFile()) {
+							errorHandler();
+							buildResponse();
+							status = 3;
+							return ;
+						}
+						generateBody();
+					}
 				}
 				buildResponse();
-				status = 3; // QUESTION where should be set and which value
+				status = 3;
 				return ;
 			}
 
@@ -291,17 +307,15 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3; // QUESTION where should be set and which value
 				return ;
 			}
+			// check if requested file exist and readble
 			if (checkFile()) {
 				if (errCode == 302) {
 					buildResponse();
-				} else if (errCode == 403) {
-					error403Handler();
-					buildResponse();
-				} else if (errCode == 404) {
-					error404Handler();
+				} else {
+					errorHandler();
 					buildResponse();
 				}
-				status = 3; // QUESTION where should be set and which value
+				status = 3;
 				return ;
 			}
 			// check if CGI settings is present in current location
@@ -354,7 +368,8 @@ void				Response::responsePrepare(int & status, map_type * data,
 }
 
 void				Response::errorHandler() {
-	if (!errorPage || !errorPage || !errorPage->count(errCode)) {
+	// check if error pages paths not set in config
+	if (!errorPage || !errorPage->count(errCode)) {
 		generateBody(); // TODO check if all possible templates are implemented
 		return ;
 	}
@@ -481,6 +496,7 @@ void				Response::generateBody() {
 			throw std::runtime_error("Error: read fails");
 		}
 		free(buf);
+		close(fd);
 		return ;
 		}
 	}
@@ -616,7 +632,7 @@ int					Response::checkLocation() {
 	// check if URI is redirection to error page
 	std::map<int, std::string>::const_iterator
 					itErrPg;
-	if (errorPage) {
+	if (errorPage && fileExt.length()) {
 		itErrPg = errorPage->begin();
 		for (; itErrPg != errorPage->end(); ++itErrPg) {
 			if (itErrPg->second.substr(itErrPg->second.rfind("/")) == uri) {
@@ -647,7 +663,9 @@ int					Response::checkLocation() {
 }
 
 int					Response::checkFile() {
-	generateFilePath();
+	if (!filePath.length()) {
+		generateFilePath();
+	}
 
 	std::multimap<std::string, std::vector<std::string> >::const_iterator
 					itLocationData;
@@ -659,8 +677,9 @@ int					Response::checkFile() {
 		if (statbuf.st_mode & S_IFDIR) {
 			// if path to dir not ended by '/' init redirect
 			if (filePath[filePath.length() - 1] != '/') {
-				redirectURI = filePath.substr(location[currLocationInd]->
-						getData().find("root")->second[0].length()) + "/";
+				// redirectURI = filePath.substr(location[currLocationInd]->
+				//         getData().find("root")->second[0].length()) + "/";
+				redirectURI = _data->find("head")->second[1] + "/";
 				errCode = 302;
 				return 1;
 			}
