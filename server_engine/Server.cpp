@@ -128,7 +128,7 @@ int Server::error_headers(Request const &req) {
 	bool is_allowed_method = false;
 	if (req.is_valid_value("head")) {
 		method = req.find("head").front();
-		for (int i = 0; i <= methods->size(); ++i)
+		for (size_t i = 0; i <= methods->size(); ++i)
 			if (method == methods[i])
 				is_allowed_method = true;
 		if (!is_allowed_method)
@@ -152,7 +152,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 	const char * read_buff = (*it)->getBuff();
 	read_buff += body_pos;
 
-	while (bytes.getBytes() > body_pos + chunk.getLenSum()){
+	while (bytes.getBytes() >
+			static_cast<unsigned long>(body_pos + chunk.getLenSum())){
 		if (chunk.getCount() % 2)
 		{
 			if (chunk.getLen() == 0)
@@ -178,7 +179,11 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			}
 			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
-			chunk.setLenSum(chunk.getLenSum() + chunk.getLen() + 2);
+			chunk.setLenSum(chunk.getLenSum() + chunk.getLen());
+			while (ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
+				chunk.setLenSum(chunk.getLenSum() + 1);
+			chunk.setLenSum(chunk.getLenSum() + 2);
+
 		}
 		else
 		{
@@ -208,7 +213,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 
 	(*it)->setLastMsg();
 
+#ifdef LINUX
+	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
+#else
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
+#endif
 	{
 		(*it)->setStatus(3);
 		return;
@@ -277,6 +286,12 @@ void Server::getLocation(std::vector<Client *>::iterator it, const map_type &dat
 		if ((*it)->getServPort() == (*serv_it).getPort() && (*it)->getServHost() == (*serv_it).getHost() && \
 			(host == (*serv_it).getHost() || !(nameCompare(host, serv_it)))){
 			(*it)->getResponse()->setServerData(*serv_it);
+			std::multimap<std::string, std::vector<std::string> > serv_data;
+			std::multimap<std::string, std::vector<std::string> >::iterator serv_data_it = serv_data.find("limit_client_body");
+			if (serv_data_it != serv_data.end()){
+				if ((*serv_it).getLimitClientBody() < (*it)->getBodyLen())
+					(*it)->getResponse()->setErrcode(413);
+			}
 			return;
 		}
 	}
