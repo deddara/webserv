@@ -91,8 +91,7 @@ char **Cgi::setEnv() {
 	method = map_it->second[0];
 
 	//for PHP
-	if (map_it->second[1].find(".php") != std::string::npos)
-		env_map["REDIRECT_STATUS"] = "200";
+	env_map["REDIRECT_STATUS"] = "200";
 
 	map_it = _cgi_data.data->find("content-type");
 	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
@@ -144,12 +143,6 @@ int Cgi::execute() {
 		return (1);
 	if (pid == 0) {
 
-//		write (pipes[1], body, _cgi_data.body_len);
-
-//		if (method == "POST"){
-//			if (sendPostBody())
-//				exit(1);
-//		}
 		if (execve(_argv[0], _argv, _env) < 0) {
 			dup2(err_pipe[0], 0);
 			dup2(err_pipe[1], 1);
@@ -180,7 +173,7 @@ int Cgi::read_response(){
 			max_fd = writePipe[0];
 		else
 			max_fd = err_pipe[0];
-		if (select(writePipe[0] + 1, &readset, 0, 0, 0) < 0) {
+		if (select(max_fd + 1, &readset, 0, 0, 0) < 0) {
 			perror("select");
 			return (500); //handle error
 		}
@@ -193,6 +186,8 @@ int Cgi::read_response(){
 			return (500); //handle error
 		}
 		bytes.bytesCount(n);
+		if (n <= 0)
+			continue;
 		if (n < 1024) {
 			return (0); //file readed
 		}
