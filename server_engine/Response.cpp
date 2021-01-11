@@ -176,6 +176,8 @@ void				Response::buildResponse() {
 		free(numStr);
 		numStr = nullptr;
 	}
+	else
+		responseHeaders.append("Content-Length: 0\r\n");
 
 	// Last-Modified
 	if (errCode == 200) {
