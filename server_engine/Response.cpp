@@ -600,7 +600,7 @@ int                 Response::checkAuth() const {
 			!_data->find("authorization")->second.empty()) {
 			std::string type_creds = _data->find("authorization")->second[0];
 			std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
-			std::multimap<std::string, std::vector<std::string>>
+			std::multimap<std::string, std::vector<std::string> >
 				::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
 			if (req_auth == conf_auth_it->second[0]) {
 				return 0;

@@ -199,6 +199,9 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
 				chunk.setCount(chunk.getCount() + 1);
 			}
+			else {
+				break;
+			}
 		}
 	}
 }
@@ -207,17 +210,13 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[300];
-	bzero(&buff, 300);
+	char buff[1024];
+	bzero(&buff, 1024);
 	int err = 400;
 
 	(*it)->setLastMsg();
 
-#ifdef LINUX
-	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
-#else
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
-#endif
 	{
 		(*it)->setStatus(3);
 		return;
