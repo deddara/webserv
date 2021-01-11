@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/11 16:15:01 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/11 17:51:46 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,23 @@ int Response::checkLimitClientBody(const cgi_data & _cgi_data)
 	return (0);
 }
 
+int					Response::checkExtForCgiHandling() {
+	if (location[currLocationInd]->getData().count("cgi_ext")) {
+		std::multimap<std::string, std::vector<std::string> >
+			::const_iterator	itExt;
+		size_t					i = 0;
+
+		itExt = location[currLocationInd]->getData().find("cgi_ext");
+		// try to find fileExt in vector of supported cgi-extensions
+		for (; i < itExt->second.size(); ++i) {
+			if (itExt->second[i] == fileExt) {
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;
@@ -318,28 +335,15 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3;
 				return ;
 			}
-			// check if CGI settings is present in current location
-			if (location[currLocationInd]->getData().count("cgi_ext")) {
-				std::multimap<std::string, std::vector<std::string> >
-					::const_iterator	itExt;
-				size_t					i = 0;
-
-				itExt = location[currLocationInd]->getData().find("cgi_ext");
-				// try to find fileExt in vector of supported cgi-extensions
-				for (; i < itExt->second.size(); ++i) {
-					if (itExt->second[i] == fileExt) {
-						break ;
-					}
-				}
-				// check if fileExt found in supported by config
-				if (i < itExt->second.size()) {
-					cgi = new Cgi(_cgi_data, filePath,
-							location[currLocationInd]->getData().
-							find("cgi_bin")->second[i], reqBody);
-					if(!cgi->handler()) {
-						cgi_response_parser(*cgi);
-						return;
-					}
+			// check if fileExt found in CGI settings for current location
+			int		i;
+			if ((i = checkExtForCgiHandling()) >= 0) {
+				cgi = new Cgi(_cgi_data, filePath,
+						location[currLocationInd]->getData().
+						find("cgi_bin")->second[i], reqBody);
+				if(!cgi->handler()) {
+					cgi_response_parser(*cgi);
+					return;
 				}
 			}
 			generateBody();
@@ -578,20 +582,30 @@ int					Response::checkAllowMethods() {
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<std::string, std::vector<std::string> >::const_iterator	itField;
 
+
 	// find requested method on allowed
 	itReq = _data->find("head");
 	itField = location[currLocationInd]->getData().find("allow_methods");
 	size_t i = 0;
 	for (; i < itField->second.size(); ++i) {
 		if (itReq->second[0] == itField->second[i]) {
-			return 0;
+			break ;
 		}
 	}
 	// requested method is not found in allowed methods for specified location
 	if (i == itField->second.size()) {
 		errCode = 405;
+		return 1;
 	}
-	return 1;
+	if (itReq->second[0] == "POST") {
+		// check if fileExt found in CGI settings for current location
+		if (checkExtForCgiHandling()) {
+			return 0;
+		} // request method is POST, but fileExt is not handled by cgi in config
+		errCode = 405;
+		return 1;
+	}
+	return 0;
 }
 
 int                 Response::checkAuth() const {
@@ -628,6 +642,8 @@ int					Response::checkLocation() {
 			fileExt.push_back(uri[pos++]);
 		}
 	}
+
+
 
 	// check if URI is redirection to error page
 	std::map<int, std::string>::const_iterator
