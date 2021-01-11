@@ -41,6 +41,19 @@ ErrorPages::ErrorPages() {
 	code400.push_back("Bad Request");
 	errorPageTemplates.insert(std::make_pair(400, code400));
 
+	std::vector<std::string>		code401;
+	code401.push_back(
+			"<html>\n"													\
+		"<head><title>401 Unauthorized</title></head>\n"				\
+		"<body bgcolor=\"white\">\n"								\
+		"<center><h1>401 Unauthorized</h1></center>\n"				\
+		"<hr><center>webserv/0.1a</center>\n"						\
+		"</body>\n"													\
+		"</html>\n"
+	);
+	code401.push_back("Unauthorized");
+	errorPageTemplates.insert(std::make_pair(401, code401));
+
 	std::vector<std::string>		code403;
 	code403.push_back(
 		"<html>\n"													\
