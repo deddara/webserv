@@ -32,5 +32,6 @@ std::string			toLower(std::string str);
 std::string			toUpper(std::string str);
 uint16_t			ft_htons(uint16_t);
 void				*ft_memcpy(void *, const void *, size_t);
+std::string         decodeBase64(std::string const &str);
 
 #endif

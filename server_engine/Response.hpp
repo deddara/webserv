@@ -49,6 +49,7 @@ private:
 	char								errHandlersFlags;
 	int									limitClientBody;
 
+	int                                 checkAuth() const;
 	int									checkLocation();
 	int									checkAllowMethods();
 	int									checkFile();

@@ -187,6 +187,11 @@ void				Response::buildResponse() {
 		responseHeaders.append("Location: " + redirectURI + "\r\n");
 	}
 
+	// Authorization in request required
+	if (errCode == 401) {
+		responseHeaders.append("WWW-Authenticate: Basic\r\n");
+	}
+
 	// Connection
 	if (_data->count("connection")) {
 		itReq = _data->find("connection");
@@ -239,6 +244,21 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3; // QUESTION where should be set and which value
 				return ;
 			}
+
+			// check authorization
+			if ((ret = checkAuth())) {
+				if (ret == 1) {
+					errCode = 401;
+					errorHandler();
+					buildResponse();
+				} else if (ret == 2) {
+					error403Handler();
+					buildResponse();
+					status = 3; // QUESTION where should be set and which value
+				}
+				return;
+			}
+
 			if (checkAllowMethods()) {
 				errorHandler();
 				buildResponse();
@@ -530,6 +550,25 @@ int					Response::checkAllowMethods() {
 		errCode = 405;
 	}
 	return 1;
+}
+
+int                 Response::checkAuth() const {
+	std::map<std::string, std::vector<std::string>>::const_iterator conf_auth_it =
+			location[currLocationInd]->getData().find("auth");
+	if (!conf_auth_it->second.empty() && !conf_auth_it->second[0].empty()) {
+		std::map<std::string, std::vector<std::string> >::const_iterator it =
+				_data->find("authorization");
+		if (!it->second.empty() && !it->second[0].empty()) {
+			std::string type_creds = it->second[0];
+			std::string req_auth = type_creds.substr(type_creds.find(' ') + 1);
+			if (decodeBase64(req_auth) == conf_auth_it->second[0]) {
+				return 0;
+			} else
+				return 2; // request auth != location auth -> response(403)
+		} else
+			return 1; // no authorization in request -> response(401)
+	}
+	return 0;
 }
 
 int					Response::checkLocation() {
