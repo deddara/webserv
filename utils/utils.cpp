@@ -57,22 +57,26 @@ static size_t pos_of_char(unsigned char c) {
 	else if (c == '/' || c == '_')
 		return 63;
 	else
-		throw std::runtime_error("Auth credentials are not valid");
+		return 0;
 }
 
 std::string decodeBase64(std::string const &str) {
 	if (str.empty())
-		return "";
+		return std::string();
 	size_t pos = 0;
 	std::string ret;
 	while (pos < str.size()) {
 		size_t pos1 = pos_of_char(str[pos + 1]);
-		ret.push_back(((pos_of_char(str[pos + 0])) << 2) + ((pos1 & 0x30) >> 4));
+		size_t pos12 = pos_of_char(str[pos + 0]);
+		if (!pos1 || !pos12) return std::string();
+		ret.push_back((pos12 << 2) + ((pos1 & 0x30) >> 4));
 		if (str[pos + 2] != '=' && str[pos + 2] != '.') {
 			size_t pos2 = pos_of_char(str[pos + 2] );
+			size_t pos23 = pos_of_char(str[pos + 3]);
+			if (!pos2 || !pos23) return std::string();
 			ret.push_back(((pos1 & 0x0f) << 4) + ((pos2 & 0x3c) >> 2));
 			if (str[pos + 3] != '=' && str[pos + 3] != '.') {
-				ret.push_back(((pos2 & 0x03) << 6) + pos_of_char(str[pos + 3]));
+				ret.push_back(((pos2 & 0x03) << 6) + pos23);
 			}
 		}
 		pos += 4;

@@ -579,15 +579,14 @@ int					Response::checkAllowMethods() {
 }
 
 int                 Response::checkAuth() const {
-	std::map<std::string, std::vector<std::string>>::const_iterator conf_auth_it =
-			location[currLocationInd]->getData().find("auth");
-	if (!conf_auth_it->second.empty() && !conf_auth_it->second[0].empty()) {
-		std::map<std::string, std::vector<std::string> >::const_iterator it =
-				_data->find("authorization");
-		if (!it->second.empty() && !it->second[0].empty()) {
-			std::string type_creds = it->second[0];
-			std::string req_auth = type_creds.substr(type_creds.find(' ') + 1);
-			if (decodeBase64(req_auth) == conf_auth_it->second[0]) {
+	if (location[currLocationInd]->getData().count("auth")) {
+		if (_data->count("authorization") &&
+			!_data->find("authorization")->second.empty()) {
+			std::string type_creds = _data->find("authorization")->second[0];
+			std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
+			std::multimap<std::string, std::vector<std::string>>
+				::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
+			if (req_auth == conf_auth_it->second[0]) {
 				return 0;
 			} else
 				return 2; // request auth != location auth -> response(403)

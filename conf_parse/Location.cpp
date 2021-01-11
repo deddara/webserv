@@ -20,6 +20,7 @@ Location::Location() {
 	pr_locationsFields.insert("cgi_ext");
 	pr_locationsFields.insert("cgi_bin");
 	pr_locationsFields.insert("limit_client_body");
+	pr_locationsFields.insert("auth");
 }
 
 Location::~Location() {}
@@ -121,6 +122,11 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 		int num = ft_atoi(val[0].c_str());
 		if (num < 0) {
 			return (setErrStruct(21, val[0]));
+		}
+	}
+	if (key == "auth") {
+		if (pr_data.count(key)) {
+			pr_data.erase(key);
 		}
 	}
 	pr_data.insert(std::make_pair(key, val));
