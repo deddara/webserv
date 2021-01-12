@@ -64,6 +64,7 @@ private:
 	void								cgi_response_parser(Cgi const &);
 	int									checkLimitClientBody(const cgi_data &);
 	int									checkExtForCgiHandling();
+	void								putHandler();
 
 public:
 	typedef std::map<std::string, std::vector<std::string> > const
@@ -79,7 +80,6 @@ public:
 						std::vector<std::string> > const *, const cgi_data &);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
-	int		putHandler();
 
 	struct s_response &					getResponseStruct();
 	VirtServer const &					getVirtServer() const;

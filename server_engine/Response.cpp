@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/11 17:51:46 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 11:44:27 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void				Response::buildResponse() {
 	responseHeaders.append("Date: " + my_localtime() + "\r\n");
 
 	// Content-Length
-	if (bodyLength) {
+	if (itReq->second[0] != "PUT" && bodyLength) {
 		if(!(numStr = ft_itoa(bodyLength))) {
 			throw std::runtime_error("Error: malloc fails");
 		}
@@ -175,11 +175,18 @@ void				Response::buildResponse() {
 		free(numStr);
 		numStr = nullptr;
 	}
-	else
+	else if (itReq->second[0] != "PUT") {
 		responseHeaders.append("Content-Length: 0\r\n");
+	}
+
+	// Content-location (PUT)
+	if (itReq->second[0] == "PUT") {
+			responseHeaders.append("Content-Location: ");
+			responseHeaders.append(itReq->second[1] + "\r\n");
+	}
 
 	// Last-Modified
-	if (errCode == 200) {
+	if (itReq->second[0] != "PUT" && errCode == 200) {
 		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
 	}
 
@@ -220,7 +227,7 @@ void				Response::buildResponse() {
 	// write(1, response.data, response.length);
 }
 
-int Response::checkLimitClientBody(const cgi_data & _cgi_data)
+int					Response::checkLimitClientBody(const cgi_data & _cgi_data)
 {
 	std::multimap<std::string, std::vector<std::string> > tmp_data = location[currLocationInd]->getData();
 	std::multimap<std::string, std::vector<std::string> >::const_iterator it = tmp_data.find("limit_client_body");
@@ -261,35 +268,28 @@ int					Response::checkExtForCgiHandling() {
 	return -1;
 }
 
-int 				Response::putHandler(){
-	std::string	reqMethod = _data->find("head")->second[0];
+void					Response::putHandler(){
 	struct stat		statbuf;
 	int fd;
-	if (reqMethod == "POST")
-	{
-		if (stat(reqMethod.c_str(), &statbuf) < 0)
-		{
-			if ((fd = open(filePath.c_str(), O_CREAT | O_WRONLY)) < 0) {
-				throw std::runtime_error("Error: file open fails");
-			}
-			write(fd, reqBody, reqBodyLen);
-			close(fd);
-			errCode = 201;
-			return (0);
+	if (stat(filePath.c_str(), &statbuf) < 0) {
+		if ((fd = open(filePath.c_str(), O_CREAT | O_WRONLY)) < 0) {
+			throw std::runtime_error("Error: file open fails");
 		}
-		else
-		{
-			if ((fd = open(filePath.c_str(), O_TRUNC | O_WRONLY)) < 0) {
-				throw std::runtime_error("Error: file open fails");
-			}
-			write(fd, reqBody, reqBodyLen);
-			close(fd);
-			errCode = 200;
-			return (0);
+		write(fd, reqBody, reqBodyLen);
+		close(fd);
+		errCode = 201;
+		return ;
+	} else {
+		if ((fd = open(filePath.c_str(), O_TRUNC | O_WRONLY)) < 0) {
+			throw std::runtime_error("Error: file open fails");
 		}
+		write(fd, reqBody, reqBodyLen);
+		close(fd);
+		errCode = 200;
+		return ;
 	}
 
-	return (0);
+	return ;
 }
 
 void				Response::responsePrepare(int & status, map_type * data,
@@ -355,6 +355,18 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3; // QUESTION where should be set and which value
 				return ;
 			}
+			// check file size limit (for PUT and POST)
+			if (checkLimitClientBody()) {
+				errorHandler();
+				buildResponse();
+				status = 3;
+				return ;
+			}
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
+				return ;
+			}
 			// check if requested file exist and readble
 			if (checkFile()) {
 				if (errCode == 302) {
@@ -372,9 +384,15 @@ void				Response::responsePrepare(int & status, map_type * data,
 				cgi = new Cgi(_cgi_data, filePath,
 						location[currLocationInd]->getData().
 						find("cgi_bin")->second[i], reqBody);
-				if(!cgi->handler()) {
+				int	res = 0;
+				if((res = cgi->handler()) == 200) {
 					cgi_response_parser(*cgi);
 					return;
+				} else {
+					errorHandler();
+					buildResponse();
+					status = 3;
+					return ;
 				}
 			}
 			generateBody();
