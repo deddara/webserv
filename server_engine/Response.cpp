@@ -266,7 +266,6 @@ void				Response::responsePrepare(int & status, map_type * data,
 	_data = data;
 
 	connectionHandler(status);
-
 	try {
 		if (errCode) {
 			errorHandler();
