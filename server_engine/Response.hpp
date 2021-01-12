@@ -48,7 +48,6 @@ private:
 
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
-	int									limitClientBody;
 
 	int                                 checkAuth() const;
 	int									checkLocation();

@@ -903,7 +903,6 @@ void				Response::setServerData(VirtServer const & obj) {
 	virtServ = & obj;
 	errorPage = & obj.getErrorPagePath();
 	location = obj.getLocation();
-	limitClientBody = obj.getLimitClientBody();
 }
 
 void				Response::setErrorPageTempl(const std::map<int,
