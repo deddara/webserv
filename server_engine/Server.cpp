@@ -211,8 +211,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[32768];
-	bzero(&buff, 32768);
+	char buff[1000000];
+	bzero(&buff, 1000000);
 	int err = 400;
 
 	(*it)->setLastMsg();
@@ -222,7 +222,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
-
+	write(1, "1", 1);
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
@@ -335,13 +335,14 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				perror("send");
 				return 1;
 			}
+			write(1, (*it)->getResponse()->getResponseStruct().data, (*it)->getResponse()->getResponseStruct().length);
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);
-//			if ((*it)->getStatus() == 3) {
-//				this->closeConnection(it);
-//				break;
-//			}
+			if ((*it)->getStatus() == 3) {
+				this->closeConnection(it);
+				break;
+			}
 			(*it)->setStatus(0);
 		}
 	}

@@ -270,11 +270,15 @@ int					Response::checkExtForCgiHandling() {
 }
 
 void					Response::putHandler(){
+	if (!filePath.length()) {
+		generateFilePath();
+	}
+
 	struct stat		statbuf;
 	int fd;
+	write (1, filePath.c_str(), filePath.length());
 	if (stat(filePath.c_str(), &statbuf) < 0) {
-		if ((fd = open(filePath.c_str(), O_CREAT | O_WRONLY)) < 0) {
-			std::cout << filePath << std::endl;
+		if ((fd = open(filePath.c_str(), O_RDWR | O_CREAT, 0755)) < 0) {
 			throw std::runtime_error("Error: file open fails");
 		}
 		write(fd, reqBody, reqBodyLen);
@@ -283,7 +287,7 @@ void					Response::putHandler(){
 		return ;
 	} else {
 		if ((fd = open(filePath.c_str(), O_TRUNC | O_WRONLY)) < 0) {
-			throw std::runtime_error("Error: file open fails");
+			throw std::runtime_error("Error: file open fail");
 		}
 		write(fd, reqBody, reqBodyLen);
 		close(fd);
@@ -298,14 +302,14 @@ void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;
 	reqBodyLen = _cgi_data.body_len;
-
 	std::cout << errCode << std::endl;
 	connectionHandler(status);
 	try {
 		if (errCode) {
 			errorHandler();
 			buildResponse();
-			status = 3; // QUESTION where should be set and which value
+			if (errCode != 404)
+				status = 3; // QUESTION where should be set and which value
 			return ;
 		} else {
 			int			ret = 0;
@@ -327,14 +331,16 @@ void				Response::responsePrepare(int & status, map_type * data,
 						if (checkFile()) {
 							errorHandler();
 							buildResponse();
-							status = 3;
+							if (errCode != 404)
+								status = 3;
 							return ;
 						}
 						generateBody();
 					}
 				}
 				buildResponse();
-				status = 3;
+				if (errCode != 404)
+					status = 3;
 				return ;
 			}
 
@@ -347,7 +353,8 @@ void				Response::responsePrepare(int & status, map_type * data,
 				} else if (ret == 2) {
 					error403Handler();
 					buildResponse();
-					status = 3; // QUESTION where should be set and which value
+					if (errCode != 404)
+						status = 3; // QUESTION where should be set and which value
 				}
 				return;
 			}
@@ -355,17 +362,24 @@ void				Response::responsePrepare(int & status, map_type * data,
 			if (checkAllowMethods()) {
 				errorHandler();
 				buildResponse();
-				status = 3; // QUESTION where should be set and which value
+				if (errCode != 404)
+					status = 3; // QUESTION where should be set and which value
 				return ;
 			}
 			// check file size limit (for PUT and POST)
 			if (checkLimitClientBody()) {
 				errorHandler();
 				buildResponse();
-				status = 3;
+				if (errCode != 404)
+					status = 3;
 				return ;
 			}
 			// check if requested file exist and readble
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
+				return ;
+			}
 			if (checkFile()) {
 				if (errCode == 302) {
 					buildResponse();
@@ -373,12 +387,8 @@ void				Response::responsePrepare(int & status, map_type * data,
 					errorHandler();
 					buildResponse();
 				}
-				status = 3;
-				return ;
-			}
-			if (_data->find("head")->second[0] == "PUT") {
-				putHandler();
-				buildResponse();
+				if (errCode != 404)
+					status = 3;
 				return ;
 			}
 			// check if fileExt found in CGI settings for current location
@@ -394,7 +404,8 @@ void				Response::responsePrepare(int & status, map_type * data,
 				} else {
 					errorHandler();
 					buildResponse();
-					status = 3;
+					if (errCode != 404)
+						status = 3;
 					return ;
 				}
 			}
@@ -411,13 +422,15 @@ void				Response::responsePrepare(int & status, map_type * data,
 			errCode = 500;
 			errorHandler();
 			buildResponse();
-			status = 3; // QUESTION where should be set and which value
+			if (errCode != 404)
+				status = 3; // QUESTION where should be set and which value
 			return ;
 		}
 		catch (std::exception & e) {
 			std::cout << e.what() << std::endl
 				<< "Close connection silently" << std::endl;
-			status = 3;
+			if (errCode != 404)
+				status = 3;
 			return ;
 		}
 	}
@@ -651,7 +664,7 @@ int					Response::checkAllowMethods() {
 	}
 	if (itReq->second[0] == "POST") {
 		// check if fileExt found in CGI settings for current location
-		if (checkExtForCgiHandling()) {
+		if (checkExtForCgiHandling() >= 0) {
 			return 0;
 		} // request method is POST, but fileExt is not handled by cgi in config
 		errCode = 405;
