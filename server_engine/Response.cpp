@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/11 17:51:46 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 18:53:20 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void				Response::buildResponse() {
 	responseHeaders.append("Date: " + my_localtime() + "\r\n");
 
 	// Content-Length
-	if (bodyLength) {
+	if (itReq->second[0] != "PUT" && bodyLength) {
 		if(!(numStr = ft_itoa(bodyLength))) {
 			throw std::runtime_error("Error: malloc fails");
 		}
@@ -175,11 +175,19 @@ void				Response::buildResponse() {
 		free(numStr);
 		numStr = nullptr;
 	}
-	else
+	else if (itReq->second[0] != "PUT") {
 		responseHeaders.append("Content-Length: 0\r\n");
+	}
+
+	// Content-location (PUT)
+	if (itReq->second[0] == "PUT") {
+			responseHeaders.append("Content-Length: 0\r\n");
+			responseHeaders.append("Content-Location: ");
+			responseHeaders.append(itReq->second[1] + "\r\n");
+	}
 
 	// Last-Modified
-	if (errCode == 200) {
+	if (itReq->second[0] != "PUT" && errCode == 200) {
 		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
 	}
 
@@ -220,13 +228,13 @@ void				Response::buildResponse() {
 	// write(1, response.data, response.length);
 }
 
-int Response::checkLimitClientBody(const cgi_data & _cgi_data)
+int					Response::checkLimitClientBody()
 {
 	std::multimap<std::string, std::vector<std::string> > tmp_data = location[currLocationInd]->getData();
 	std::multimap<std::string, std::vector<std::string> >::const_iterator it = tmp_data.find("limit_client_body");
 	if (it != tmp_data.end())
 	{
-		if (location[currLocationInd]->getLimitClientBody() < _cgi_data.body_len)
+		if (location[currLocationInd]->getLimitClientBody() < reqBodyLen)
 		{
 			errCode = 413;
 			return (1);
@@ -235,7 +243,7 @@ int Response::checkLimitClientBody(const cgi_data & _cgi_data)
 	it = virtServ->getData().find("limit_client_body");
 	if (it != virtServ->getData().end())
 	{
-		if (virtServ->getLimitClientBody() < _cgi_data.body_len)
+		if (virtServ->getLimitClientBody() < reqBodyLen)
 		{
 			errCode = 413;
 			return (1);
@@ -261,16 +269,46 @@ int					Response::checkExtForCgiHandling() {
 	return -1;
 }
 
+void					Response::putHandler(){
+	if (!filePath.length()) {
+		generateFilePath();
+	}
+
+	struct stat		statbuf;
+	int fd;
+	if (stat(filePath.c_str(), &statbuf) < 0) {
+		if ((fd = open(filePath.c_str(), O_RDWR | O_CREAT, 0755)) < 0) {
+			throw std::runtime_error("Error: file open fails");
+		}
+		write(fd, reqBody, reqBodyLen);
+		close(fd);
+		errCode = 201;
+		return ;
+	} else {
+		if ((fd = open(filePath.c_str(), O_TRUNC | O_WRONLY)) < 0) {
+			throw std::runtime_error("Error: file open fail");
+		}
+		write(fd, reqBody, reqBodyLen);
+		close(fd);
+		errCode = 200;
+		return ;
+	}
+
+	return ;
+}
+
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;
+	reqBodyLen = _cgi_data.body_len;
 
 	connectionHandler(status);
 	try {
 		if (errCode) {
 			errorHandler();
 			buildResponse();
-			status = 3; // QUESTION where should be set and which value
+			if (errCode != 404)
+				status = 3; // QUESTION where should be set and which value
 			return ;
 		} else {
 			int			ret = 0;
@@ -292,14 +330,16 @@ void				Response::responsePrepare(int & status, map_type * data,
 						if (checkFile()) {
 							errorHandler();
 							buildResponse();
-							status = 3;
+							if (errCode != 404)
+								status = 3;
 							return ;
 						}
 						generateBody();
 					}
 				}
 				buildResponse();
-				status = 3;
+				if (errCode != 404)
+					status = 3;
 				return ;
 			}
 
@@ -308,22 +348,49 @@ void				Response::responsePrepare(int & status, map_type * data,
 				if (ret == 1) {
 					errCode = 401;
 					errorHandler();
-					buildResponse();
 				} else if (ret == 2) {
+					errCode = 403;
 					error403Handler();
-					buildResponse();
-					status = 3; // QUESTION where should be set and which value
+					if (errCode != 404)
+						status = 3;
 				}
+				buildResponse();
 				return;
 			}
 
 			if (checkAllowMethods()) {
 				errorHandler();
 				buildResponse();
-				status = 3; // QUESTION where should be set and which value
+				if (errCode != 404)
+					status = 3; // QUESTION where should be set and which value
+				return ;
+			}
+			// check file size limit (for PUT and POST)
+			if (checkLimitClientBody()) {
+				errorHandler();
+				buildResponse();
+				if (errCode != 404)
+					status = 3;
+				return ;
+			}
+			// check file size limit (for PUT and POST)
+			if (checkLimitClientBody()) {
+				errorHandler();
+				buildResponse();
+				status = 3;
+				return ;
+			}
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
 				return ;
 			}
 			// check if requested file exist and readble
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
+				return ;
+			}
 			if (checkFile()) {
 				if (errCode == 302) {
 					buildResponse();
@@ -331,7 +398,8 @@ void				Response::responsePrepare(int & status, map_type * data,
 					errorHandler();
 					buildResponse();
 				}
-				status = 3;
+				if (errCode != 404)
+					status = 3;
 				return ;
 			}
 			// check if fileExt found in CGI settings for current location
@@ -340,9 +408,16 @@ void				Response::responsePrepare(int & status, map_type * data,
 				cgi = new Cgi(_cgi_data, filePath,
 						location[currLocationInd]->getData().
 						find("cgi_bin")->second[i], reqBody);
-				if(!cgi->handler()) {
+				int	res = 0;
+				if((res = cgi->handler()) == 200) {
 					cgi_response_parser(*cgi);
 					return;
+				} else {
+					errorHandler();
+					buildResponse();
+					if (errCode != 404)
+						status = 3;
+					return ;
 				}
 			}
 			generateBody();
@@ -358,13 +433,15 @@ void				Response::responsePrepare(int & status, map_type * data,
 			errCode = 500;
 			errorHandler();
 			buildResponse();
-			status = 3; // QUESTION where should be set and which value
+			if (errCode != 404)
+				status = 3; // QUESTION where should be set and which value
 			return ;
 		}
 		catch (std::exception & e) {
 			std::cout << e.what() << std::endl
 				<< "Close connection silently" << std::endl;
-			status = 3;
+			if (errCode != 404)
+				status = 3;
 			return ;
 		}
 	}
@@ -598,7 +675,7 @@ int					Response::checkAllowMethods() {
 	}
 	if (itReq->second[0] == "POST") {
 		// check if fileExt found in CGI settings for current location
-		if (checkExtForCgiHandling()) {
+		if (checkExtForCgiHandling() >= 0) {
 			return 0;
 		} // request method is POST, but fileExt is not handled by cgi in config
 		errCode = 405;
@@ -607,22 +684,101 @@ int					Response::checkAllowMethods() {
 	return 0;
 }
 
-int                 Response::checkAuth() const {
-	if (location[currLocationInd]->getData().count("auth")) {
-		if (_data->count("authorization") &&
-			!_data->find("authorization")->second.empty()) {
-			std::string type_creds = _data->find("authorization")->second[0];
-			std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
-			std::multimap<std::string, std::vector<std::string> >
-				::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
-			if (req_auth == conf_auth_it->second[0]) {
-				return 0;
-			} else
-				return 2; // request auth != location auth -> response(403)
-		} else
-			return 1; // no authorization in request -> response(401)
+// int					Response::checkAuth() const {
+	// if (location[currLocationInd]->getData().count("auth")) {
+		// if (_data->count("authorization") &&
+			// !_data->find("authorization")->second.empty()) {
+			// std::string type_creds = _data->find("authorization")->second[0];
+			// std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
+			// std::multimap<std::string, std::vector<std::string> >
+				// ::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
+			// if (req_auth == conf_auth_it->second[0]) {
+				// return 0;
+			// } else
+				// return 2; // request auth != location auth -> response(403)
+		// } else
+			// return 1; // no authorization in request -> response(401)
+	// }
+	// return 0;
+// }
+
+int					Response::checkAuth() {
+	// insert 'root' of location in '.htaccess' file path
+	std::string		accessFilePath = location[currLocationInd]->getData().
+													find("root")->second[0];
+
+	// add '/' to the end of the 'root' path if needed
+	if (accessFilePath[accessFilePath.length() - 1] != '/') {
+		accessFilePath.append("/");
 	}
-	return 0;
+	// complete '.htaccess' file path
+	accessFilePath.append(".htacess");
+
+	struct stat		statbuf;
+	// check if location root contains .htaccess
+	if (!(stat(accessFilePath.c_str(), & statbuf))) {
+		int			fd;
+		if (!_data->count("authorization") ||
+				!_data->find("authorization")->second.size()) {
+			return 1; // no authorization in request -> response(401)
+		}
+		if ((fd = open(accessFilePath.c_str(), O_RDONLY)) < 0) {
+			return 2; // have not read access to .htacess
+		}
+		char *	line = nullptr;
+		int		res = 0;
+		std::map<std::string, std::string>	accessFileData;
+		std::string							tempLine;
+		std::string							key, value;
+		while ((res = get_next_line(fd, &line)) >= 0) {
+			tempLine = std::string(line);
+			key = tempLine.substr(0, tempLine.find(' '));
+			if (key == "AuthName" || key == "AuthUserFile") {
+				accessFileData[key] = tempLine.substr(tempLine.find(' '));
+			}
+			free(line);
+			if (!res) { break ; }
+		}
+		if (res < 0) {
+			errCode = 500;
+			close(fd);
+			throw std::runtime_error("Error: malloc fails");
+		}
+		close(fd);
+		if (accessFileData.size() != 2) {
+			return 2;
+		}
+		trim(accessFileData["AuthUserFile"]);
+		if ((fd = open(accessFileData["AuthUserFile"].c_str(), O_RDONLY))
+				< 0) {
+			return 2; // have not read access to .htpasswd
+		}
+		std::string authData = _data->find("authorization")->second[0];
+		if (toLower(authData.substr(0, authData.find(' '))) != "basic") {
+			close(fd);
+			return 2; // request auth != location auth -> response(403)
+		}
+		std::string	strLine;
+		while ((res = get_next_line(fd, &line)) >= 0) {
+			strLine = std::string(line);
+			if (decodeBase64(authData.substr(authData.find(' ') + 1)) ==
+					strLine && strLine.length()) {
+				free(line);
+				close(fd);
+				return 0;
+			}
+			free(line);
+			if (!res) { break ; }
+		}
+		if (res < 0) {
+			errCode = 500;
+			close(fd);
+			throw std::runtime_error("Error: malloc fails");
+		}
+		close(fd);
+		return 2; // have not read access to .htacess
+	}
+	return 0; // authorization is not required
 }
 
 int					Response::checkLocation() {
@@ -766,6 +922,10 @@ int					Response::checkFile() {
 			return 1;
 		}
 	}
+	else {
+		if (_data->find("head")->second[0] == "PUT")
+			return (0);
+	}
 	// file is not found
 	errCode = 404;
 	return 1;
@@ -833,7 +993,6 @@ void				Response::setServerData(VirtServer const & obj) {
 	virtServ = & obj;
 	errorPage = & obj.getErrorPagePath();
 	location = obj.getLocation();
-	limitClientBody = obj.getLimitClientBody();
 }
 
 void				Response::setErrorPageTempl(const std::map<int,

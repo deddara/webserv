@@ -1,0 +1,3 @@
+AuthName "How about authorization?"
+
+AuthUserFile .htpasswd

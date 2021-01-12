@@ -6,7 +6,7 @@
 /*   By: jjeremia <jjeremia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 10:45:13 by jjeremia          #+#    #+#             */
-/*   Updated: 2020/12/18 14:59:01 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 17:58:37 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,6 @@ Request::value_type split(std::string const &raw, char delim) {
 	if (k != "")
 		res.push_back(k);
 	return res;
-}
-
-void    trim(std::string &str) {
-	str.erase(str.find_last_not_of(' ') + 1);
-	str.erase(0, str.find_first_not_of(' '));
-}
-
-std::string str_to_lower(std::string &str) {
-	for (size_t i = 0; i != str.size(); ++i)
-		str[i] = tolower(str[i]);
-	return str;
 }
 
 // Private functions
@@ -94,7 +83,7 @@ void	Request::req_init(std::string const &raw_data){
 		value_type value(++header.begin(), header.end());
 		for(size_t i = 0; i != value.size(); ++i)
 			trim(value[i]);
-		_data[str_to_lower(key)] = value;
+		_data[toLower(key)] = value;
 	}
 	check_common();
 }
@@ -146,7 +135,7 @@ bool Request::error() const {
 
 bool Request::is_valid_value(const std::string &key) const {
 	std::string low_key = static_cast<std::string>(key);
-	value_type value = _data.find(str_to_lower(low_key))->second;
+	value_type value = _data.find(toLower(low_key))->second;
 	if (!value.empty() && !value[0].empty())
 		return true;
 	return false;
@@ -154,7 +143,7 @@ bool Request::is_valid_value(const std::string &key) const {
 
 const Request::value_type &Request::find(std::string const &key) const {
 	std::string low_key = static_cast<std::string>(key);
-	return _data.find(str_to_lower(low_key))->second;
+	return _data.find(toLower(low_key))->second;
 }
 
 size_t Request::get_body_pos() const {

@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/25 17:26:04 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/11 13:59:19 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 10:58:46 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ ErrorPages::ErrorPages() {
 	code200.push_back("");
 	code200.push_back("OK");
 	errorPageTemplates.insert(std::make_pair(200, code200));
+
+	std::vector<std::string>		code201;
+	code201.push_back("");
+	code201.push_back("Created");
+	errorPageTemplates.insert(std::make_pair(201, code201));
 
 	std::vector<std::string>		code301;
 	code301.push_back("");
@@ -109,14 +114,14 @@ ErrorPages::ErrorPages() {
 	std::vector<std::string>		code413;
 	code413.push_back(
 		"<html>\n"													\
-		"<head><title>413 Payload Too Large</title></head>\n"	\
+		"<head><title>413 Request Entity Too Large</title></head>\n"	\
 		"<body bgcolor=\"white\">\n"								\
-		"<center><h1>413 Payload Too Large</h1></center>\n"		\
+		"<center><h1>413 Request Entity Too Large</h1></center>\n"		\
 		"<hr><center>webserv/0.1a</center>\n"						\
 		"</body>\n"													\
 		"</html>\n"
 		);
-	code413.push_back("Payload Too Large");
+	code413.push_back("Request Entity Too Large");
 	errorPageTemplates.insert(std::make_pair(413, code413));
 
 	std::vector<std::string>		code500;
