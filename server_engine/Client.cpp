@@ -124,6 +124,8 @@ void Client::setResponse(Response *response) {
 	resp = response;
 }
 
+void Client::setRequest(Request *req) { reqst = req; }
+
 cgi_data const & Client::getCgiData() const { return _cgi_data; }
 
 

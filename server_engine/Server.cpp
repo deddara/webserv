@@ -339,6 +339,9 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);
+			delete (*it)->getRequest();
+			Request			*reqst = new Request;
+			(*it)->setRequest(reqst);
 //			if ((*it)->getStatus() == 3) {
 //				this->closeConnection(it);
 //				break;

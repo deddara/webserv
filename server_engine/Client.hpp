@@ -79,6 +79,7 @@ public:
 	void clearBuff();
 	void setCgiData();
 	void setResponse(Response *);
+	void setRequest(Request *);
 	void setBodyLen(int const &);
 
 	struct timeval & getLastMsg();

@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/12 19:01:20 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 20:36:52 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void				Response::buildResponse() {
 	responseHeaders.append("Date: " + my_localtime() + "\r\n");
 
 	// Content-Length
-	if (itReq->second[0] != "PUT" && bodyLength) {
+	if (bodyLength && !(_data->size() && itReq->second[0] == "PUT")) {
 		if(!(numStr = ft_itoa(bodyLength))) {
 			throw std::runtime_error("Error: malloc fails");
 		}
@@ -174,20 +174,18 @@ void				Response::buildResponse() {
 		responseHeaders.append("\r\n");
 		free(numStr);
 		numStr = nullptr;
-	}
-	else if (itReq->second[0] != "PUT") {
+	} else {
 		responseHeaders.append("Content-Length: 0\r\n");
 	}
 
 	// Content-location (PUT)
-	if (itReq->second[0] == "PUT") {
-			responseHeaders.append("Content-Length: 0\r\n");
+	if (_data->size() && itReq->second[0] == "PUT") {
 			responseHeaders.append("Content-Location: ");
 			responseHeaders.append(itReq->second[1] + "\r\n");
 	}
 
 	// Last-Modified
-	if (itReq->second[0] != "PUT" && errCode == 200) {
+	if (errCode == 200 && !(_data->size() && itReq->second[0] == "PUT")) {
 		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
 	}
 
@@ -299,7 +297,13 @@ void					Response::putHandler(){
 
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
-	_data = data;
+	std::map<std::string, std::vector<std::string> > tmpMap;
+	if (errCode != 400) {
+		_data = data;
+	} else {
+		_data = &tmpMap;
+	}
+	std::cout << errCode << std::endl;
 	reqBodyLen = _cgi_data.body_len;
 
 	connectionHandler(status);
@@ -683,24 +687,6 @@ int					Response::checkAllowMethods() {
 	}
 	return 0;
 }
-
-// int					Response::checkAuth() const {
-	// if (location[currLocationInd]->getData().count("auth")) {
-		// if (_data->count("authorization") &&
-			// !_data->find("authorization")->second.empty()) {
-			// std::string type_creds = _data->find("authorization")->second[0];
-			// std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
-			// std::multimap<std::string, std::vector<std::string> >
-				// ::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
-			// if (req_auth == conf_auth_it->second[0]) {
-				// return 0;
-			// } else
-				// return 2; // request auth != location auth -> response(403)
-		// } else
-			// return 1; // no authorization in request -> response(401)
-	// }
-	// return 0;
-// }
 
 int					Response::checkAuth() {
 	// insert 'root' of location in '.htaccess' file path
