@@ -62,7 +62,7 @@ private:
 	void								buildResponse();
 	void								generateDirListing();
 	void								cgi_response_parser(Cgi const &);
-	int									checkLimitClientBody(const cgi_data &);
+	int									checkLimitClientBody();
 	int									checkExtForCgiHandling();
 	void								putHandler();
 

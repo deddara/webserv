@@ -70,7 +70,7 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 				return (setErrStruct(7, val[i]));
 			}
 			val[i] = toUpper(val[i]);
-			if (val[i] != "GET" && val[i] != "HEAD" && val[i] != "POST")
+			if (val[i] != "GET" && val[i] != "HEAD" && val[i] != "POST" && val[i] != "PUT")
 				return (setErrStruct(15, val[i]));
 		}
 	}

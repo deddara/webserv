@@ -181,6 +181,7 @@ void				Response::buildResponse() {
 
 	// Content-location (PUT)
 	if (itReq->second[0] == "PUT") {
+			responseHeaders.append("Content-Length: 0\r\n");
 			responseHeaders.append("Content-Location: ");
 			responseHeaders.append(itReq->second[1] + "\r\n");
 	}
@@ -227,13 +228,13 @@ void				Response::buildResponse() {
 	// write(1, response.data, response.length);
 }
 
-int					Response::checkLimitClientBody(const cgi_data & _cgi_data)
+int					Response::checkLimitClientBody()
 {
 	std::multimap<std::string, std::vector<std::string> > tmp_data = location[currLocationInd]->getData();
 	std::multimap<std::string, std::vector<std::string> >::const_iterator it = tmp_data.find("limit_client_body");
 	if (it != tmp_data.end())
 	{
-		if (location[currLocationInd]->getLimitClientBody() < _cgi_data.body_len)
+		if (location[currLocationInd]->getLimitClientBody() < reqBodyLen)
 		{
 			errCode = 413;
 			return (1);
@@ -242,7 +243,7 @@ int					Response::checkLimitClientBody(const cgi_data & _cgi_data)
 	it = virtServ->getData().find("limit_client_body");
 	if (it != virtServ->getData().end())
 	{
-		if (virtServ->getLimitClientBody() < _cgi_data.body_len)
+		if (virtServ->getLimitClientBody() < reqBodyLen)
 		{
 			errCode = 413;
 			return (1);
@@ -273,6 +274,7 @@ void					Response::putHandler(){
 	int fd;
 	if (stat(filePath.c_str(), &statbuf) < 0) {
 		if ((fd = open(filePath.c_str(), O_CREAT | O_WRONLY)) < 0) {
+			std::cout << filePath << std::endl;
 			throw std::runtime_error("Error: file open fails");
 		}
 		write(fd, reqBody, reqBodyLen);
@@ -297,6 +299,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 	_data = data;
 	reqBodyLen = _cgi_data.body_len;
 
+	std::cout << errCode << std::endl;
 	connectionHandler(status);
 	try {
 		if (errCode) {
@@ -362,11 +365,6 @@ void				Response::responsePrepare(int & status, map_type * data,
 				status = 3;
 				return ;
 			}
-			if (_data->find("head")->second[0] == "PUT") {
-				putHandler();
-				buildResponse();
-				return ;
-			}
 			// check if requested file exist and readble
 			if (checkFile()) {
 				if (errCode == 302) {
@@ -376,6 +374,11 @@ void				Response::responsePrepare(int & status, map_type * data,
 					buildResponse();
 				}
 				status = 3;
+				return ;
+			}
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
 				return ;
 			}
 			// check if fileExt found in CGI settings for current location
@@ -815,6 +818,10 @@ int					Response::checkFile() {
 			errCode = 403;
 			return 1;
 		}
+	}
+	else {
+		if (_data->find("head")->second[0] == "PUT")
+			return (0);
 	}
 	// file is not found
 	errCode = 404;

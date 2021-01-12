@@ -153,7 +153,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 	read_buff += body_pos;
 
 	while (bytes.getBytes() >
-			static_cast<unsigned long>(body_pos + chunk.getLenSum())){
+			(static_cast<unsigned long>(body_pos + chunk.getLenSum()) + chunk.getLen())){
 		if (chunk.getCount() % 2)
 		{
 			if (chunk.getLen() == 0)
@@ -164,8 +164,9 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 					(*it)->setStatus(1);
 					chunk.setZero();
 				}
-				else if ((bytes.getBytes() - (body_pos + chunk.getLenSum())) == 1)
+				else if ((bytes.getBytes() - (body_pos + chunk.getLenSum())) == 1) {
 					break;
+				}
 				else
 				{
 					(*it)->getResponse()->setErrcode(400);
@@ -182,10 +183,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
 			chunk.setCount(chunk.getCount() + 1);
 			chunk.setLenSum(chunk.getLenSum() + chunk.getLen());
-			while (ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
-				chunk.setLenSum(chunk.getLenSum() + 1);
+			chunk.setLen(0);
 			chunk.setLenSum(chunk.getLenSum() + 2);
-
 		}
 		else
 		{
@@ -212,8 +211,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[1024];
-	bzero(&buff, 1024);
+	char buff[32768];
+	bzero(&buff, 32768);
 	int err = 400;
 
 	(*it)->setLastMsg();
@@ -308,7 +307,6 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
-						std::cout <<(*it)->getBuff() << std::endl;
 						(*it)->setCgiData();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
@@ -352,6 +350,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 
 int Server::launch() {
 	ErrorPages		errPageMap;
+	int i = 0;
 	//главный цикл жизни сервера (Желательно потом разбить на еще доп методы, это я сделаю сам)
 	for (;;){
 		int select_res;
@@ -370,5 +369,6 @@ int Server::launch() {
 			return (1);
 		if (this->clientSessionHandler(errPageMap))
 			return (1);
+		++i;
 	}
 }
