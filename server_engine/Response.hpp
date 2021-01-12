@@ -28,6 +28,7 @@ private:
 										errorPageTempl;
 
 	int									errCode;
+	int									reqBodyLen;
 	char *								body;
 	const char *						reqBody;
 	size_t								bodyLength;
@@ -78,6 +79,7 @@ public:
 						std::vector<std::string> > const *, const cgi_data &);
 	void	connectionHandler(int & status);
 	void	clearResponseData();
+	int		putHandler();
 
 	struct s_response &					getResponseStruct();
 	VirtServer const &					getVirtServer() const;

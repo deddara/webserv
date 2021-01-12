@@ -261,9 +261,41 @@ int					Response::checkExtForCgiHandling() {
 	return -1;
 }
 
+int 				Response::putHandler(){
+	std::string	reqMethod = _data->find("head")->second[0];
+	struct stat		statbuf;
+	int fd;
+	if (reqMethod == "POST")
+	{
+		if (stat(reqMethod.c_str(), &statbuf) < 0)
+		{
+			if ((fd = open(filePath.c_str(), O_CREAT | O_WRONLY)) < 0) {
+				throw std::runtime_error("Error: file open fails");
+			}
+			write(fd, reqBody, reqBodyLen);
+			close(fd);
+			errCode = 201;
+			return (0);
+		}
+		else
+		{
+			if ((fd = open(filePath.c_str(), O_TRUNC | O_WRONLY)) < 0) {
+				throw std::runtime_error("Error: file open fails");
+			}
+			write(fd, reqBody, reqBodyLen);
+			close(fd);
+			errCode = 200;
+			return (0);
+		}
+	}
+
+	return (0);
+}
+
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;
+	reqBodyLen = _cgi_data.body_len;
 
 	connectionHandler(status);
 	try {
