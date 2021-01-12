@@ -6,7 +6,7 @@
 #    By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 10:44:20 by awerebea          #+#    #+#              #
-#    Updated: 2021/01/11 11:47:26 by awerebea         ###   ########.fr        #
+#    Updated: 2021/01/12 15:11:42 by awerebea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,10 +78,18 @@ FLS_4		= $(addprefix $(DIR_4), \
 				)
 INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_4))
 
+DIR_5		= utils/gnl/
+FLS_5		= $(addprefix $(DIR_5), \
+				get_next_line \
+				get_next_line_utils \
+				)
+INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_5))
+
 DIR_TEST	= tests/
 
-SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4)
-DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)
+SRC			= $(FLS_ROOT) $(FLS_1) $(FLS_2) $(FLS_3) $(FLS_4) $(FLS_5)
+DIRS		= $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4) $(DIR_5)
+
 
 OBJ			= $(addprefix $(OBJDIR), $(SRC:=.o))
 DFLS		= $(SRC:=.d) $(SRC_C:=.d)
@@ -146,6 +154,12 @@ test_resp_prepare:
 			SRC="$(addprefix $(DIR_TEST), test_resp_prepare) $(FLS_1) $(FLS_2) \
 			$(FLS_3) $(FLS_4)" \
 			DIRS="$(DIR_TEST) $(DIR_1) $(DIR_2) $(DIR_3) $(DIR_4)" \
+			all --no-print-directory
+
+test_gnl:
+	@make	FLAGS="-Wall -Wextra -w $(DBGFLAGS)" \
+			SRC="$(addprefix $(DIR_TEST), test_gnl) $(FLS_4) $(FLS_5)" \
+			DIRS="$(DIR_TEST) $(DIR_4) $(DIR_5)" \
 			all --no-print-directory
 
 test_valgrind: test_resp_prepare

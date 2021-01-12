@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/12 11:44:27 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/12 19:01:20 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,6 @@ void					Response::putHandler(){
 
 	struct stat		statbuf;
 	int fd;
-	write (1, filePath.c_str(), filePath.length());
 	if (stat(filePath.c_str(), &statbuf) < 0) {
 		if ((fd = open(filePath.c_str(), O_RDWR | O_CREAT, 0755)) < 0) {
 			throw std::runtime_error("Error: file open fails");
@@ -302,7 +301,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
 	_data = data;
 	reqBodyLen = _cgi_data.body_len;
-	std::cout << errCode << std::endl;
+
 	connectionHandler(status);
 	try {
 		if (errCode) {
@@ -349,13 +348,13 @@ void				Response::responsePrepare(int & status, map_type * data,
 				if (ret == 1) {
 					errCode = 401;
 					errorHandler();
-					buildResponse();
 				} else if (ret == 2) {
+					errCode = 403;
 					error403Handler();
-					buildResponse();
 					if (errCode != 404)
-						status = 3; // QUESTION where should be set and which value
+						status = 3;
 				}
+				buildResponse();
 				return;
 			}
 
@@ -372,6 +371,18 @@ void				Response::responsePrepare(int & status, map_type * data,
 				buildResponse();
 				if (errCode != 404)
 					status = 3;
+				return ;
+			}
+			// check file size limit (for PUT and POST)
+			if (checkLimitClientBody()) {
+				errorHandler();
+				buildResponse();
+				status = 3;
+				return ;
+			}
+			if (_data->find("head")->second[0] == "PUT") {
+				putHandler();
+				buildResponse();
 				return ;
 			}
 			// check if requested file exist and readble
@@ -673,22 +684,101 @@ int					Response::checkAllowMethods() {
 	return 0;
 }
 
-int                 Response::checkAuth() const {
-	if (location[currLocationInd]->getData().count("auth")) {
-		if (_data->count("authorization") &&
-			!_data->find("authorization")->second.empty()) {
-			std::string type_creds = _data->find("authorization")->second[0];
-			std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
-			std::multimap<std::string, std::vector<std::string> >
-				::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
-			if (req_auth == conf_auth_it->second[0]) {
-				return 0;
-			} else
-				return 2; // request auth != location auth -> response(403)
-		} else
-			return 1; // no authorization in request -> response(401)
+// int					Response::checkAuth() const {
+	// if (location[currLocationInd]->getData().count("auth")) {
+		// if (_data->count("authorization") &&
+			// !_data->find("authorization")->second.empty()) {
+			// std::string type_creds = _data->find("authorization")->second[0];
+			// std::string req_auth = decodeBase64(type_creds.substr(type_creds.find(' ') + 1));
+			// std::multimap<std::string, std::vector<std::string> >
+				// ::const_iterator conf_auth_it = location[currLocationInd]->getData().find("auth");
+			// if (req_auth == conf_auth_it->second[0]) {
+				// return 0;
+			// } else
+				// return 2; // request auth != location auth -> response(403)
+		// } else
+			// return 1; // no authorization in request -> response(401)
+	// }
+	// return 0;
+// }
+
+int					Response::checkAuth() {
+	// insert 'root' of location in '.htaccess' file path
+	std::string		accessFilePath = location[currLocationInd]->getData().
+													find("root")->second[0];
+
+	// add '/' to the end of the 'root' path if needed
+	if (accessFilePath[accessFilePath.length() - 1] != '/') {
+		accessFilePath.append("/");
 	}
-	return 0;
+	// complete '.htaccess' file path
+	accessFilePath.append(".htacess");
+
+	struct stat		statbuf;
+	// check if location root contains .htaccess
+	if (!(stat(accessFilePath.c_str(), & statbuf))) {
+		int			fd;
+		if (!_data->count("authorization") ||
+				!_data->find("authorization")->second.size()) {
+			return 1; // no authorization in request -> response(401)
+		}
+		if ((fd = open(accessFilePath.c_str(), O_RDONLY)) < 0) {
+			return 2; // have not read access to .htacess
+		}
+		char *	line = nullptr;
+		int		res = 0;
+		std::map<std::string, std::string>	accessFileData;
+		std::string							tempLine;
+		std::string							key, value;
+		while ((res = get_next_line(fd, &line)) >= 0) {
+			tempLine = std::string(line);
+			key = tempLine.substr(0, tempLine.find(' '));
+			if (key == "AuthName" || key == "AuthUserFile") {
+				accessFileData[key] = tempLine.substr(tempLine.find(' '));
+			}
+			free(line);
+			if (!res) { break ; }
+		}
+		if (res < 0) {
+			errCode = 500;
+			close(fd);
+			throw std::runtime_error("Error: malloc fails");
+		}
+		close(fd);
+		if (accessFileData.size() != 2) {
+			return 2;
+		}
+		trim(accessFileData["AuthUserFile"]);
+		if ((fd = open(accessFileData["AuthUserFile"].c_str(), O_RDONLY))
+				< 0) {
+			return 2; // have not read access to .htpasswd
+		}
+		std::string authData = _data->find("authorization")->second[0];
+		if (toLower(authData.substr(0, authData.find(' '))) != "basic") {
+			close(fd);
+			return 2; // request auth != location auth -> response(403)
+		}
+		std::string	strLine;
+		while ((res = get_next_line(fd, &line)) >= 0) {
+			strLine = std::string(line);
+			if (decodeBase64(authData.substr(authData.find(' ') + 1)) ==
+					strLine && strLine.length()) {
+				free(line);
+				close(fd);
+				return 0;
+			}
+			free(line);
+			if (!res) { break ; }
+		}
+		if (res < 0) {
+			errCode = 500;
+			close(fd);
+			throw std::runtime_error("Error: malloc fails");
+		}
+		close(fd);
+		return 2; // have not read access to .htacess
+	}
+	return 0; // authorization is not required
 }
 
 int					Response::checkLocation() {

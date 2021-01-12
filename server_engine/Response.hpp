@@ -1,19 +1,20 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
+# include "CGI.hpp"
 # include "ErrorPages.hpp"
 # include "VirtServer.hpp"
+# include "cgi_data.hpp"
+# include "get_next_line.hpp"
 # include "includes.hpp"
 # include <dirent.h>
 # include <fcntl.h>
 # include <map>
+# include <stdexcept>
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-# include "CGI.hpp"
-# include "cgi_data.hpp"
-# include <stdexcept>
 
 struct									s_response {
 	char *								data;
@@ -49,7 +50,7 @@ private:
 	// errHandlersFlags: 0b00000001 - 403 checked, 0b00000010 - 404 checked
 	char								errHandlersFlags;
 
-	int                                 checkAuth() const;
+	int									checkAuth();
 	int									checkLocation();
 	int									checkAllowMethods();
 	int									checkFile();

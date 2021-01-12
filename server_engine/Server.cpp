@@ -339,10 +339,10 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);
-			if ((*it)->getStatus() == 3) {
-				this->closeConnection(it);
-				break;
-			}
+//			if ((*it)->getStatus() == 3) {
+//				this->closeConnection(it);
+//				break;
+//			}
 			(*it)->setStatus(0);
 		}
 	}
@@ -353,8 +353,8 @@ int Server::launch() {
 	ErrorPages		errPageMap;
 	int i = 0;
 	//главный цикл жизни сервера (Желательно потом разбить на еще доп методы, это я сделаю сам)
+	int select_res;
 	for (;;){
-		int select_res;
 		max_fd = virt_serv.back().getFd();
 		if (this->set_prepare())
 			continue;
