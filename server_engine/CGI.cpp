@@ -164,7 +164,6 @@ int Cgi::read_response(){
 			max_fd = readPipe[1];
 
 		if (select(max_fd + 1, &readset, &writeset, 0, 0) < 0) {
-			perror("select");
 			return (500); //handle error
 		}
 
@@ -174,16 +173,13 @@ int Cgi::read_response(){
 			body_len -= n;
 			continue;
 		}
-		write (1, "e", 1);
 
 		if (FD_ISSET(err_pipe[0], &readset)){
 			return (502);
 		}
 		n = read(writePipe[0], line, 1024);
 		if((buffAppend(line, n)))
-		{
 			return (500); //handle error
-		}
 		bytes.bytesCount(n);
 		if (n <= 0)
 			continue;

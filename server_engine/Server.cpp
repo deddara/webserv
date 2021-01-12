@@ -164,6 +164,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 					(*it)->setStatus(1);
 					chunk.setZero();
 				}
+				else if ((bytes.getBytes() - (body_pos + chunk.getLenSum())) == 1)
+					break;
 				else
 				{
 					(*it)->getResponse()->setErrcode(400);
@@ -338,10 +340,10 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);
-			if ((*it)->getStatus() == 3) {
-				this->closeConnection(it);
-				break;
-			}
+//			if ((*it)->getStatus() == 3) {
+//				this->closeConnection(it);
+//				break;
+//			}
 			(*it)->setStatus(0);
 		}
 	}
