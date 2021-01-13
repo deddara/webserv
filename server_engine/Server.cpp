@@ -317,6 +317,8 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
+						std::string tmp((*it)->getBuff());
+						std::cout << tmp.substr(0, tmp.find("\r\n\r\n") + 2);
 						(*it)->setCgiData();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
