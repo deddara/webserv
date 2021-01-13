@@ -196,7 +196,7 @@ void				Response::buildResponse() {
 
 	// Authorization in request required
 	if (errCode == 401) {
-		responseHeaders.append("WWW-Authenticate: Basic\r\n");
+		responseHeaders.append("WWW-Authenticate: Basic realm=" + realm + "\r\n");
 	}
 
 	// Connection
@@ -704,10 +704,6 @@ int					Response::checkAuth() {
 	// check if location root contains .htaccess
 	if (!(stat(accessFilePath.c_str(), & statbuf))) {
 		int			fd;
-		if (!_data->count("authorization") ||
-				!_data->find("authorization")->second.size()) {
-			return 1; // no authorization in request -> response(401)
-		}
 		if ((fd = open(accessFilePath.c_str(), O_RDONLY)) < 0) {
 			return 2; // have not read access to .htacess
 		}
@@ -733,6 +729,12 @@ int					Response::checkAuth() {
 		close(fd);
 		if (accessFileData.size() != 2) {
 			return 2;
+		}
+		trim(accessFileData["AuthName"]);
+		realm = accessFileData["AuthName"];
+		if (!_data->count("authorization") ||
+		    !_data->find("authorization")->second.size()) {
+			return 1; // no authorization in request -> response(401)
 		}
 		trim(accessFileData["AuthUserFile"]);
 		if ((fd = open(accessFileData["AuthUserFile"].c_str(), O_RDONLY))

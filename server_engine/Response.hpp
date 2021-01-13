@@ -44,6 +44,7 @@ private:
 	std::string							webservVersion;
 	std::string							dirListing;
 	std::string							fileExt;
+	std::string                         realm;   // for WWW-Authenticate
 	struct s_response					response;
 	Cgi								*	cgi;
 
