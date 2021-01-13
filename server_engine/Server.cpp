@@ -217,7 +217,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 
 	(*it)->setLastMsg();
 
+#ifdef LINUX
+	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
+#else
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), MSG_TRUNC)) <= 0)
+#endif
 	{
 		(*it)->setStatus(3);
 		return;
