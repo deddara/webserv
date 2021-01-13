@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/12 20:36:52 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/13 15:22:56 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void				Response::buildResponse() {
 	responseHeaders.append("Date: " + my_localtime() + "\r\n");
 
 	// Content-Length
-	if (bodyLength && !(_data->size() && itReq->second[0] == "PUT")) {
+	if (bodyLength && !(_data->size() > 1 && itReq->second[0] == "PUT")) {
 		if(!(numStr = ft_itoa(bodyLength))) {
 			throw std::runtime_error("Error: malloc fails");
 		}
@@ -179,13 +179,13 @@ void				Response::buildResponse() {
 	}
 
 	// Content-location (PUT)
-	if (_data->size() && itReq->second[0] == "PUT") {
+	if (_data->size() > 1 && itReq->second[0] == "PUT") {
 			responseHeaders.append("Content-Location: ");
 			responseHeaders.append(itReq->second[1] + "\r\n");
 	}
 
 	// Last-Modified
-	if (errCode == 200 && !(_data->size() && itReq->second[0] == "PUT")) {
+	if (errCode == 200 && !(_data->size() > 1 && itReq->second[0] == "PUT")) {
 		responseHeaders.append("Last-Modified: " + fileModifiedTime + "\r\n");
 	}
 
@@ -297,13 +297,14 @@ void					Response::putHandler(){
 
 void				Response::responsePrepare(int & status, map_type * data,
 												const cgi_data & _cgi_data) {
-	std::map<std::string, std::vector<std::string> > tmpMap;
+		std::map<std::string, std::vector<std::string> > tmpMap;
 	if (errCode != 400) {
 		_data = data;
 	} else {
+		tmpMap["head"] = std::vector<std::string>(3, "HTTP/1.1");
 		_data = &tmpMap;
 	}
-	std::cout << errCode << std::endl;
+
 	reqBodyLen = _cgi_data.body_len;
 
 	connectionHandler(status);
