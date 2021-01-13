@@ -51,6 +51,7 @@ private:
 	struct sockaddr_in & addr;
 
 public:
+	int 		head_readed_flag;
 
 	Client(int fd, std::string const &, int const &, struct sockaddr_in & client_addr);
 	~Client();

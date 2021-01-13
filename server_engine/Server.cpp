@@ -144,13 +144,15 @@ int Server::error_headers(Request const &req) {
 	return 0;
 }
 
-void Server::chunkHandler(std::vector<Client*>::iterator & it) {
+void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) {
 
 	Chunk & chunk = (*it)->getChunk();
 	Bytes & bytes = (*it)->getBytes();
 	const int & body_pos = (*it)->getRequest()->get_body_pos();
-	const char * read_buff = (*it)->getBuff();
-	read_buff += body_pos;
+	if (!(*it)->head_readed_flag) {
+		buf = (*it)->getBuff();
+		buf += body_pos;
+	}
 
 	while (bytes.getBytes() >
 			(static_cast<unsigned long>(body_pos + chunk.getLenSum()) + chunk.getLen())){
@@ -158,7 +160,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 		{
 			if (chunk.getLen() == 0)
 			{
-				if (!ft_memcmp(read_buff + chunk.getLenSum(), "\r\n", 2))
+				if (!ft_memcmp(buf, "\r\n", 2))
 				{
 					(*it)->setBodyLen(chunk.getBuffSum());
 					(*it)->setStatus(1);
@@ -174,7 +176,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 				}
 				return;
 			}
-			if((*it)->bodyAppend(read_buff + chunk.getLenSum(), chunk.getLen()))
+			if((*it)->bodyAppend(buf, chunk.getLen()))
 			{
 				(*it)->getResponse()->setErrcode(500);
 				(*it)->setStatus(1);
@@ -188,7 +190,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 		}
 		else
 		{
-			int res = chunk.takeNum(read_buff + chunk.getLenSum(), bytes.getBytes() - body_pos);
+			int res = chunk.takeNum(buf, bytes.getBytes() - body_pos);
 			if (res == -1)
 			{
 				(*it)->getResponse()->setErrcode(400);
@@ -199,6 +201,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 			{
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
 				chunk.setCount(chunk.getCount() + 1);
+				buf += chunk.getHexLen();
 			}
 			else {
 				break;
@@ -211,8 +214,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[1000000];
-	bzero(&buff, 1000000);
+	char buff[50];
+	bzero(&buff, 50);
 	int err = 400;
 
 	(*it)->setLastMsg();
@@ -226,37 +229,45 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
-	write(1, "1", 1);
-	if((*it)->buffAppend(buff, n)) {
-		(*it)->getResponse()->setErrcode(500);
+	if(!(*it)->head_readed_flag) {
+		if ((*it)->buffAppend(buff, n)) {
+			(*it)->getResponse()->setErrcode(500);
+		}
 	}
+	write(1, "1", 1);
+
 	(*it)->getBytes().bytesCount(n);
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
 		//parse and chech parse errror codes
-		(*it)->getRequest()->req_init(((*it)->getBuff()));
-		if ((*it)->getRequest()->error() || (err = error_headers(*(*it)->getRequest()))) {
-			(*it)->setStatus(1);
-			for (size_t i = 0; i < virt_serv.size(); ++i) {
-				if (virt_serv[i].getHost() == (*it)->getServHost() &&
-						virt_serv[i].getPort() == (*it)->getServPort()) {
-					(*it)->getResponse()->setServerData(virt_serv[i]);
+		if (!(*it)->head_readed_flag) {
+			(*it)->getRequest()->req_init(((*it)->getBuff()));
+			if ((*it)->getRequest()->error() || (err = error_headers(*(*it)->getRequest()))) {
+				(*it)->setStatus(1);
+				for (size_t i = 0; i < virt_serv.size(); ++i) {
+					if (virt_serv[i].getHost() == (*it)->getServHost() &&
+							virt_serv[i].getPort() == (*it)->getServPort()) {
+						(*it)->getResponse()->setServerData(virt_serv[i]);
+					}
 				}
-			}
-			(*it)->getResponse()->setErrcode(err);
-			return;
+				(*it)->getResponse()->setErrcode(err);
+				return;
+			};
 		}
 		map_type const & map_data = (*it)->getRequest()->getData();
 		map_it = map_data.find("head");
+
 		if (map_it->second[0] == "POST" || map_it->second[0] == "PUT") {
 			map_it = map_data.find("transfer-encoding");
 			if (map_it != map_data.end() && map_it->second[0] == "chunked")
-				chunkHandler(it);
+				chunkHandler(it, buff);
 			else
 				postPutHandler((*it)->getRequest()->getData(), it);
+			write(1, " 2 ", 3);
 
 		}
 		else
 			(*it)->setStatus(1);
+		(*it)->head_readed_flag = 1;
 
 	}
 }
@@ -357,6 +368,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				(*it)->setStatus(2);
 				break;
 			}
+			(*it)->head_readed_flag = 0;
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);

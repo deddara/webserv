@@ -25,14 +25,15 @@ void	Chunk::setLen(const int &num) { len = num; }
 void	Chunk::setCount(const int &num) { count = num; }
 void Chunk::setBuffSum(const int &num) { buff_sum = num; }
 
-int		Chunk::takeNum(const char * src,const int &ln){
+int		Chunk::takeNum(const char * src, const int &ln){
 
-	if (!ft_strnstr(src, "\r\n", ln))
+	if (!ft_strnstr(src, "\r\n", ln)) {
+		str_num.append(src, ln);
 		return (1);
-	std::string str_num = "str";
+	}
 	char *p;
-	if (*src != '\r' && *(src + 1) != '\n')
-		str_num.clear();
+//	if (*src != '\r' && *(src + 1) != '\n')
+//		str_num.clear();
 	while (*src != '\r' && *(src + 1) != '\n')
 	{
 		str_num.push_back(*src);
@@ -40,12 +41,15 @@ int		Chunk::takeNum(const char * src,const int &ln){
 	}
 
 	long n = strtol( str_num.c_str(), &p, 16);
-	if (*p != 0)
+	if (*p != 0) {
+		str_num = "";
 		return (-1);
+	}
 	else {
 		hex_len = str_num.length() + 2;
 		len = n;
 	}
+	str_num = "";
 	return (0);
 }
 

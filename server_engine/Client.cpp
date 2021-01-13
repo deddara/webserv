@@ -18,6 +18,7 @@ Client::Client(int fd, std::string const & host, int const & port, struct sockad
 	body_len = 0;
 	reqst = new Request();
 	resp = new Response();
+	head_readed_flag = 0;
 	gettimeofday(&last_msg, NULL);
 }
 

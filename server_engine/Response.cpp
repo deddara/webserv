@@ -918,7 +918,7 @@ int					Response::checkFile() {
 		}
 	}
 	else {
-		if (_data->find("head")->second[0] == "PUT")
+		if (_data->find("head")->second[0] == "PUT" || _data->find("head")->second[0] == "POST")
 			return (0);
 	}
 	// file is not found
