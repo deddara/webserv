@@ -28,8 +28,9 @@
 					};
 
 					Response::~Response() {
-						if (response.data) {
-							free(response.data);
+						if (response.data_begin_p) {
+							free(response.data_begin_p);
+							response.data_begin_p = nullptr;
 							response.data = nullptr;
 						}
 						if (body) {

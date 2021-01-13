@@ -71,11 +71,11 @@ int Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		gettimeofday(&t, NULL);
-		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 500)
-		{
-			closeConnection(it);
-			return (1);
-		}
+//		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 500)
+//		{
+//			closeConnection(it);
+//			return (1);
+//		}
 		FD_SET((*it)->getFd(), &readset);
 		if ((*it)->getResponse() && ((*it)->getResponse()->getResponseStruct().length)){
 			FD_SET((*it)->getFd(), &writeset);
@@ -323,6 +323,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 						(*it)->getResponse()->setReqBody((*it)->getBody());
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
+						(*it)->getResponse()->getResponseStruct().data_begin_p = (*it)->getResponse()->getResponseStruct().data;
 						(*it)->clearBuff();
 						break;
 					}
@@ -338,12 +339,21 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			}
 		}
 		if (FD_ISSET((*it)->getFd(), &writeset)){
-			if ((send((*it)->getFd(),
+			size_t res;
+			if ((res = send((*it)->getFd(),
 					(*it)->getResponse()->getResponseStruct().data,
 					(*it)->getResponse()->getResponseStruct().length, 0)) < 0)
 			{
 				perror("send");
 				return 1;
+			}
+			std::cout << res << std::endl;
+			if (res < (*it)->getResponse()->getResponseStruct().length)
+			{
+				(*it)->getResponse()->getResponseStruct().data += res;
+				(*it)->getResponse()->getResponseStruct().length -= res;
+				(*it)->setStatus(2);
+				break;
 			}
 			delete (*it)->getResponse();
 			Response		*resp = new Response;

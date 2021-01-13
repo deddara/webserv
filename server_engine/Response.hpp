@@ -18,6 +18,7 @@
 
 struct									s_response {
 	char *								data;
+	char *								data_begin_p;
 	size_t								length;
 };
 

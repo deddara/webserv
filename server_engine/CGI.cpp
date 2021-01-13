@@ -158,9 +158,9 @@ int Cgi::read_response(){
 	char *tmp = (char*)malloc(sizeof(char) * f_data.st_size + 1);
 	n = read(fd_tmp, tmp, f_data.st_size);
 	tmp[n] = '\0';
-	if (buffAppend(tmp, f_data.st_size + 1))
+	if (buffAppend(tmp, f_data.st_size))
 		return (500);
-	bytes.bytesCount(n + 1);
+	bytes.bytesCount(n);
 	unlink("./temp_file");
 	return (0);
 }
