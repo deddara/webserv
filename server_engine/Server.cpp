@@ -236,6 +236,12 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->getRequest()->req_init(((*it)->getBuff()));
 		if ((*it)->getRequest()->error() || (err = error_headers(*(*it)->getRequest()))) {
 			(*it)->setStatus(1);
+			for (size_t i = 0; i < virt_serv.size(); ++i) {
+				if (virt_serv[i].getHost() == (*it)->getServHost() &&
+						virt_serv[i].getPort() == (*it)->getServPort()) {
+					(*it)->getResponse()->setServerData(virt_serv[i]);
+				}
+			}
 			(*it)->getResponse()->setErrcode(err);
 			return;
 		}
