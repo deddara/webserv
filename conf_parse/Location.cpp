@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:33:30 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 18:43:51 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/13 10:07:56 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ Location::Location() {
 	pr_locationsFields.insert("cgi_ext");
 	pr_locationsFields.insert("cgi_bin");
 	pr_locationsFields.insert("limit_client_body");
-	pr_locationsFields.insert("auth");
 }
 
 Location::~Location() {}
@@ -122,11 +121,6 @@ struct s_errExitData const &	Location::setDataPair(std::string const & key,
 		int num = ft_atoi(val[0].c_str());
 		if (num < 0) {
 			return (setErrStruct(21, val[0]));
-		}
-	}
-	if (key == "auth") {
-		if (pr_data.count(key)) {
-			pr_data.erase(key);
 		}
 	}
 	pr_data.insert(std::make_pair(key, val));
