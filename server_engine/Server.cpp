@@ -339,7 +339,6 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				perror("send");
 				return 1;
 			}
-			write(1, (*it)->getResponse()->getResponseStruct().data, (*it)->getResponse()->getResponseStruct().length);
 			delete (*it)->getResponse();
 			Response		*resp = new Response;
 			(*it)->setResponse(resp);

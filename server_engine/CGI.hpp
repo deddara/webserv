@@ -19,9 +19,8 @@ private:
 	const char			*body;
 	std::string			method;
 
-	int readPipe[2];
-	int writePipe[2];
-	int err_pipe[2];
+	int fd[2];
+	int fd_tmp;
 	pid_t pid;
 	char **_argv;
 	char **_env;

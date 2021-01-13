@@ -1,5 +1,9 @@
 #include "CGI.hpp"
 #include "stdlib.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 // CGI
 
 Cgi::Cgi(const cgi_data &data, const std::string &path, std::string const & binPath, const char *bdy) : resp_buff(NULL),_cgi_data(data), file_path(path), bin_path(binPath), body(bdy), _argv(NULL), _env(NULL), status(0) {
@@ -115,21 +119,21 @@ char **Cgi::setEnv() {
 }
 
 int Cgi::execute() {
-	readPipe[0] = readPipe[1] = writePipe[0] = writePipe[1] = err_pipe[0] = err_pipe[1] = -1;
-	if(pipe(readPipe) < 0 || pipe(writePipe) || pipe(err_pipe) < 0)
+	if (pipe(fd) < 0)
 		return (1);
-	if (dup2(writePipe[1], 1) < 0 || dup2(readPipe[0], 0) < 0)
-		return (1);
-	close(readPipe[0]);
-	close(writePipe[1]);
-
 	if((pid = fork()) < 0)
 		return (1);
+
+	fd_tmp = open("./temp_file", O_CREAT | O_RDWR, S_IRWXU);
+	if(fd_tmp < 0)
+		return (1);
 	if (pid == 0) {
+		close(fd[1]);
+		dup2(fd[0], 0);
+		close(fd[0]);
+		dup2(fd_tmp, 1);
+		close(fd_tmp);
 		if (execve(_argv[0], _argv, _env) < 0) {
-			dup2(err_pipe[0], 0);
-			dup2(err_pipe[1], 1);
-			write(1, "1", 1);
 			exit(1);
 		}
 	}
@@ -137,63 +141,31 @@ int Cgi::execute() {
 }
 
 int Cgi::read_response(){
-	int n = 0;
-	int max_fd = 0;
+	struct stat f_data;
+	int n;
 	int body_len = _cgi_data.body_len;
-	while (1) {
-		char line[1024];
-		bzero(line, 1024);
-		fd_set readset, writeset;
 
-		waitpid(pid, &status, WNOHANG);
-		if (WEXITSTATUS(status) != 0) {
-			return (502);
-		}
-
-		FD_ZERO(&readset); FD_ZERO(&writeset);
-		FD_SET(err_pipe[0], &readset);
-		FD_SET(writePipe[0], &readset);
-		if (body_len > 0)
-			FD_SET(readPipe[1], &writeset);
-
-		if (writePipe[0] > err_pipe[0] && writePipe[0] > readPipe[1])
-			max_fd = writePipe[0];
-		else if (err_pipe[0] > writePipe[0] && err_pipe[0] > readPipe[1])
-			max_fd = err_pipe[0];
-		else
-			max_fd = readPipe[1];
-
-		if (select(max_fd + 1, &readset, &writeset, 0, 0) < 0) {
-			return (500); //handle error
-		}
-
-		if (FD_ISSET(readPipe[1], &writeset)){
-			write (1, "2", 1);
-			int n = write(readPipe[1], body, _cgi_data.body_len);
-			body_len -= n;
-			continue;
-		}
-
-		if (FD_ISSET(err_pipe[0], &readset)){
-			return (502);
-		}
-		n = read(writePipe[0], line, 1024);
-		if((buffAppend(line, n)))
-			return (500); //handle error
-		bytes.bytesCount(n);
-		if (n <= 0)
-			continue;
-		if (n < 1024) {
-			return (0); //file readed
-		}
+	close(fd[0]);
+	if (body_len)
+		write(fd[1], body, body_len);
+	close(fd[1]);
+	waitpid(pid, &status, 0);
+	if (WEXITSTATUS(status) != 0) {
+		return (502);
 	}
+	if (fstat(fd_tmp, &f_data) < 0)
+		return (500);
+	char *tmp = (char*)malloc(sizeof(char) * f_data.st_size + 1);
+	n = read(fd_tmp, tmp, f_data.st_size);
+	tmp[n] = '\0';
+	if (buffAppend(tmp, f_data.st_size + 1))
+		return (500);
+	bytes.bytesCount(n + 1);
+	unlink("./temp_file");
+	return (0);
 }
 
 int Cgi::handler(){
-	int oldWrite, oldRead;
-	oldWrite = dup(1);
-	oldRead = dup(0);
-
 	if(!(_argv = (char **) malloc(sizeof(char *) * 3)))
 		return (500);
 	if(!(_argv[0] = ft_strdup(bin_path.c_str())))
@@ -207,23 +179,12 @@ int Cgi::handler(){
 
 	if (execute())
 		return (500);
-
-	dup2(oldRead, 0);
-	dup2(oldWrite, 1);
-	close(oldWrite);
-	close(oldRead);
-	oldWrite = -1;
-	oldRead = -1;
 //	write(readPipe[1], body, _cgi_data.body_len);
 
 	int execute_result = read_response();
 
-	close(err_pipe[0]);
-	close(err_pipe[1]);
-	close(writePipe[0]);
-	close(writePipe[1]);
-	close(readPipe[1]);
-	close(readPipe[0]);
+	if (!execute_result)
+		execute_result = 200;
 
 	return (execute_result);
 }

@@ -126,6 +126,8 @@ void Response::cgi_response_parser(Cgi const &cgi){
 		throw std::runtime_error("Error: malloc fails");
 	}
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
+	std::cout <<
+			  response.data << std::endl;
 	if (bodyLength) {
 		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
 				bodyLength);
