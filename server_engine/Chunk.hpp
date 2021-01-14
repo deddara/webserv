@@ -25,7 +25,7 @@ private:
 	std::string str_num;
 
 public:
-	Chunk() : count(0), len_sum(0), len(0), hex_len(0), buff_sum(0), str_num("") {};
+	Chunk() : count(0), len_sum(0), len(0), hex_len(0), buff_sum(0) {};
 	~Chunk() {};
 
 	const int & getCount(void);

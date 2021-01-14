@@ -115,12 +115,13 @@ void Response::cgi_response_parser(Cgi const &cgi){
 
 	pos = cgi_buff_str.find("\r\n\r\n") + 4;
 	int content_len = cgi.getBytes().getBytes() - pos;
+	if (cgi.getBytes().getBytes() == 0)
+		content_len = 0;
 	responseHeaders.append("Content-Length: ");
 	responseHeaders.append(std::to_string(content_len));
 	responseHeaders.append("\r\n");
 	responseHeaders.append("Connection: close\r\n\r\n");
 	bodyLength = content_len;
-
 
 	response.length = responseHeaders.size() + bodyLength;
 	if(!(response.data = (char*)malloc(response.length))) {

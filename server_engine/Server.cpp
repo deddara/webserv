@@ -150,6 +150,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 	Bytes & bytes = (*it)->getBytes();
 	const int & body_pos = (*it)->getRequest()->get_body_pos();
 	if (!(*it)->head_readed_flag) {
+		if (bytes.getBytes() == body_pos)
+			return;
 		buf = (*it)->getBuff();
 		buf += body_pos;
 	}
@@ -178,7 +180,7 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 				}
 				return;
 			}
-			int len = bytes.getCurBytes() > (unsigned long)chunk.getLen() ? bytes.getCurBytes() : chunk.getLen();
+			int len = bytes.getCurBytes() > (unsigned long)chunk.getLen() ? chunk.getLen() : bytes.getCurBytes();
 			if((*it)->bodyAppend(buf, len))
 			{
 				(*it)->getResponse()->setErrcode(500);
@@ -186,10 +188,11 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 				return;
 			}
 			chunk.setBuffSum(chunk.getBuffSum() + len);
-			if (len ==  chunk.getLen())
+			if (len == chunk.getLen())
 				chunk.setCount(chunk.getCount() + 1);
 			chunk.setLenSum(chunk.getLenSum() + len);
-			if ((unsigned long)len == bytes.getCurBytes())
+			chunk.setLen(chunk.getLen() - len);
+			if (chunk.getLen() != 0)
 				break;
 			chunk.setLen(0);
 			chunk.setLenSum(chunk.getLenSum() + 2);

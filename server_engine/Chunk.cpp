@@ -42,14 +42,14 @@ int		Chunk::takeNum(const char * src, const int &ln){
 
 	long n = strtol( str_num.c_str(), &p, 16);
 	if (*p != 0) {
-		str_num = "";
+		str_num.clear();
 		return (-1);
 	}
 	else {
 		hex_len = str_num.length() + 2;
 		len = n;
 	}
-	str_num = "";
+	str_num.clear();
 	return (0);
 }
 
