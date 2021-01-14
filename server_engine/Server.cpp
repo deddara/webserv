@@ -211,10 +211,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	int buff_len = 256000;
-
-	char buff[buff_len];
-	bzero(&buff, buff_len);
+	char buff[1000000];
+	bzero(&buff, 1000000);
 	int err = 400;
 
 	(*it)->setLastMsg();
@@ -229,12 +227,11 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		return;
 	}
 
-	(*it)->getBytes().bytesCount(n);
 	write(1, "1", 1);
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
-	(*it)->getBytes().prevBytesCount(n);
+	(*it)->getBytes().bytesCount(n);
 
 	if (ft_strnstr((*it)->getBuff(), "\r\n\r\n", (*it)->getBytes().getBytes())) {
 		//parse and chech parse errror codes

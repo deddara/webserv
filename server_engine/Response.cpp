@@ -115,6 +115,8 @@ void Response::cgi_response_parser(Cgi const &cgi){
 
 	pos = cgi_buff_str.find("\r\n\r\n") + 4;
 	int content_len = cgi.getBytes().getBytes() - pos;
+//	if (cgi.getBytes().getBytes() == 0)
+//		content_len = 0;
 	responseHeaders.append("Content-Length: ");
 	responseHeaders.append(std::to_string(content_len));
 	responseHeaders.append("\r\n");
@@ -918,7 +920,7 @@ int					Response::checkFile() {
 		}
 	}
 	else {
-		if (_data->find("head")->second[0] == "PUT")
+		if (_data->find("head")->second[0] == "PUT" || _data->find("head")->second[0] == "POST")
 			return (0);
 	}
 	// file is not found

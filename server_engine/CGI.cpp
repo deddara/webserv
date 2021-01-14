@@ -107,7 +107,9 @@ char **Cgi::setEnv() {
 	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
 		env_map["HTTP_ACCEPT"] = map_it->second[0];
 
-
+	map_it = _cgi_data.data->find("x-secret-header-for-test");
+	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
+		env_map["HTTP_X_SECRET_HEADER_FOR_TEST"] = map_it->second[0];
 	char **env;
 	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
 		return (NULL);
@@ -124,7 +126,7 @@ int Cgi::execute() {
 	if((pid = fork()) < 0)
 		return (1);
 
-	fd_tmp = open("./temp_file", O_CREAT | O_RDWR, S_IRWXU);
+	fd_tmp = open("./temp_file",  O_CREAT | O_RDWR, S_IRWXU);
 	if(fd_tmp < 0)
 		return (1);
 	if (pid == 0) {

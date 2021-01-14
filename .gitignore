@@ -28,6 +28,5 @@ objs/*
 vgcore.*
 webserv
 webserv.conf
-tester
 test_cases
 CMakeLists.txt
