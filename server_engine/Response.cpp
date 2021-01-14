@@ -390,18 +390,6 @@ void				Response::responsePrepare(int & status, map_type * data,
 					status = 3;
 				return ;
 			}
-			// check file size limit (for PUT and POST)
-			if (checkLimitClientBody()) {
-				errorHandler();
-				buildResponse();
-				status = 3;
-				return ;
-			}
-			if (_data->find("head")->second[0] == "PUT") {
-				putHandler();
-				buildResponse();
-				return ;
-			}
 			// check if requested file exist and readble
 			if (_data->find("head")->second[0] == "PUT") {
 				putHandler();
