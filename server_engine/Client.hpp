@@ -37,6 +37,7 @@ private:
 	int			_fd;
 	int			state;
 	int 		body_len;
+	int			occupied_len;
 	std::string serv_host;
 	int			serv_port;
 

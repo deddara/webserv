@@ -47,19 +47,45 @@ const std::string & Client::getServHost() { return serv_host; }
 const int & Client::getServPort() { return serv_port; }
 
 int Client::bodyAppend(char const *buff, const int &len) {
-	if (!body_buff)
-	{
-		if (!(body_buff = bytes.bytesDup(body_buff, buff, len)))
+	char *		tmp = nullptr;
+	if (body_buff) {
+		if (body_len < occupied_len + len) {
+			tmp = body_buff;
+			if(!(body_buff = (char*)malloc((body_len =
+								(occupied_len + len) * 2)))) {
+				return 1;
+			}
+			ft_memcpy(body_buff, tmp, occupied_len);
+			ft_memcpy(body_buff + occupied_len, buff, len);
+			occupied_len += len;
+			free(tmp);
+			tmp = nullptr;
+		} else {
+			ft_memcpy(body_buff + occupied_len, buff, len);
+			occupied_len += len;
+		}
+	} else {
+		if (!(body_buff = (char*)malloc((body_len = len)))) {
 			return 1;
+		}
+		ft_memcpy(body_buff, buff, len);
+		occupied_len = body_len;
+		return 0;
 	}
-	else
-	{
-		char *tmp = body_buff;
-		if (!(body_buff = bytes.bytesJoin(body_buff, buff, len, chunk.getBuffSum())))
-			return 1;
-		free(tmp);
-	}
-	return (0);
+	// PREVIOUS VERSION
+	// if (!body_buff)
+	// {
+	//     if (!(body_buff = bytes.bytesDup(body_buff, buff, len)))
+	//         return 1;
+	// }
+	// else
+	// {
+	//     char *tmp = body_buff;
+	//     if (!(body_buff = bytes.bytesJoin(body_buff, buff, len, chunk.getBuffSum())))
+	//         return 1;
+	//     free(tmp);
+	// }
+	// return (0);
 }
 
 int Client::buffAppend(char const * buff, int len) {
