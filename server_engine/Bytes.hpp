@@ -16,13 +16,16 @@
 class Bytes{
 private:
 	unsigned long bytes_count;
-
+	unsigned long cur_bytes;
 public:
 	Bytes();
 
 	const unsigned long & getBytes() const;
 	void setBytes(const unsigned long &);
 	void bytesCount(const int &);
+
+	const unsigned long & getCurBytes() const;
+	void setCurBytes(const unsigned long &);
 
 	char* bytesDup(char*, const char*,int const & len);
 	char * bytesJoin(char*, const char*,int const & len, int const & src_len);

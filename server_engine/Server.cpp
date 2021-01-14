@@ -153,20 +153,22 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 		buf = (*it)->getBuff();
 		buf += body_pos;
 	}
-
-	while (bytes.getBytes() >
-			(static_cast<unsigned long>(body_pos + chunk.getLenSum()) + chunk.getLen())){
+	const char *begin_buf = buf;
+	while (1){
 		if (chunk.getCount() % 2)
 		{
 			if (chunk.getLen() == 0)
 			{
-				if (!ft_memcmp(buf, "\r\n", 2))
+				if (begin_buf + bytes.getCurBytes() == buf)
+					break;
+				if (!ft_memcmp(buf, "\r\n", 2) || (*buf == '\n' && c == '\r'))
 				{
 					(*it)->setBodyLen(chunk.getBuffSum());
 					(*it)->setStatus(1);
 					chunk.setZero();
 				}
-				else if ((bytes.getBytes() - (body_pos + chunk.getLenSum())) == 1) {
+				else if (begin_buf + bytes.getCurBytes() - 1 == buf) {
+					c = *buf;
 					break;
 				}
 				else
@@ -176,21 +178,25 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 				}
 				return;
 			}
-			if((*it)->bodyAppend(buf, chunk.getLen()))
+			int len = bytes.getCurBytes() > (unsigned long)chunk.getLen() ? bytes.getCurBytes() : chunk.getLen();
+			if((*it)->bodyAppend(buf, len))
 			{
 				(*it)->getResponse()->setErrcode(500);
 				(*it)->setStatus(1);
 				return;
 			}
-			chunk.setBuffSum(chunk.getBuffSum() + chunk.getLen());
-			chunk.setCount(chunk.getCount() + 1);
-			chunk.setLenSum(chunk.getLenSum() + chunk.getLen());
+			chunk.setBuffSum(chunk.getBuffSum() + len);
+			if (len ==  chunk.getLen())
+				chunk.setCount(chunk.getCount() + 1);
+			chunk.setLenSum(chunk.getLenSum() + len);
+			if ((unsigned long)len == bytes.getCurBytes())
+				break;
 			chunk.setLen(0);
 			chunk.setLenSum(chunk.getLenSum() + 2);
 		}
 		else
 		{
-			int res = chunk.takeNum(buf, bytes.getBytes() - body_pos);
+			int res = chunk.takeNum(buf, bytes.getCurBytes());
 			if (res == -1)
 			{
 				(*it)->getResponse()->setErrcode(400);
@@ -199,9 +205,16 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it, char const *buf) 
 			}
 			else if (!res)
 			{
+				const char *x = buf;
+				x += bytes.getCurBytes();
+
 				chunk.setLenSum(chunk.getLenSum() + chunk.getHexLen());
 				chunk.setCount(chunk.getCount() + 1);
-				buf += chunk.getHexLen();
+				buf = ft_strnstr(buf, "\r\n", bytes.getCurBytes());
+				if (x - buf < 2)
+					break;
+				else
+					buf += 2;
 			}
 			else {
 				break;
@@ -229,6 +242,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
+	(*it)->getBytes().setCurBytes(n);
 	if(!(*it)->head_readed_flag) {
 		if ((*it)->buffAppend(buff, n)) {
 			(*it)->getResponse()->setErrcode(500);

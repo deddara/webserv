@@ -13,7 +13,7 @@
 #include "Bytes.hpp"
 #include "stdlib.h"
 #include <iostream>
-Bytes::Bytes() : bytes_count(0) {}
+Bytes::Bytes() : bytes_count(0), cur_bytes(0) {}
 
 const unsigned long & Bytes::getBytes() const { return bytes_count; }
 
@@ -22,6 +22,9 @@ void Bytes::bytesCount(const int &num){
 	bytes_count += num;
 }
 
+const unsigned long & Bytes::getCurBytes() const { return cur_bytes; }
+
+void Bytes::setCurBytes(const unsigned long &num) { cur_bytes = num;}
 
 char * Bytes::bytesDup(char *dst, const char *src, int const & len) {
 	if (!(dst = (char*)malloc(sizeof(char) * len + 1)))

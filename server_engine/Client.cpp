@@ -109,6 +109,7 @@ void Client::clearBuff()
 	if (body_buff)
 		free(body_buff);
 	bytes.setBytes(0);
+	bytes.setCurBytes(0);
 	read_buff = nullptr;
 	body_buff = nullptr;
 }

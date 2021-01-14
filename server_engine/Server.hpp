@@ -34,10 +34,12 @@ private:
 	fd_set						readset, writeset;
 	size_t						serversNum;
 	struct timeval				t;
+	char						c;
 
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
 	Server(std::vector<VirtServer> & vec) : max_fd(0), is_closed(0), virt_serv(vec) {
+		c = '\0';
 		serversNum = virt_serv.size();
 	}
 	~Server(){};
