@@ -16,12 +16,16 @@
 class Bytes{
 private:
 	unsigned long bytes_count;
+	unsigned long prev_bytes_count;
 
 public:
 	Bytes();
 
 	const unsigned long & getBytes() const;
+	const unsigned long & getPrevBytes() const;
+	void prevBytesCount(const int &num);
 	void setBytes(const unsigned long &);
+	void setPrevBytes(const unsigned long &);
 	void bytesCount(const int &);
 
 	char* bytesDup(char*, const char*,int const & len);

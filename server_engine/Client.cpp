@@ -16,6 +16,7 @@
 Client::Client(int fd, std::string const & host, int const & port, struct sockaddr_in & client_addr) :
 	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port), addr(client_addr) {
 	body_len = 0;
+	buff_capacity = 0;
 	reqst = new Request();
 	resp = new Response();
 	gettimeofday(&last_msg, NULL);
@@ -61,18 +62,50 @@ int Client::bodyAppend(char const *buff, const int &len) {
 	return (0);
 }
 
-int Client::buffAppend(char const * buff, const int &len) {
+int Client::buffAppend(char const * buff, int len) {
+	char *tmp = nullptr;
 	if (!read_buff)
 	{
 		if (!(read_buff = bytes.bytesDup(read_buff, buff, len)))
 			return 1;
+		buff_capacity = len;
 	}
 	else
 	{
-		char *tmp = read_buff;
-		if (!(read_buff = bytes.bytesJoin(read_buff, buff, len,bytes.getBytes())))
-			return 1;
-		free(tmp);
+		if (bytes.getBytes() > buff_capacity)
+		{
+			buff_capacity += bytes.getBytes();
+			if (!(tmp = (char*)malloc((buff_capacity * 2) + 1)))
+				return (1);
+			bzero(tmp, buff_capacity * 2);
+
+			buff_capacity *= 2;
+
+			for (size_t i = 0; i < bytes.getPrevBytes(); ++i)
+				*tmp++ = *read_buff++;
+
+			read_buff -= bytes.getPrevBytes();
+
+			for (int i = 0; i < len; ++i)
+				*tmp++ = *buff++;
+			*tmp = '\0';
+
+			free(read_buff);
+			tmp = tmp - len - bytes.getPrevBytes();
+			read_buff = tmp;
+		}
+		else {
+			tmp = read_buff;
+			tmp += bytes.getPrevBytes();
+			while (len)
+			{
+				*tmp = *buff;
+				tmp++;
+				buff++;
+				--len;
+			}
+			*tmp = '\0';
+		}
 	}
 	return (0);
 };
@@ -108,6 +141,8 @@ void Client::clearBuff()
 	if (body_buff)
 		free(body_buff);
 	bytes.setBytes(0);
+	bytes.setPrevBytes(0);
+	buff_capacity = 0;
 	read_buff = nullptr;
 	body_buff = nullptr;
 }

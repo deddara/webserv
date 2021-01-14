@@ -13,11 +13,20 @@
 #include "Bytes.hpp"
 #include "stdlib.h"
 #include <iostream>
-Bytes::Bytes() : bytes_count(0) {}
+Bytes::Bytes() : bytes_count(0), prev_bytes_count(0) {}
 
 const unsigned long & Bytes::getBytes() const { return bytes_count; }
 
 void Bytes::setBytes(const unsigned long &num) { bytes_count = num;}
+
+const unsigned long & Bytes::getPrevBytes() const { return prev_bytes_count; }
+
+void Bytes::setPrevBytes(const unsigned long &num) { prev_bytes_count = num;}
+
+void Bytes::prevBytesCount(const int &num){
+	prev_bytes_count += num;
+}
+
 void Bytes::bytesCount(const int &num){
 	bytes_count += num;
 }

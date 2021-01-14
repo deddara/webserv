@@ -45,6 +45,7 @@ private:
 	Response		*resp;
 	Chunk			chunk;
 	cgi_data		_cgi_data;
+	size_t 			buff_capacity;
 
 	struct timeval	last_msg;
 
@@ -73,7 +74,7 @@ public:
 	int const & getServPort();
 	int const & getBodyLen() const;
 
-	int buffAppend(char const *, const int &);
+	int buffAppend(char const *, int);
 	int bodyAppend(char const *, const int &);
 	int buffCut(unsigned long const &);
 	void clearBuff();
