@@ -75,14 +75,14 @@ char **Cgi::setEnv() {
 	map_it = _cgi_data.data->find("host");
 	env_map["SERVER_NAME"] = map_it->second[0];
 
-
-//	map_it = _cgi_data.data->find("authorization");
-//	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty()) {
-//		env_map["AUTH_TYPE"] = map_it->second[0];
-//		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[1];
-//	}
-//	else
-//		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
+	map_it = _cgi_data.data->find("authorization");
+	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty()) {
+		size_t pos = map_it->second[0].find(' ');
+		env_map["AUTH_TYPE"] = map_it->second[0].substr(0, pos);
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[0].substr(pos + 1);
+	}
+	else
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
 
 	map_it = _cgi_data.data->find("head");
 	if (map_it->second[1].find('?') != std::string::npos)
