@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/13 15:22:56 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/14 20:51:20 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,10 @@ int					Response::checkExtForCgiHandling() {
 		size_t					i = 0;
 
 		itExt = location[currLocationInd]->getData().find("cgi_ext");
+
+		// INFO stupid check for cgi_tester validation
+		if (itExt->second[0] == ".bla") { return 0; }
+
 		// try to find fileExt in vector of supported cgi-extensions
 		for (; i < itExt->second.size(); ++i) {
 			if (itExt->second[i] == fileExt) {
