@@ -16,7 +16,7 @@ private:
 	std::string const	&file_path;
 	std::string const	&bin_path;
 	Bytes				bytes;
-	const char			*body;
+	char			*body;
 	std::string			method;
 
 	int fd[2];
@@ -29,11 +29,11 @@ private:
 
 public:
 	typedef std::map<std::string, std::vector<std::string> >    map_type;
-	Cgi(cgi_data const &, std::string const &, std::string const &, const char *);
+	Cgi(cgi_data const &, std::string const &, std::string const &, char *);
 	~Cgi();
 
 
-	char const	*	getResponse() const;
+	char *			getResponse();
 	Bytes const &	getBytes() const;
 
 	char			**setEnv();

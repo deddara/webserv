@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/15 14:19:49 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/15 21:15:12 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,40 +22,52 @@
 						currLocationInd = std::string::npos;
 						errorPage = nullptr;
 						webservVersion = "webserv/0.1a";
-						response.data = nullptr;
-						response.length = 0;
+						response.headers = nullptr;
+						response.headersCurr = nullptr;
+						response.body = nullptr;
+						response.bodyCurr = nullptr;
+						response.curr = nullptr;
+						response.headersLength = 0;
+						response.bodyLength = 0;
+						response.shiftBody = 0;
 						errHandlersFlags = 0;
 					};
 
 					Response::~Response() {
-						if (response.data_begin_p) {
-							free(response.data_begin_p);
-							response.data_begin_p = nullptr;
-							response.data = nullptr;
-						}
-						if (body) {
-							free(body);
-							body = nullptr;
-						}
+//						if (response.data_begin_p) {
+//							free(response.data_begin_p);
+//							response.data_begin_p = nullptr;
+//						}
+						// if (body) {
+						//     free(body);
+						//     body = nullptr;
+						// }
 						if (cgi)
 							delete cgi;
+						if (response.headers) {
+							free(response.headers);
+							response.headers = nullptr;
+						}
+						if (response.body) {
+							free(response.body - response.shiftBody);
+							response.body = nullptr;
+						}
 					}
 
 void				Response::clearResponseData() {
-	if (response.data) {
-		free(response.data);
-		response.data = nullptr;
-		response.length = 0;
+	if (response.headers) {
+		free(response.headers);
+		response.headers = nullptr;
 	}
-	if (body) {
-		free(body);
-		body = nullptr;
-		bodyLength = 0;
+	if (response.body) {
+		free(response.body - response.shiftBody);
+		response.body = nullptr;
 	}
 	responseHeaders.clear();
 	redirectURI.clear();
 	filePath.clear();
 	fileModifiedTime.clear();
+	response.shiftBody = 0;
 }
 
 void Response::connectionHandler(int & status) {
@@ -64,16 +76,19 @@ void Response::connectionHandler(int & status) {
 		status = 3;
 }
 
-void Response::cgi_response_parser(Cgi const &cgi){
+void Response::cgi_response_parser(Cgi &cgi){
 	std::map<std::string, std::vector<std::string> >::const_iterator	itReq;
 	std::map<int, std::vector<std::string> >::const_iterator			itErr;
-	char const *	cgi_buff = cgi.getResponse();
+	char *			cgi_buff = cgi.getResponse();
 	std::string		cgi_buff_str = std::string(cgi_buff);
 	char *			numStr = nullptr;
 	std::string		cgi_headers;
 	size_t			pos = 0;
 
+
 	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
+
+	std::cout << cgi_headers << std::endl;
 
 	itReq = _data->find("head");
 	// HTTP/1.X
@@ -114,26 +129,31 @@ void Response::cgi_response_parser(Cgi const &cgi){
 	responseHeaders.append("Date: " + my_localtime() + "\r\n");
 
 	pos = cgi_buff_str.find("\r\n\r\n") + 4;
-	int content_len = cgi.getBytes().getBytes() - pos;
+	bodyLength = cgi.getBytes().getBytes() - pos;
 //	if (cgi.getBytes().getBytes() == 0)
 //		content_len = 0;
 	responseHeaders.append("Content-Length: ");
-	responseHeaders.append(std::to_string(content_len));
+	responseHeaders.append(std::to_string(bodyLength));
 	responseHeaders.append("\r\n");
 	responseHeaders.append("Connection: close\r\n\r\n");
-	bodyLength = content_len;
 
 
-	response.length = responseHeaders.size() + bodyLength;
-	if(!(response.data = (char*)malloc(response.length))) {
+	response.headersLength = responseHeaders.size();
+	if(!(response.headers = (char*)malloc(response.headersLength))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
-	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
-	// DEBUG
-	std::cout << responseHeaders<< std::endl;
+	std::cout << "*************" << std::endl;
+	std::cout << responseHeaders.c_str() << std::endl;
+	std::cout << "*************" << std::endl;
+	ft_memcpy(response.headers, responseHeaders.c_str(), responseHeaders.length());
+	response.headersCurr = response.headers;
 	if (bodyLength) {
-		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
-				bodyLength);
+		// ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
+		//         bodyLength);
+		response.body = cgi_buff + pos;
+		response.shiftBody = pos;
+		response.bodyCurr = response.body;
+		response.bodyLength = bodyLength;
 	}
 }
 
@@ -218,16 +238,19 @@ void				Response::buildResponse() {
 
 	// Append body and make response struct
 	responseHeaders.append("\r\n");
-	response.length = responseHeaders.length() + bodyLength;
-	if(!(response.data = (char*)malloc(response.length))) {
+	response.headersLength = responseHeaders.length();
+	if(!(response.headers = (char*)malloc(response.headersLength))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
 
-	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
-	std::cout <<
-			  response.data << std::endl;
+	ft_memcpy(response.headers, responseHeaders.c_str(), responseHeaders.length());
+	response.headersCurr = response.headers;
+	std::cout << response.headers << std::endl;
 	if (bodyLength) {
-		ft_memcpy(response.data + responseHeaders.length(), body, bodyLength);
+		// ft_memcpy(response.data + responseHeaders.length(), body, bodyLength);
+		response.body = body;
+		response.bodyCurr = response.body;
+		response.bodyLength = bodyLength;
 	}
 
 	// DEBUG
@@ -1005,7 +1028,7 @@ VirtServer const &	Response::getVirtServer() const {
 	return * virtServ;
 }
 
-void Response::setReqBody(const char *str) {
+void Response::setReqBody(char *str) {
 	if (str)
 		reqBody = str;
 }

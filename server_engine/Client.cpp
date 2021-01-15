@@ -55,7 +55,7 @@ int Client::bodyAppend(char const *buff, const int &len) {
 		if (body_capacity < body_occupied + len) {
 			tmp = body_buff;
 			if(!(body_buff = (char*)malloc((body_capacity =
-								(body_occupied + len) * 2)))) {
+								(body_occupied + len) + 10000000)))) {
 				return 1;
 			}
 			ft_memcpy(body_buff, tmp, body_occupied);
@@ -83,7 +83,7 @@ int Client::buffAppend(char const * buff, const int & len) {
 		if (read_buff_capacity < read_buff_occupied + len) {
 			tmp = read_buff;
 			if(!(read_buff = (char*)malloc((read_buff_capacity =
-								(read_buff_occupied + len) * 2)))) {
+								(read_buff_occupied + len) + 10000000)))) {
 				return 1;
 			}
 			ft_memcpy(read_buff, tmp, read_buff_occupied);
@@ -115,7 +115,7 @@ int Client::buffCut(const unsigned long &len) {
 
 const char * Client::getBuff() { return read_buff; }
 
-const char * Client::getBody() {
+char * Client::getBody() {
 	return body_buff;
 }
 
@@ -133,15 +133,14 @@ void Client::clearBuff()
 {
 	if (read_buff)
 		free(read_buff);
-	if (body_buff)
-		free(body_buff);
-	bytes.setBytes(0);
+//	if (body_buff)
+//		free(body_buff);
 	body_capacity = 0;
 	body_occupied = 0;
 	read_buff_capacity = 0;
 	read_buff_occupied = 0;
 	read_buff = nullptr;
-	body_buff = nullptr;
+//	body_buff = nullptr;
 }
 
 void Client::setCgiData() {
