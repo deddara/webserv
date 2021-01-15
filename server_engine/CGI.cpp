@@ -6,7 +6,7 @@
 
 // CGI
 
-Cgi::Cgi(const cgi_data &data, const std::string &path, std::string const & binPath, const char *bdy) : resp_buff(NULL),_cgi_data(data), file_path(path), bin_path(binPath), body(bdy), _argv(NULL), _env(NULL), status(0) {
+Cgi::Cgi(const cgi_data &data, const std::string &path, std::string const & binPath, char *bdy) : resp_buff(NULL),_cgi_data(data), file_path(path), bin_path(binPath), body(bdy), _argv(NULL), _env(NULL), status(0) {
 	return;
 }
 
@@ -59,9 +59,9 @@ char **Cgi::setEnv() {
 	env_map["SERVER_SOFTWARE"] = "webserv/1.0";
 	env_map["SERVER_PROTOCOL"] = "HTTP/1.1";
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
-	env_map["SCRIPT_NAME"] = file_path;
+	env_map["SCRIPT_NAME"] = bin_path;
 	env_map["PATH_TRANSLATED"] = file_path;
-	env_map["REMOTE_ADDR"] = inet_ntoa(_cgi_data.addr->sin_addr);
+	env_map["REMOTE_ADDR"] = "127.0.0.1";
 
 
 	num = ft_itoa(_cgi_data.serv_port);
@@ -72,8 +72,8 @@ char **Cgi::setEnv() {
 	env_map["CONTENT_LENGTH"] = num;
 	free(num);
 
-	map_it = _cgi_data.data->find("host");
-	env_map["SERVER_NAME"] = map_it->second[0];
+//	map_it = _cgi_data.data->find("host");
+//	env_map["SERVER_NAME"] = map_it->second[0];
 
 	map_it = _cgi_data.data->find("authorization");
 	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty()) {
@@ -81,8 +81,8 @@ char **Cgi::setEnv() {
 		env_map["AUTH_TYPE"] = map_it->second[0].substr(0, pos);
 		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[0].substr(pos + 1);
 	}
-	else
-		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
+//	else
+//		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
 
 	map_it = _cgi_data.data->find("head");
 	if (map_it->second[1].find('?') != std::string::npos)
@@ -91,12 +91,17 @@ char **Cgi::setEnv() {
 		env_map["QUERY_STRING"] = "";
 	env_map["REQUEST_METHOD"] = map_it->second[0];
 	env_map["PATH_INFO"] = map_it->second[1];
-	env_map["REQUEST_URI"] = "http://" + _cgi_data.serv_host + ":" + std::to_string(_cgi_data.serv_port) + map_it->second[1];
+	env_map["REQUEST_URI"] = map_it->second[1];
 	method = map_it->second[0];
 
 	//for PHP
-	env_map["REDIRECT_STATUS"] = "200";
+//	env_map["REDIRECT_STATUS"] = "200";
 
+	env_map["HTTP_Accept-Encoding"] = "gzip";
+	env_map["HTTP_Content-Type"] = "test/file";
+	env_map["HTTP_Host"] = "localhost:3038";
+	env_map["HTTP_Transfer-Encoding"] = "chunked";
+	env_map["HTTP_User-Agent"] = "Go-http-client/1.1";
 	map_it = _cgi_data.data->find("content-type");
 	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
 		env_map["CONTENT_TYPE"] = "";
@@ -148,11 +153,25 @@ int Cgi::read_response(){
 	int body_len = _cgi_data.body_len;
 
 	close(fd[0]);
-	if (body_len)
+	usleep(20);
+	if (body_len) {
+		int i = 0;
+		while (_env[i])
+		{
+			std::cout << _env[i] << std::endl;
+			++i;
+		}
+		write(1, body, 100);
 		write(fd[1], body, body_len);
+		if (body) {
+			free(body);
+			body = NULL;
+		}
+	}
 	close(fd[1]);
 	waitpid(pid, &status, 0);
 	if (WEXITSTATUS(status) != 0) {
+		std::cout << "ERRRR" << std::endl;
 		return (502);
 	}
 	if (fstat(fd_tmp, &f_data) < 0)

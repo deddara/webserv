@@ -217,6 +217,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 
 	(*it)->setLastMsg();
 
+	std::cout << "CLIENT " << (*it)->getFd() << " SENT: ";
 #ifdef LINUX
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
 #else
@@ -226,8 +227,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
-
-	write(1, "1", 1);
+	std::cout << n << " BYTES" << std::endl;
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
@@ -319,16 +319,20 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
+						std::cout << "REQUEST HEADERS FROM " << (*it)->getFd() << " CLIENT" << std::endl;
 						std::string tmp((*it)->getBuff());
-						std::cout << tmp.substr(0, tmp.find("\r\n\r\n") + 2);
+						std::cout << tmp.substr(0, tmp.find("\r\n\r\n") + 2) << std::endl;
+						(*it)->clearBuff();
 						(*it)->setCgiData();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
 						(*it)->getResponse()->setReqBody((*it)->getBody());
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
+						std::cout << "CGI HEADERS FROM " << (*it)->getFd() << " CLIENT" << std::endl;
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->getResponse()->getResponseStruct().data_begin_p = (*it)->getResponse()->getResponseStruct().data;
-						(*it)->clearBuff();
+
+						(*it)->getBytes().setBytes(0);
 						break;
 					}
 				case finish:
@@ -351,7 +355,6 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				perror("send");
 				return 1;
 			}
-			std::cout << res << std::endl;
 			if (res < (*it)->getResponse()->getResponseStruct().length)
 			{
 				(*it)->getResponse()->getResponseStruct().data += res;
@@ -365,10 +368,10 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			delete (*it)->getRequest();
 			Request			*reqst = new Request;
 			(*it)->setRequest(reqst);
-//			if ((*it)->getStatus() == 3) {
-//				this->closeConnection(it);
-//				break;
-//			}
+			if ((*it)->getStatus() == 3) {
+				this->closeConnection(it);
+				break;
+			}
 			(*it)->setStatus(0);
 		}
 	}

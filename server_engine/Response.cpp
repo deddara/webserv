@@ -73,7 +73,10 @@ void Response::cgi_response_parser(Cgi const &cgi){
 	std::string		cgi_headers;
 	size_t			pos = 0;
 
+
 	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
+
+	std::cout << cgi_headers << std::endl;
 
 	itReq = _data->find("head");
 	// HTTP/1.X
@@ -128,9 +131,11 @@ void Response::cgi_response_parser(Cgi const &cgi){
 	if(!(response.data = (char*)malloc(response.length))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
+	std::cout << "*************" << std::endl;
+	std::cout << responseHeaders.c_str() << std::endl;
+	std::cout << "*************" << std::endl;
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
 	// DEBUG
-	std::cout << responseHeaders<< std::endl;
 	if (bodyLength) {
 		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
 				bodyLength);
@@ -1000,7 +1005,7 @@ VirtServer const &	Response::getVirtServer() const {
 	return * virtServ;
 }
 
-void Response::setReqBody(const char *str) {
+void Response::setReqBody(char *str) {
 	if (str)
 		reqBody = str;
 }

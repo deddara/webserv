@@ -64,7 +64,7 @@ public:
 	int & getStatus();
 	void setStatus(int status);
 	char const	*getBuff();
-	char const	*getBody();
+	char 	*getBody();
 	void 		setBody(char *);
 
 	Request * getRequest();
