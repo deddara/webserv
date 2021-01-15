@@ -526,6 +526,11 @@ void				Response::generateFilePath() {
 				&& appendixFromURI[0] != '/') {
 			filePath.append("/");
 		}
+		// remove '/' between root and appendix from URI if needed
+		if (filePath[filePath.length() - 1] == '/' && appendixFromURI.length()
+			&& appendixFromURI[0] == '/') {
+			filePath = filePath.substr(0, filePath.length() - 1);
+		}
 		filePath.append(appendixFromURI);
 		return ;
 	}
