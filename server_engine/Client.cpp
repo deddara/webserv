@@ -17,7 +17,9 @@ Client::Client(int fd, std::string const & host, int const & port, struct sockad
 	read_buff(nullptr), body_buff(nullptr), _fd(fd), state(0), serv_host(host), serv_port(port), addr(client_addr) {
 	body_len = 0;
 	body_capacity = 0;
-	occupied_len = 0;
+	body_occupied = 0;
+	read_buff_capacity = 0;
+	read_buff_occupied = 0;
 	reqst = new Request();
 	resp = new Response();
 	gettimeofday(&last_msg, NULL);
@@ -50,46 +52,58 @@ const int & Client::getServPort() { return serv_port; }
 int Client::bodyAppend(char const *buff, const int &len) {
 	char *		tmp = nullptr;
 	if (body_buff) {
-		if (body_capacity < occupied_len + len) {
+		if (body_capacity < body_occupied + len) {
 			tmp = body_buff;
 			if(!(body_buff = (char*)malloc((body_capacity =
-								(occupied_len + len) * 2)))) {
+								(body_occupied + len) * 2)))) {
 				return 1;
 			}
-			ft_memcpy(body_buff, tmp, occupied_len);
-			ft_memcpy(body_buff + occupied_len, buff, len);
-			occupied_len += len;
+			ft_memcpy(body_buff, tmp, body_occupied);
+			ft_memcpy(body_buff + body_occupied, buff, len);
+			body_occupied += len;
 			free(tmp);
 			tmp = nullptr;
 		} else {
-			ft_memcpy(body_buff + occupied_len, buff, len);
-			occupied_len += len;
+			ft_memcpy(body_buff + body_occupied, buff, len);
+			body_occupied += len;
 		}
 	} else {
 		if (!(body_buff = (char*)malloc((body_capacity = len)))) {
 			return 1;
 		}
 		ft_memcpy(body_buff, buff, len);
-		occupied_len = body_capacity;
+		body_occupied = body_capacity;
 	}
 	return 0;
 }
 
 int Client::buffAppend(char const * buff, const int & len) {
-	if (!read_buff)
-	{
-		if (!(read_buff = bytes.bytesDup(read_buff, buff, len)))
+	char *		tmp = nullptr;
+	if (read_buff) {
+		if (read_buff_capacity < read_buff_occupied + len) {
+			tmp = read_buff;
+			if(!(read_buff = (char*)malloc((read_buff_capacity =
+								(read_buff_occupied + len) * 2)))) {
+				return 1;
+			}
+			ft_memcpy(read_buff, tmp, read_buff_occupied);
+			ft_memcpy(read_buff + read_buff_occupied, buff, len);
+			read_buff_occupied += len;
+			free(tmp);
+			tmp = nullptr;
+		} else {
+			ft_memcpy(read_buff + read_buff_occupied, buff, len);
+			read_buff_occupied += len;
+		}
+	} else {
+		if (!(read_buff = (char*)malloc((read_buff_capacity = len)))) {
 			return 1;
+		}
+		ft_memcpy(read_buff, buff, len);
+		read_buff_occupied = read_buff_capacity;
 	}
-	else
-	{
-		char *tmp = read_buff;
-		if (!(read_buff = bytes.bytesJoin(read_buff, buff, len,bytes.getBytes())))
-			return 1;
-		free(tmp);
-	}
-	return (0);
-};
+	return 0;
+}
 
 int Client::buffCut(const unsigned long &len) {
 	char *tmp = read_buff;
@@ -123,7 +137,9 @@ void Client::clearBuff()
 		free(body_buff);
 	bytes.setBytes(0);
 	body_capacity = 0;
-	occupied_len = 0;
+	body_occupied = 0;
+	read_buff_capacity = 0;
+	read_buff_occupied = 0;
 	read_buff = nullptr;
 	body_buff = nullptr;
 }

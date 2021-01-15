@@ -36,9 +36,11 @@ private:
 
 	int			_fd;
 	int			state;
-	int 		body_len;
-	int 		body_capacity;
-	int			occupied_len;
+	int			body_len;
+	int			body_capacity;
+	int			body_occupied;
+	int			read_buff_capacity;
+	int			read_buff_occupied;
 	std::string serv_host;
 	int			serv_port;
 
