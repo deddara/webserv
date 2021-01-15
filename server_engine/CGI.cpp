@@ -97,16 +97,16 @@ char **Cgi::setEnv() {
 	//for PHP
 //	env_map["REDIRECT_STATUS"] = "200";
 
-	env_map["HTTP_Accept-Encoding"] = "gzip";
-	env_map["HTTP_Content-Type"] = "test/file";
-	env_map["HTTP_Host"] = "localhost:3038";
-	env_map["HTTP_Transfer-Encoding"] = "chunked";
-	env_map["HTTP_User-Agent"] = "Go-http-client/1.1";
+	env_map["HTTP_ACCEPT-ENCODING"] = "gzip";
+	env_map["HTTP_CONTENT-TYPE"] = "test/file";
+	env_map["HTTP_HOST"] = "localhost:3038";
+	env_map["HTTP_TRANSFER-ENCODING"] = "chunked";
+	env_map["HTTP_USER-AGENT"] = "Go-http-client/1.1";
 	map_it = _cgi_data.data->find("content-type");
-	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
-		env_map["CONTENT_TYPE"] = "";
-	else
-		env_map["CONTENT_TYPE"] = map_it->second[0];
+//	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
+//		env_map["CONTENT_TYPE"] = "";
+//	else
+//		env_map["CONTENT_TYPE"] = map_it->second[0];
 
 	map_it = _cgi_data.data->find("accept");
 	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
@@ -161,7 +161,6 @@ int Cgi::read_response(){
 			std::cout << _env[i] << std::endl;
 			++i;
 		}
-		write(1, body, 100);
 		write(fd[1], body, body_len);
 		if (body) {
 			free(body);
