@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 19:53:23 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/14 20:51:20 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/15 14:19:49 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,13 +129,13 @@ void Response::cgi_response_parser(Cgi const &cgi){
 		throw std::runtime_error("Error: malloc fails");
 	}
 	ft_memcpy(response.data, responseHeaders.c_str(), responseHeaders.length());
-	std::cout <<
-			  responseHeaders<< std::endl;
+	// DEBUG
+	std::cout << responseHeaders<< std::endl;
 	if (bodyLength) {
 		ft_memcpy(response.data + responseHeaders.length(), cgi_buff + pos,
 				bodyLength);
 	}
-};
+}
 
 
 void				Response::buildResponse() {
@@ -259,6 +259,13 @@ int					Response::checkLimitClientBody()
 }
 
 int					Response::checkExtForCgiHandling() {
+	// XXX HACK stupid check for cgi_tester validation
+	if (_data->find("head")->second[0] == "POST" &&
+			(location[currLocationInd]->getPrefix() == "/post_body" ||
+			location[currLocationInd]->getPrefix() == "/post_body/")) {
+		return 0;
+	}
+
 	if (location[currLocationInd]->getData().count("cgi_ext")) {
 		std::multimap<std::string, std::vector<std::string> >
 			::const_iterator	itExt;
@@ -266,7 +273,7 @@ int					Response::checkExtForCgiHandling() {
 
 		itExt = location[currLocationInd]->getData().find("cgi_ext");
 
-		// INFO stupid check for cgi_tester validation
+		// XXX HACK stupid check for cgi_tester validation
 		if (itExt->second[0] == ".bla") { return 0; }
 
 		// try to find fileExt in vector of supported cgi-extensions

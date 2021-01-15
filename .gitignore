@@ -30,3 +30,5 @@ webserv
 webserv.conf
 test_cases
 CMakeLists.txt
+site/test/YoupiBanane/multiple_same
+site/index2.html
