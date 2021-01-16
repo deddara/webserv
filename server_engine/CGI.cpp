@@ -181,7 +181,9 @@ int Cgi::read_response(){
 	tmp[n] = '\0';
 	if (buffAppend(tmp, f_data.st_size))
 		return (500);
+	free (tmp);
 	bytes.bytesCount(n);
+	close (fd_tmp);
 	unlink("./temp_file");
 	return (0);
 }
