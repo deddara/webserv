@@ -38,10 +38,10 @@
 //							free(response.data_begin_p);
 //							response.data_begin_p = nullptr;
 //						}
-						 if (body) {
-						     free(body);
-						     body = nullptr;
-						 }
+//						 if (body) {
+//						     free(body);
+//						     body = nullptr;
+//						 }
 						if (cgi)
 							delete cgi;
 						if (response.headers) {
