@@ -160,5 +160,12 @@ void Client::setRequest(Request *req) { reqst = req; }
 cgi_data const & Client::getCgiData() const { return _cgi_data; }
 
 
+void Client::clearReqBody() {
+	if (body_buff){
+		free(body_buff);
+		body_buff = nullptr;
+	}
+}
+
 void Client::setBodyLen(const int &num) { body_len = num; }
 const int & Client::getBodyLen() const { return body_len; }

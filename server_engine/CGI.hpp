@@ -41,6 +41,7 @@ public:
 	int				handler();
 	int				buffAppend(const char *buff, int len);
 	int				read_response();
+	void 			clearResponseBuf();
 
 
 };

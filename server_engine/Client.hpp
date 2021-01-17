@@ -85,6 +85,7 @@ public:
 	void setResponse(Response *);
 	void setRequest(Request *);
 	void setBodyLen(int const &);
+	void clearReqBody();
 
 	struct timeval & getLastMsg();
 	void			setLastMsg();

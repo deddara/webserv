@@ -14,8 +14,18 @@
 #include "includes.hpp"
 #include "Request.hpp"
 #include "sys/time.h"
+
+Server::~Server(){
+	for (std::vector<Client*>::iterator it = client_session.begin(); it != client_session.end(); ++it){
+		close((*it)->getFd());
+		delete (*it);
+	}
+}
+
+
 void Server::closeConnection(std::vector<Client*>::iterator it){
 	close((*it)->getFd());
+	delete (*it);
 	client_session.erase(it);
 }
 
@@ -332,8 +342,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
 						std::cout << "CGI HEADERS FROM " << (*it)->getFd() << " CLIENT" << std::endl;
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
-						// (*it)->getResponse()->getResponseStruct().data_begin_p = (*it)->getResponse()->getResponseStruct().body;
-
+						(*it)->clearReqBody();
 						(*it)->getBytes().setBytes(0);
 						break;
 					}

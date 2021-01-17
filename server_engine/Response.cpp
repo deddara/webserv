@@ -38,10 +38,10 @@
 //							free(response.data_begin_p);
 //							response.data_begin_p = nullptr;
 //						}
-						// if (body) {
-						//     free(body);
-						//     body = nullptr;
-						// }
+						 if (body) {
+						     free(body);
+						     body = nullptr;
+						 }
 						if (cgi)
 							delete cgi;
 						if (response.headers) {
@@ -154,6 +154,10 @@ void Response::cgi_response_parser(Cgi &cgi){
 		response.shiftBody = pos;
 		response.bodyCurr = response.body;
 		response.bodyLength = bodyLength;
+	}
+	else
+	{
+		cgi.clearResponseBuf();
 	}
 }
 
@@ -448,6 +452,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 					cgi_response_parser(*cgi);
 					return;
 				} else {
+					cgi->clearResponseBuf();
 					errorHandler();
 					buildResponse();
 					if (errCode != 404)

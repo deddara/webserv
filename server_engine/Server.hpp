@@ -40,7 +40,7 @@ public:
 	Server(std::vector<VirtServer> & vec) : max_fd(0), is_closed(0), virt_serv(vec) {
 		serversNum = virt_serv.size();
 	}
-	~Server(){};
+	~Server();
 
 	int launch();
 	int setup();

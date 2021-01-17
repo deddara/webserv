@@ -163,10 +163,10 @@ int Cgi::read_response(){
 		}
 		write(1, body, 100);
 		write(fd[1], body, body_len);
-		if (body) {
-			free(body);
-			body = NULL;
-		}
+//		if (body) {
+//			free(body);
+//			body = NULL;
+//		}
 	}
 	close(fd[1]);
 	waitpid(pid, &status, 0);
@@ -212,7 +212,11 @@ int Cgi::handler(){
 	return (execute_result);
 }
 
-
+void Cgi::clearResponseBuf() {
+	if (resp_buff)
+		free(resp_buff);
+	resp_buff = NULL;
+}
 
 char * Cgi::getResponse() { return resp_buff; }
 
