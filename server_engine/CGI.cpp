@@ -72,8 +72,8 @@ char **Cgi::setEnv() {
 	env_map["CONTENT_LENGTH"] = num;
 	free(num);
 
-//	map_it = _cgi_data.data->find("host");
-//	env_map["SERVER_NAME"] = map_it->second[0];
+	map_it = _cgi_data.data->find("host");
+	env_map["SERVER_NAME"] = map_it->second[0];
 
 	map_it = _cgi_data.data->find("authorization");
 	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty()) {
@@ -81,8 +81,8 @@ char **Cgi::setEnv() {
 		env_map["AUTH_TYPE"] = map_it->second[0].substr(0, pos);
 		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = map_it->second[0].substr(pos + 1);
 	}
-//	else
-//		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
+	else
+		env_map["REMOTE_IDENT"] = env_map["REMOTE_USER"] = "";
 
 	map_it = _cgi_data.data->find("head");
 	if (map_it->second[1].find('?') != std::string::npos)
@@ -93,15 +93,24 @@ char **Cgi::setEnv() {
 	env_map["PATH_INFO"] = map_it->second[1];
 	env_map["REQUEST_URI"] = map_it->second[1];
 	method = map_it->second[0];
+	if (map_it->second[1].find(".php") != std::string::npos)
+			env_map["REDIRECT_STATUS"] = "200";
 
 	//for PHP
-//	env_map["REDIRECT_STATUS"] = "200";
 
-	env_map["HTTP_Accept-Encoding"] = "gzip";
-	env_map["HTTP_Content-Type"] = "test/file";
-	env_map["HTTP_Host"] = "localhost:3038";
-	env_map["HTTP_Transfer-Encoding"] = "chunked";
-	env_map["HTTP_User-Agent"] = "Go-http-client/1.1";
+
+	for (map_it = _cgi_data.data->begin(); map_it != _cgi_data.data->end(); ++map_it){
+		if (map_it->first == "head")
+			continue;
+		std::string key = "HTTP_";
+		std::string value = "";
+		key.append(map_it->first);
+		key = toUpper(key);
+		for (std::vector<std::string>::const_iterator  val_it = map_it->second.begin(); val_it != map_it->second.end(); ++val_it)
+			value.append(*val_it);
+		env_map[key] = value;
+	}
+
 	map_it = _cgi_data.data->find("content-type");
 	if (map_it == _cgi_data.data->end() || map_it->second[0].empty())
 		env_map["CONTENT_TYPE"] = "";
@@ -112,9 +121,6 @@ char **Cgi::setEnv() {
 	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
 		env_map["HTTP_ACCEPT"] = map_it->second[0];
 
-	map_it = _cgi_data.data->find("x-secret-header-for-test");
-	if (map_it != _cgi_data.data->end() && !map_it->second[0].empty())
-		env_map["HTTP_X_SECRET_HEADER_FOR_TEST"] = map_it->second[0];
 	char **env;
 	if (!(env = (char **)malloc(sizeof(char *) * (env_map.size() + 1))))
 		return (NULL);
