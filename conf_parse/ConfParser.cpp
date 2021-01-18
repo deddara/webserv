@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/18 18:02:26 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/18 18:20:02 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,16 +242,13 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 		errorExit(pr_errStruct.code, pr_errStruct.word);
 	}
 	if (location->getData().count("allow_methods")) {
-		std::multimap<std::string, std::vector<std::string> >::const_iterator it
-			= location->getData().find("allow_methods");
-		size_t i = 0;
-		for (; i < it->second.size(); ++i) {
-			if (it->second[i] == "POST") {
-				break ;
+		std::vector<std::string>::const_iterator it
+			= location->getData().find("allow_methods")->second.begin();
+		for (; it != location->getData().find("allow_methods")->second.end();
+				++it) {
+			if (*it == "POST" && !location->getData().count("cgi_ext")) {
+				errorExit(25, str);
 			}
-		}
-		if (i < it->second.size() && !location->getData().count("cgi_ext")) {
-			errorExit(25, str);
 		}
 	}
 	return location;
