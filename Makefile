@@ -136,6 +136,7 @@ clean:
 
 fclean:	clean
 	rm -f	$(NAME)
+	rm -f   $(CONFIG)
 
 debug:
 	make FLAGS="$(CFLAGS) $(DBGFLAGS)" all

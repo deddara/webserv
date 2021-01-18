@@ -40,7 +40,6 @@ server {
 server {
   host                 127.0.0.1;
   listen               3035;
-  server_name          example.com     www.example.com;
   error_page 403       PWD/errors/403.html;
   error_page 404       PWD/errors/404.html;
   error_page 500       PWD/errors/500.html;
@@ -49,7 +48,7 @@ server {
   location /auth_website {
     index              index.html;
     allow_methods      GET           HEAD;
-    root               PWD/web_content/auth_website;
+    root               PWD/web_content/auth_website/;
   }
 
   location / {
@@ -73,7 +72,7 @@ server {
   location /put_test {
       allow_methods    PUT;
       index            index.html;
-      root             PWD/web_content/test/YoupiBanane;
+      root             PWD/web_content/test/YoupiBanane/;
   }
 
   location /directory {
@@ -81,7 +80,7 @@ server {
     allow_methods      GET POST;
     root               PWD/web_content/test/YoupiBanane/;
     cgi_ext            .bla;
-    cgi_bin            PWD/cgi_tester;
+    cgi_bin            PWD/tests/cgi_tester;
   }
 
   location /post_body {
@@ -90,7 +89,7 @@ server {
     allow_methods      POST;
     limit_client_body  100;
     cgi_ext            .bla;
-    cgi_bin            PWD/cgi_tester;
+    cgi_bin            PWD/tests/cgi_tester;
   }
 
   location / {
