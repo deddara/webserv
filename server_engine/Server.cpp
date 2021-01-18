@@ -369,8 +369,9 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			if ((res = send((*it)->getFd(), responseStruct.curr,
 					currLength, 0)) < 0)
 			{
-				std::cerr << "send" << std::endl;
-				return 1;
+				std::cerr << "send error" << std::endl;
+				this->closeConnection(it);
+				break;
 			}
 			if (res < responseStruct.headersLength + responseStruct.bodyLength)
 			{

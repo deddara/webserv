@@ -182,18 +182,7 @@ int Cgi::read_response(){
 	close(fd[0]);
 	usleep(20);
 	if (body_len) {
-		int i = 0;
-		while (_env[i])
-		{
-			std::cout << _env[i] << std::endl;
-			++i;
-		}
-		write(1, body, 100);
 		write(fd[1], body, body_len);
-//		if (body) {
-//			free(body);
-//			body = NULL;
-//		}
 	}
 	close(fd[1]);
 	waitpid(pid, &status, 0);
@@ -229,7 +218,6 @@ int Cgi::handler(){
 
 	if (execute())
 		return (500);
-//	write(readPipe[1], body, _cgi_data.body_len);
 
 	int execute_result = read_response();
 
