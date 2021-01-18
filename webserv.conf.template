@@ -2,37 +2,104 @@
 # virtual server configuration section:
 server {
   # ip address of virtual server
-  host              127.0.0.1;
+  host                 127.0.0.1;
   # number of port to listen
-  listen            3032;
+  listen               3030;
   # server name(s) (separated by space)
-  server_name       localhost     www.localhost;
+  server_name          localhost     www.localhost;
   # path to the page that is returned when an error occurs
   # while processing the request
-  error_page 403 PWD/errors/403.html;
-  error_page 404 PWD/errors/404.html;
-  error_page 500 PWD/errors/500.html;
+  error_page 403       PWD/errors/403.html;
+  error_page 404       PWD/errors/404.html;
+  error_page 500       PWD/errors/500.html;
   # limit (in bytes) the size of the POST request body
-  limit_client_body 1024;
+  limit_client_body    1024;
   # location configuration section
   location / {
     # name(s) of the index page, which is returned when the catalog is requested
     # (separated by space)
-    index           index.html    index.php;
+    index              index.html    index.php;
     # allowed request methots list (separated by space)
-    allow_methods   GET           HEAD         POST ;
+    allow_methods      GET           HEAD         POST ;
     # path of root directory for current location
-    root PWD/site/;
+    root               PWD/web_content/;
     # generate directory list page if index page not found in path,
     # 'on' or 'off' values is allowed
-    autoindex       on; #use default off
+    autoindex          on; #use default off
   # limit (in bytes) the size of the POST request body
-    limit_client_body 1024;
+    limit_client_body  1024;
   # a set of file extensions to be treated as scripts
-    cgi_ext   .py .php .cgi;
+    cgi_ext            .py .php .cgi;
   # set of executable paths for script interpreters
-    cgi_bin   PYTHON
-              PHP_CGI
-              PHP_CGI;
+    cgi_bin            PYTHON
+                       PHP_CGI
+                       PHP_CGI;
+  }
+}
+
+server {
+  host                 127.0.0.1;
+  listen               3035;
+  server_name          example.com     www.example.com;
+  error_page 403       PWD/errors/403.html;
+  error_page 404       PWD/errors/404.html;
+  error_page 500       PWD/errors/500.html;
+  limit_client_body    1024;
+
+  location /auth_website {
+    index              index.html;
+    allow_methods      GET           HEAD;
+    root               PWD/web_content/auth_website;
+  }
+
+  location / {
+    index              index.html    index.php;
+    allow_methods      GET           HEAD         POST ;
+    root               PWD/web_content/;
+    autoindex          on; #use default off
+    limit_client_body  1024;
+    cgi_ext            .py .php .cgi;
+    cgi_bin            PYTHON
+                       PHP_CGI
+                       PHP_CGI;
+  }
+}
+
+server {
+  host                 127.0.0.1;
+  listen               3040;
+  server_name          localhost     www.localhost;
+
+  location /put_test {
+      allow_methods    PUT;
+      index            index.html;
+      root             PWD/web_content/test/YoupiBanane;
+  }
+
+  location /directory {
+    index              youpi.bad_extension;
+    allow_methods      GET POST;
+    root               PWD/web_content/test/YoupiBanane/;
+    cgi_ext            .bla;
+    cgi_bin            PWD/cgi_tester;
+  }
+
+  location /post_body {
+    index              index.html;
+    root               PWD/web_content/;
+    allow_methods      POST;
+    limit_client_body  100;
+    cgi_ext            .bla;
+    cgi_bin            PWD/cgi_tester;
+  }
+
+  location / {
+    index              index.html    index.php;
+    allow_methods      GET;
+    root               PWD/web_content/;
+    cgi_ext            .py .cgi .php;
+    cgi_bin            PYTHON
+                       PHP_CGI
+                       PHP_CGI;
   }
 }
