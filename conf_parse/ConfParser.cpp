@@ -6,7 +6,7 @@
 /*   By: awerebea <awerebea@student.21-school.ru>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 11:40:21 by awerebea          #+#    #+#             */
-/*   Updated: 2021/01/09 17:41:01 by awerebea         ###   ########.fr       */
+/*   Updated: 2021/01/18 18:02:26 by awerebea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ std::string			ConfParser::readConfFile(std::string const & fpath) {
 }
 
 void				ConfParser::errorExit(int code, std::string const & word) {
-	std::string		errors[25] = {
+	std::string		errors[26] = {
 		"Error: config file is unavailable",
 		"Error: read fails",
 		"Error: config file syntax error",
@@ -106,6 +106,8 @@ void				ConfParser::errorExit(int code, std::string const & word) {
 		"Error: duplicate location \"" + word + "\" found",
 		"Error: invalid cgi-file extension \"" + word + "\" found",
 		"Error: invalid cgi settings in location \"" + word + "\"",
+		"Error: forbidden POST method without cgi settings in location \"" +
+			word + "\"",
 	};
 	std::cout << errors[code] << std::endl;
 	for (size_t i = 0; i < pr_server.size(); ++i) {
@@ -238,6 +240,19 @@ Location *				ConfParser::locationBlockProc(std::string const & str) {
 	pr_errStruct = location->checkCgiSettings();
 	if (pr_errStruct.code) {
 		errorExit(pr_errStruct.code, pr_errStruct.word);
+	}
+	if (location->getData().count("allow_methods")) {
+		std::multimap<std::string, std::vector<std::string> >::const_iterator it
+			= location->getData().find("allow_methods");
+		size_t i = 0;
+		for (; i < it->second.size(); ++i) {
+			if (it->second[i] == "POST") {
+				break ;
+			}
+		}
+		if (i < it->second.size() && !location->getData().count("cgi_ext")) {
+			errorExit(25, str);
+		}
 	}
 	return location;
 }
