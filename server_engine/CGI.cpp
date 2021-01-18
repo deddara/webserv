@@ -182,6 +182,7 @@ int Cgi::read_response(){
 	close(fd[0]);
 	if (body_len) {
 		write(fd[1], body, body_len);
+		signal(SIGPIPE, SIG_IGN);
 	}
 	close(fd[1]);
 	waitpid(pid, &status, 0);

@@ -373,6 +373,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				this->closeConnection(it);
 				break;
 			}
+			signal(SIGPIPE, SIG_IGN);
 			if (res < responseStruct.headersLength + responseStruct.bodyLength)
 			{
 				if (responseStruct.headersLength > 0) {

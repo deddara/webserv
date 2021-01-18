@@ -88,7 +88,6 @@ void Response::cgi_response_parser(Cgi &cgi){
 
 	cgi_headers = cgi_buff_str.substr(0, cgi_buff_str.find("\r\n\r\n") + 2);
 
-	std::cout << cgi_headers << std::endl;
 
 	itReq = _data->find("head");
 	// HTTP/1.X
