@@ -524,18 +524,6 @@ void				Response::generateFilePath() {
 
 	filePath = location[currLocationInd]->getData().find("root")->second[0];
 
-	// case if the specified location is the file extension (.ext)
-	if (location[currLocationInd]->getPrefix()[0] == '.') {
-		size_t		pos = 0;
-		// get from the URI part from the start to the '?' if exist
-		while (pos < it->second[1].length() && it->second[1][pos] != '?') {
-			appendixFromURI.push_back(it->second[1][pos++]);
-		}
-		// append part of path from URI
-		filePath.append(appendixFromURI);
-		return ;
-	}
-
 	// case if the specified location is the path (/path/to/file_or_dir)
 	if (location[currLocationInd]->getPrefix()[0] == '/') {
 		// get from the URI part from the index position equal length of the
@@ -551,6 +539,10 @@ void				Response::generateFilePath() {
 		if (filePath[filePath.length() - 1] == '/' && appendixFromURI.length()
 			&& appendixFromURI[0] == '/') {
 			filePath = filePath.substr(0, filePath.length() - 1);
+		}
+		size_t pos;
+		if ((pos = appendixFromURI.find('?')) != std::string::npos) {
+			appendixFromURI = appendixFromURI.substr(0, pos);
 		}
 		filePath.append(appendixFromURI);
 		return ;

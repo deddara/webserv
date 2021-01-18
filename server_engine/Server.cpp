@@ -24,6 +24,7 @@ Server::~Server(){
 
 
 void Server::closeConnection(std::vector<Client*>::iterator it){
+	std::cout << "Connection with " << (*it)->getFd() << " successfully closed..." << std::endl;
 	close((*it)->getFd());
 	delete (*it);
 	client_session.erase(it);
@@ -54,6 +55,7 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 		std::cerr << "listen_sock" << std::endl;
 		return (500);
 	}
+	std::cout << "listening " << port << "..." << std::endl;
 	virt_serv[i].setFd(listen_sock);
 	return (0);
 }
@@ -81,11 +83,11 @@ int Server::set_prepare()
 		FD_SET((*it).getFd(), &readset);
 	for (std::vector<Client*>::iterator it = client_session.begin(); it !=  client_session.end(); ++it){
 		gettimeofday(&t, NULL);
-//		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 500)
-//		{
-//			closeConnection(it);
-//			return (1);
-//		}
+		if (t.tv_sec - (*it)->getLastMsg().tv_sec > 500)
+		{
+			closeConnection(it);
+			return (1);
+		}
 		FD_SET((*it)->getFd(), &readset);
 		if ((*it)->getResponse() &&
 				(((*it)->getResponse()->getResponseStruct().headersLength) ||
@@ -223,8 +225,8 @@ void Server::chunkHandler(std::vector<Client*>::iterator & it) {
 void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
-	char buff[1000000];
-	ft_bzero(&buff, 1000000);
+	char buff[256000];
+	ft_bzero(&buff, 256000);
 	int err = 400;
 
 	(*it)->setLastMsg();

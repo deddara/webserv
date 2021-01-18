@@ -180,14 +180,13 @@ int Cgi::read_response(){
 	int body_len = _cgi_data.body_len;
 
 	close(fd[0]);
-	usleep(20);
 	if (body_len) {
 		write(fd[1], body, body_len);
 	}
 	close(fd[1]);
 	waitpid(pid, &status, 0);
 	if (WEXITSTATUS(status) != 0) {
-		std::cout << "ERRRR" << std::endl;
+		std::cerr << "ERRRR" << std::endl;
 		return (502);
 	}
 	if (fstat(fd_tmp, &f_data) < 0)
