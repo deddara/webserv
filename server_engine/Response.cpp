@@ -139,9 +139,10 @@ void Response::cgi_response_parser(Cgi &cgi){
 
 
 	response.headersLength = responseHeaders.size();
-	if(!(response.headers = (char*)malloc(response.headersLength))) {
+	if(!(response.headers = (char*)malloc(response.headersLength + 1))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
+	response.headers[response.headersLength] = '\0';
 	std::cout << "*************" << std::endl;
 	std::cout << responseHeaders.c_str() << std::endl;
 	std::cout << "*************" << std::endl;
@@ -243,9 +244,10 @@ void				Response::buildResponse() {
 	// Append body and make response struct
 	responseHeaders.append("\r\n");
 	response.headersLength = responseHeaders.length();
-	if(!(response.headers = (char*)malloc(response.headersLength))) {
+	if(!(response.headers = (char*)malloc(response.headersLength + 1))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
+	response.headers[response.headersLength] = '\0';
 
 	ft_memcpy(response.headers, responseHeaders.c_str(), responseHeaders.length());
 	response.headersCurr = response.headers;

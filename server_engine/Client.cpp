@@ -54,10 +54,12 @@ int Client::bodyAppend(char const *buff, const int &len) {
 	if (body_buff) {
 		if (body_capacity < body_occupied + len) {
 			tmp = body_buff;
-			if(!(body_buff = (char*)malloc((body_capacity =
-								(body_occupied + len) + 10000000)))) {
+			body_capacity = (body_occupied + len) + 10000000;
+			if(!(body_buff = (char*)malloc((body_capacity + 1)))) {
 				return 1;
 			}
+			bzero(body_buff, body_capacity);
+			body_buff[body_capacity] = '\0';
 			ft_memcpy(body_buff, tmp, body_occupied);
 			ft_memcpy(body_buff + body_occupied, buff, len);
 			body_occupied += len;
@@ -68,9 +70,11 @@ int Client::bodyAppend(char const *buff, const int &len) {
 			body_occupied += len;
 		}
 	} else {
-		if (!(body_buff = (char*)malloc((body_capacity = len)))) {
+		body_capacity = len;
+		if (!(body_buff = (char*)malloc(len + 1))) {
 			return 1;
 		}
+		body_buff[len] = '\0';
 		ft_memcpy(body_buff, buff, len);
 		body_occupied = body_capacity;
 	}
@@ -82,10 +86,12 @@ int Client::buffAppend(char const * buff, const int & len) {
 	if (read_buff) {
 		if (read_buff_capacity < read_buff_occupied + len) {
 			tmp = read_buff;
-			if(!(read_buff = (char*)malloc((read_buff_capacity =
-								(read_buff_occupied + len) + 10000000)))) {
+			read_buff_capacity = (read_buff_occupied + len) + 10000000;
+			if(!(read_buff = (char*)malloc(read_buff_capacity + 1))) {
 				return 1;
 			}
+			bzero(read_buff, read_buff_capacity);
+			read_buff[read_buff_capacity] = '\0';
 			ft_memcpy(read_buff, tmp, read_buff_occupied);
 			ft_memcpy(read_buff + read_buff_occupied, buff, len);
 			read_buff_occupied += len;
@@ -96,9 +102,11 @@ int Client::buffAppend(char const * buff, const int & len) {
 			read_buff_occupied += len;
 		}
 	} else {
-		if (!(read_buff = (char*)malloc((read_buff_capacity = len)))) {
+		read_buff_capacity = len;
+		if (!(read_buff = (char*)malloc(len + 1))) {
 			return 1;
 		}
+		read_buff[len] = '\0';
 		ft_memcpy(read_buff, buff, len);
 		read_buff_occupied = read_buff_capacity;
 	}

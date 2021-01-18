@@ -128,8 +128,8 @@ static std::string date_prepare(time_t & sec, struct tm & t)
 	char buffer[40];
 	int is_v_year;
 	int day;
-
 	bzero(buffer, sizeof(buffer));
+	bzero(&t, sizeof(t));
 	t.tm_year = get_year(sec, is_v_year, day);
 	get_day_of_week(sec, day);
 	t.tm_mon = get_month(sec, is_v_year);
@@ -139,7 +139,7 @@ static std::string date_prepare(time_t & sec, struct tm & t)
 	t.tm_min = get_min(sec);
 	t.tm_sec = sec;
 
-	strftime (buffer, sizeof buffer, "%a, %d %b %G %k:%M:%S GMT", &t);
+	strftime (buffer, sizeof(buffer), "%a, %d %b %G %k:%M:%S GMT", &t);
 	std::string date(buffer);
 	return date;
 }
