@@ -54,7 +54,7 @@ int Client::bodyAppend(char const *buff, const int &len) {
 	if (body_buff) {
 		if (body_capacity < body_occupied + len) {
 			tmp = body_buff;
-			body_capacity = (body_occupied + len) + 10000000;
+			body_capacity = (body_occupied + len) * 2;
 			if(!(body_buff = (char*)malloc((body_capacity + 1)))) {
 				return 1;
 			}
@@ -86,7 +86,7 @@ int Client::buffAppend(char const * buff, const int & len) {
 	if (read_buff) {
 		if (read_buff_capacity < read_buff_occupied + len) {
 			tmp = read_buff;
-			read_buff_capacity = (read_buff_occupied + len) + 10000000;
+			read_buff_capacity = (read_buff_occupied + len) * 2;
 			if(!(read_buff = (char*)malloc(read_buff_capacity + 1))) {
 				return 1;
 			}

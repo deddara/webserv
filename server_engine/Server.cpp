@@ -24,7 +24,7 @@ Server::~Server(){
 
 
 void Server::closeConnection(std::vector<Client*>::iterator it){
-	std::cout << "Connection with " << (*it)->getFd() << " successfully closed..." << std::endl;
+	std::cout << "Connection with client " << (*it)->getFd() << " successfully closed" << std::endl;
 	close((*it)->getFd());
 	delete (*it);
 	client_session.erase(it);
@@ -231,7 +231,6 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 
 	(*it)->setLastMsg();
 
-	std::cout << "CLIENT " << (*it)->getFd() << " SENT: ";
 #ifdef LINUX
 	if((n = recv((*it)->getFd(), buff, sizeof(buff), 0)) <= 0)
 #else
@@ -241,7 +240,6 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 		(*it)->setStatus(3);
 		return;
 	}
-	std::cout << n << " BYTES" << std::endl;
 	if((*it)->buffAppend(buff, n)) {
 		(*it)->getResponse()->setErrcode(500);
 	}
@@ -288,6 +286,7 @@ int Server::newSession() {
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
+			std::cout << "Connection with client " << accept_sock << " successfully established" << std::endl;
 			client_session.push_back(new Client(accept_sock, (*it).getHost(), (*it).getPort(), addr));
 		}
 	}
