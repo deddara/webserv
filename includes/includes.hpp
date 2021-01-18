@@ -26,6 +26,7 @@ int					checkSuspiciousSymbols(std::string const &);
 int					ft_atoi(const char *);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
 size_t				ft_strlen(const char *);
+void                ft_bzero(void *b, size_t n);
 std::string			my_localtime();
 std::string			timeToStr(time_t);
 std::string			toLower(std::string str);

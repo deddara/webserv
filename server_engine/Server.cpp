@@ -33,7 +33,7 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 	struct sockaddr_in addr;
 	int listen_sock;
 
-	bzero(&addr, sizeof(addr));
+	ft_bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = ft_htons(port);
 	addr.sin_addr.s_addr = inet_addr(host.c_str());
@@ -224,7 +224,7 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 	int n;
 	map_type::const_iterator map_it;
 	char buff[1000000];
-	bzero(&buff, 1000000);
+	ft_bzero(&buff, 1000000);
 	int err = 400;
 
 	(*it)->setLastMsg();
@@ -267,7 +267,6 @@ void Server::recv_msg(std::vector<Client*>::iterator it){
 				chunkHandler(it);
 			else
 				postPutHandler((*it)->getRequest()->getData(), it);
-
 		}
 		else
 			(*it)->setStatus(1);
@@ -279,7 +278,7 @@ int Server::newSession() {
 	for (std::vector<VirtServer>::iterator it = virt_serv.begin(); it != virt_serv.end(); ++it) {
 		if (FD_ISSET((*it).getFd(), &readset)) {
 			struct sockaddr_in addr;
-			bzero(&addr, sizeof(addr));
+			ft_bzero(&addr, sizeof(addr));
 			int accept_sock;
 			socklen_t slen = sizeof(addr);
 			if ((accept_sock = accept((*it).getFd(), (struct sockaddr *) &addr, &slen)) < 0) {
@@ -322,7 +321,6 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 		if (FD_ISSET((*it)->getFd(), &readset))
 		{
 			map_type const & data = (*it)->getRequest()->getData();
-
 			switch ((*it)->getStatus()) {
 				case rdy_recv:
 					recv_msg(it);

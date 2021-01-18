@@ -332,8 +332,6 @@ void					Response::putHandler(){
 		errCode = 200;
 		return ;
 	}
-
-	return ;
 }
 
 void				Response::responsePrepare(int & status, map_type * data,
@@ -419,7 +417,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 					status = 3;
 				return ;
 			}
-			// check if requested file exist and readble
+			// check if requested file exist and readable
 			if (_data->find("head")->second[0] == "PUT") {
 				putHandler();
 				buildResponse();
@@ -461,7 +459,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 		return ;
 	}
 	catch (std::exception & e) {
-		std::cout << e.what() << std::endl
+		std::cerr << e.what() << std::endl
 			<< "Generation \"error 500\" response" << std::endl;
 		try {
 			clearResponseData();
@@ -473,7 +471,7 @@ void				Response::responsePrepare(int & status, map_type * data,
 			return ;
 		}
 		catch (std::exception & e) {
-			std::cout << e.what() << std::endl
+			std::cerr << e.what() << std::endl
 				<< "Close connection silently" << std::endl;
 			if (errCode != 404)
 				status = 3;
@@ -815,7 +813,7 @@ int					Response::checkLocation() {
 	uri = it->second[1];
 
 	// check if URI contains file extension
-	if ((pos = uri.find(".", 0)) != std::string::npos) {
+	if ((pos = uri.find('.', 0)) != std::string::npos) {
 		// cut out file extension from URI
 		while (pos < uri.length() && uri[pos] != '?') {
 			fileExt.push_back(uri[pos++]);

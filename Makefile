@@ -66,6 +66,7 @@ INCLUDES	+= -I $(addprefix $(SRCDIR), $(DIR_3))
 DIR_4		= utils/
 FLS_4		= $(addprefix $(DIR_4), \
 				ft_atoi \
+				ft_bzero \
 				ft_itoa \
 				ft_memcmp \
 				ft_memcpy \
