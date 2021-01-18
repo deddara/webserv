@@ -52,7 +52,7 @@ private:
 
 	struct timeval	last_msg;
 
-	struct sockaddr_in & addr;
+	struct sockaddr_in addr;
 
 public:
 

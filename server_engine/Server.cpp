@@ -39,7 +39,7 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 	addr.sin_addr.s_addr = inet_addr(host.c_str());
 
 	if ((listen_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-		perror("listen_sock");
+		std::cerr << "listen_sock" << std::endl;
 		return (500);
 	}
 	fcntl(listen_sock, F_SETFL, O_NONBLOCK);
@@ -47,11 +47,11 @@ int Server::createSocket(const std::string &host, const int port, int const & i)
 	setsockopt(listen_sock, SOL_SOCKET,  SO_REUSEADDR, &opt, sizeof(opt));
 	if ((bind(listen_sock, (struct sockaddr*)& addr, sizeof(addr))) < 0)
 	{
-		perror("bind");
+		std::cerr << "bind" << std::endl;
 		return (500);
 	}
 	if ((listen(listen_sock, 2048)) < 0){
-		perror("listen_sock");
+		std::cerr << "listen_sock" << std::endl;
 		return (500);
 	}
 	virt_serv[i].setFd(listen_sock);
@@ -283,7 +283,7 @@ int Server::newSession() {
 			int accept_sock;
 			socklen_t slen = sizeof(addr);
 			if ((accept_sock = accept((*it).getFd(), (struct sockaddr *) &addr, &slen)) < 0) {
-				perror("accept");
+				std::cerr << "accept" << std::endl;
 				return (1);
 			}
 			fcntl(accept_sock, F_SETFL, O_NONBLOCK);
@@ -371,7 +371,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			if ((res = send((*it)->getFd(), responseStruct.curr,
 					currLength, 0)) < 0)
 			{
-				perror("send");
+				std::cerr << "send" << std::endl;
 				return 1;
 			}
 			if (res < responseStruct.headersLength + responseStruct.bodyLength)

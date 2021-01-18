@@ -51,6 +51,28 @@ int Cgi::buffAppend(const char *buff, int len){
 	return (0);
 }
 
+static std::string setIP(const cgi_data &data) {
+	std::string ip;
+
+	char *tmp = ft_itoa(int(data.addr->sin_addr.s_addr & 0xFF));
+	ip += tmp;
+	free(tmp);
+	ip += '.';
+	tmp = ft_itoa(int(data.addr->sin_addr.s_addr & 0xFF00) >> 8);
+	ip += tmp;
+	free(tmp);
+	ip += '.';
+	tmp = ft_itoa(int(data.addr->sin_addr.s_addr & 0xFF0000) >> 16);
+	ip += tmp;
+	free(tmp);
+	ip += '.';
+	tmp = ft_itoa(int(data.addr->sin_addr.s_addr & 0xFF000000) >> 24);
+	ip += tmp;
+	free(tmp);
+
+	return ip;
+}
+
 char **Cgi::setEnv() {
 	std::map<std::string, std::string>  env_map;
 	map_type::const_iterator map_it;
@@ -61,8 +83,7 @@ char **Cgi::setEnv() {
 	env_map["GATEWAY_INTERFACE"] = "CGI/1.1";
 	env_map["SCRIPT_NAME"] = bin_path;
 	env_map["PATH_TRANSLATED"] = file_path;
-	env_map["REMOTE_ADDR"] = "127.0.0.1";
-
+	env_map["REMOTE_ADDR"] = setIP(_cgi_data);
 
 	num = ft_itoa(_cgi_data.serv_port);
 	env_map["SERVER_PORT"] = num;
