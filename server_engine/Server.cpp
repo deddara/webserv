@@ -331,16 +331,14 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 				case rdy_parse:
 					if ((*it)->getStatus() != 3)
 					{
-						std::cout << "REQUEST HEADERS FROM " << (*it)->getFd() << " CLIENT" << std::endl;
-						std::string tmp((*it)->getBuff());
-						std::cout << tmp.substr(0, tmp.find("\r\n\r\n") + 2) << std::endl;
+//						std::string tmp((*it)->getBuff());
+//						std::cout << tmp.substr(0, tmp.find("\r\n\r\n") + 2) << std::endl;
 						(*it)->clearBuff();
 						(*it)->setCgiData();
 						if (!(*it)->getRequest()->error()) // check for 400
 							this->getLocation(it, data);
 						(*it)->getResponse()->setReqBody((*it)->getBody());
 						(*it)->getResponse()->setErrorPageTempl(&errPageMap.getErrorPageTemplates());
-						std::cout << "CGI HEADERS FROM " << (*it)->getFd() << " CLIENT" << std::endl;
 						(*it)->getResponse()->responsePrepare((*it)->getStatus(), &data, (*it)->getCgiData());
 						(*it)->clearReqBody();
 						(*it)->getBytes().setBytes(0);
@@ -382,7 +380,10 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 					responseStruct.bodyCurr += res;
 				}
 				currLength -= res;
-				(*it)->setStatus(2);
+				if ((*it)->getStatus() == 3)
+					(*it)->setStatus(4);
+				else
+					(*it)->setStatus(2);
 				break;
 			}
 			delete (*it)->getResponse();
@@ -391,7 +392,7 @@ int Server::clientSessionHandler(ErrorPages const & errPageMap) {
 			delete (*it)->getRequest();
 			Request			*reqst = new Request;
 			(*it)->setRequest(reqst);
-			if ((*it)->getStatus() == 3) {
+			if ((*it)->getStatus() == 3 || (*it)->getStatus() == 4) {
 				this->closeConnection(it);
 				break;
 			}
@@ -412,7 +413,6 @@ int Server::launch() {
 			continue;
 		t.tv_sec = 500;
 		t.tv_usec = 0;
-
 		if ((select_res = select(max_fd + 1, &readset, &writeset, NULL, &t)) < 0) {
 			return (1);
 		}

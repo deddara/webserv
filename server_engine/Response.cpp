@@ -130,22 +130,18 @@ void Response::cgi_response_parser(Cgi &cgi){
 
 	pos = cgi_buff_str.find("\r\n\r\n") + 4;
 	bodyLength = cgi.getBytes().getBytes() - pos;
-//	if (cgi.getBytes().getBytes() == 0)
-//		content_len = 0;
+	if (cgi.getBytes().getBytes() == 0)
+		bodyLength = 0;
 	responseHeaders.append("Content-Length: ");
 	responseHeaders.append(std::to_string(bodyLength));
 	responseHeaders.append("\r\n");
 	responseHeaders.append("Connection: close\r\n\r\n");
-
 
 	response.headersLength = responseHeaders.size();
 	if(!(response.headers = (char*)malloc(response.headersLength + 1))) {
 		throw std::runtime_error("Error: malloc fails");
 	}
 	response.headers[response.headersLength] = '\0';
-	std::cout << "*************" << std::endl;
-	std::cout << responseHeaders.c_str() << std::endl;
-	std::cout << "*************" << std::endl;
 	ft_memcpy(response.headers, responseHeaders.c_str(), responseHeaders.length());
 	response.headersCurr = response.headers;
 	if (bodyLength) {
@@ -251,7 +247,6 @@ void				Response::buildResponse() {
 
 	ft_memcpy(response.headers, responseHeaders.c_str(), responseHeaders.length());
 	response.headersCurr = response.headers;
-	std::cout << response.headers << std::endl;
 	if (bodyLength) {
 		// ft_memcpy(response.data + responseHeaders.length(), body, bodyLength);
 		response.body = body;
@@ -259,8 +254,6 @@ void				Response::buildResponse() {
 		response.bodyLength = bodyLength;
 	}
 
-	// DEBUG
-	// write(1, response.data, response.length);
 }
 
 int					Response::checkLimitClientBody()
