@@ -32,7 +32,7 @@ Request::value_type split(std::string const &raw, char delim) {
 // Private functions
 
 void Request::check_common() {
-	if (_data["head"][2] != "HTTP/1.1" && _data["head"][2] != "HTTP/1.0")
+	if (_data["head"].size() != 3  || (_data["head"][2] != "HTTP/1.1" && _data["head"][2] != "HTTP/1.0"))
 		_isbadrequest = true;
 	if (!_data["host"].size() || _data["host"][0].empty())
 		_isbadrequest = true;
